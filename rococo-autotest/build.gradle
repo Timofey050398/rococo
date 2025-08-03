@@ -1,0 +1,69 @@
+buildscript {
+    ext {
+        junitVersion = '5.11.4'
+        allureVersion = '2.29.1'
+        selenideVersion = '7.9.1'
+        okhttp3Version = '4.11.0'
+        retrofitVersion = '2.11.0'
+        apollographqlVersion = '0.0.2'
+        logbackVersion = '1.4.11'
+        slf4jVersion = '2.0.9'
+        springJdbcVersion = '6.1.12'
+        springCryptoVersion = '6.3.1'
+        p6spyVersion = '3.9.1'
+        hibernateVersion = '6.6.0.Final'
+        kafkaClientsVersion = '3.8.0'
+        saajVersion = '3.0.4'
+        jakartaJaxbVersion = '4.0.2'
+        springDataCommonsVersion = '3.3.3'
+        atomicosVersion = '6.0.0'
+        wiremockVersion = '3.0.1'
+        fakerVersion = '1.0.2'
+        ashotVersion = '1.5.4'
+        apolloVersion = '0.0.2'
+    }
+}
+
+plugins {
+    id 'io.qameta.allure' version '2.12.0'
+    id 'io.qameta.allure-adapter' version '2.12.0'
+    id 'com.apollographql.apollo' version '4.1.0'
+}
+
+group = 'timofeyqa'
+version = '0.0.1-SNAPSHOT'
+
+dependencies {
+}
+
+allure {
+    version.set("${allureVersion}")
+    adapter {
+        aspectjVersion.set("1.9.22")
+        aspectjWeaver.set(true)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.register('printVersion') {
+    doLast {
+        println project.version
+    }
+}
+
+tasks.named { it == "generateRococoApolloSources" }.configureEach {
+    dependsOn("downloadRococoApolloSchemaFromIntrospection")
+}
+
+test {
+    systemProperty "test.env", "docker"
+    options {
+        systemProperties(System.getProperties())
+    }
+    testLogging.showStandardStreams = true
+    testLogging.exceptionFormat = 'full'
+    useJUnitPlatform()
+}

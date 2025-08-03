@@ -1,0 +1,22 @@
+plugins {
+	id 'org.springframework.boot' version '3.5.4'
+}
+
+group = 'timofeyqa'
+version = '0.0.1-SNAPSHOT'
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.register('printVersion') {
+	doLast {
+		println project.version
+	}
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

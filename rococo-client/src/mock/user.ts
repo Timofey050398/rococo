@@ -1,8 +1,8 @@
 import type { UserType } from "$lib/types/User";
 
 export const user: UserType = {
-    id: 1,
-    name: "Роксана",
-    surname: "Каменева",
+    id: "str",
+    firstname: "Роксана",
+    lastname: "Каменева",
     username: "babayanna",
 }

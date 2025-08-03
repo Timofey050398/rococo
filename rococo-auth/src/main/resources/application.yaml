@@ -7,7 +7,6 @@ spring:
   mvc:
     log-request-details: true
   datasource:
-    url: 'jdbc:mysql://127.0.0.1:3306/rococo-auth?serverTimezone=UTC&createDatabaseIfNotExist=true'
     hikari:
       connection-timeout: 20000
       minimum-idle: 10
@@ -15,13 +14,10 @@ spring:
       idle-timeout: 10000
       max-lifetime: 1000
       auto-commit: true
-    username: root
-    password: secret
   flyway:
     enabled: true
     baseline-on-migrate: true
     baseline-version: 0
-    schemas: rococo-auth
     locations: classpath:db/migration/rococo-auth
   jpa:
     hibernate:
@@ -37,6 +33,8 @@ spring:
     open-in-view: false
 
 logging:
+  file:
+    path: ./logs/rococo-auth
   level:
     root: INFO
     org.springframework.web: DEBUG
@@ -44,7 +42,101 @@ logging:
     org.springframework.security.oauth2: DEBUG
     org.springframework.boot.autoconfigure: DEBUG
 
+  
+---
+spring:
+  config:
+    activate:
+      on-profile: 'local'
+  autoconfigure:
+    exclude:
+      - 'org.springframework.cloud.vault.config.VaultAutoConfiguration'
+      - 'org.springframework.cloud.vault.config.VaultObservationAutoConfiguration'
+      - 'org.springframework.cloud.vault.config.VaultReactiveAutoConfiguration'
+  kafka:
+    bootstrap-servers: 'localhost:9092'
+  datasource:
+    url: 'jdbc:mysql://127.0.0.1:3306/rococo-auth?serverTimezone=UTC&createDatabaseIfNotExist=true'
+    username: root
+    password: secret
 rococo-front:
   base-uri: 'http://127.0.0.1:3000'
 rococo-auth:
   base-uri: 'http://127.0.0.1:9000'
+oauth2:
+  client-id: 'client'
+---
+spring:
+  config:
+    activate:
+      on-profile: 'docker'
+  autoconfigure:
+    exclude:
+      - 'org.springframework.cloud.vault.config.VaultAutoConfiguration'
+      - 'org.springframework.cloud.vault.config.VaultObservationAutoConfiguration'
+      - 'org.springframework.cloud.vault.config.VaultReactiveAutoConfiguration'
+  kafka:
+    bootstrap-servers: 'kafka:9092'
+  datasource:
+    url: 'jdbc:mysql://rococo-all-db:3306/rococo-auth?serverTimezone=UTC&createDatabaseIfNotExist=true'
+    username: root
+    password: secret
+rococo-front:
+  base-uri: 'http://frontend.rococo.dc'
+rococo-auth:
+  base-uri: 'http://auth.rococo.dc:9000'
+oauth2:
+  client-id: 'client'
+---
+spring:
+  config:
+    activate:
+      on-profile: 'prod'
+    import: vault://
+  cloud:
+    vault:
+      authentication: TOKEN
+      host: vault.timofeyqa
+      uri: https://vault.timofeyqa
+      token: ${VAULT_TOKEN}
+      kv:
+        enabled: true
+  kafka:
+    bootstrap-servers: ${kafka.url}
+  datasource:
+    url: ${db.url}
+    username: ${db.username}
+    password: ${db.password}
+rococo-front:
+  base-uri: 'https://rococo.timofeyqa'
+rococo-auth:
+  base-uri: 'https://auth.rococo.timofeyqa'
+oauth2:
+  client-id: ${client-id}
+---
+spring:
+  config:
+    activate:
+      on-profile: 'staging'
+    import: vault://
+  cloud:
+    vault:
+      authentication: TOKEN
+      host: vault.timofeyqa
+      uri: https://vault.timofeyqa
+      token: ${VAULT_TOKEN}
+      kv:
+        enabled: true
+  kafka:
+    bootstrap-servers: ${kafka.url}
+  datasource:
+    url: ${db.url}
+    username: ${db.username}
+    password: ${db.password}
+rococo-front:
+  base-uri: 'https://rococo-stage.timofeyqa'
+rococo-auth:
+  base-uri: 'https://auth.rococo-stage.timofeyqa'
+oauth2:
+  client-id: ${client-id}
+---

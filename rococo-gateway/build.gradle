@@ -1,0 +1,74 @@
+plugins {
+    id 'org.springframework.boot' version '3.4.2'
+    id 'com.google.cloud.tools.jib' version '3.4.1'
+}
+
+group = 'timofeyqa'
+version = '0.0.1-SNAPSHOT'
+
+dependencies {
+    implementation project(':rococo-grpc')
+    implementation "net.devh:grpc-client-spring-boot-starter:${project.ext.springGrpcVersion}"
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation('org.springframework.boot:spring-boot-starter-web-services') {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+    }
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${project.ext.springOpenApiVersion}"
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation "org.springframework.kafka:spring-kafka:${project.ext.springKafkaVersion}"
+    implementation "org.springframework.cloud:spring-cloud-starter-vault-config:${project.ext.springVaultVersion}"
+    implementation "net.coobird:thumbnailator:${project.ext.thumbnailatorVersion}"
+    annotationProcessor "org.projectlombok:lombok:${project.ext.lombokVersion}"
+    compileOnly "org.projectlombok:lombok:${project.ext.lombokVersion}"
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+jib {
+    container {
+        ports = ['8090']
+        jvmFlags = ["-Dspring.profiles.active=${System.env.PROFILE}"]
+        environment = [
+                'VAULT_TOKEN': "${System.env.VAULT_TOKEN}".toString(),
+                'TZ'         : 'Europe/Moscow'
+        ]
+        creationTime = 'USE_CURRENT_TIMESTAMP'
+        labels = [
+                'maintainer': 'Timofey Litvinov',
+                'version'   : "${project.version}".toString()
+        ]
+    }
+    from {
+        image = "${project.ext.dockerImage}"
+        platforms {
+            platform {
+                architecture = "${project.ext.dockerArch}"
+                os = 'linux'
+            }
+        }
+    }
+    to {
+        image = "${project.ext.dockerHubName}/${project.name}-${System.env.PROFILE}"
+        tags = ['latest', "${project.version}"]
+    }
+}
+
+tasks.jib.dependsOn test
+tasks.jibDockerBuild.dependsOn test
+
+tasks.named('bootJar') {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.register('printVersion') {
+    doLast {
+        println project.version
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

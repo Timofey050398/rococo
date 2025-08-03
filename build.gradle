@@ -1,16 +1,49 @@
 plugins {
     id 'java'
+    id 'com.github.ben-manes.versions' version '0.51.0'
+    id 'io.spring.dependency-management' version '1.1.7'
 }
 
-group = 'guru.qa'
-sourceCompatibility = '17'
+group = 'timofeyqa'
+version = '0.0.1-SNAPSHOT'
 
-subprojects {
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'io.spring.dependency-management'
+
     repositories {
         mavenCentral()
     }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+    }
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
+subprojects {
+    ext {
+        dockerHubName = "timofeyqa"
+
+        lombokVersion = '1.18.34'
+        springKafkaVersion = '3.3.2'
+        springVaultVersion = '4.2.0'
+        springOpenApiVersion = '2.8.3'
+        mysqlDriverVersion = '9.3.0'
+        flywayVersion = '11.7.2'
+        springGrpcVersion = '3.1.0.RELEASE'
+        protobufVersion = '3.25.3'
+        grpcVersion = '1.63.0'
+        thumbnailatorVersion = '0.4.20'
+        h2Version = '2.3.232'
+        mockitoVersion = '5.12.0'
+
+        dockerImage = System.getProperty("os.arch") == "aarch64" || System.getProperty("os.arch") == "arm64"
+                ? "arm64v8/eclipse-temurin:21-jdk"
+                : "eclipse-temurin:21-jdk"
+        dockerArch = System.getProperty("os.arch") == "aarch64" || System.getProperty("os.arch") == "arm64"
+                ? "arm64"
+                : "amd64"
+    }
 }
