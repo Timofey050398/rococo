@@ -7,6 +7,9 @@ group = 'timofeyqa'
 version = '0.0.1-SNAPSHOT'
 
 dependencies {
+	implementation project(':rococo-grpc')
+	implementation "net.devh:grpc-server-spring-boot-starter:${project.ext.springGrpcVersion}"
+
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation('org.springframework.boot:spring-boot-starter-web-services') {
 		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
@@ -28,7 +31,7 @@ dependencies {
 
 jib {
 	container {
-		ports = ['8093']
+		ports = ['8095']
 		jvmFlags = ["-Dspring.profiles.active=${System.env.PROFILE}"]
 		environment = [
 				'VAULT_TOKEN': "${System.env.VAULT_TOKEN}".toString(),

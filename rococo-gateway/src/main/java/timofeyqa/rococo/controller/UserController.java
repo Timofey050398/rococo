@@ -3,23 +3,29 @@ package timofeyqa.rococo.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import timofeyqa.rococo.model.UserJson;
-import timofeyqa.rococo.service.api.GrpcUserdataClient;
+import timofeyqa.rococo.service.api.RestUserdataClient;
 
 @RestController
+@RequestMapping("/api/user")
 public class UserController {
 
-    private final GrpcUserdataClient grpcUserdataClient;
+    private final RestUserdataClient userdataClient;
 
     @Autowired
-    public UserController(GrpcUserdataClient grpcUserdataClient) {
-        this.grpcUserdataClient = grpcUserdataClient;
+    public UserController(RestUserdataClient userdataClient) {
+        this.userdataClient = userdataClient;
     }
 
-    @GetMapping("/api/user")
+    @GetMapping
     public UserJson getUser(@AuthenticationPrincipal Jwt principal) {
-        return grpcUserdataClient.getUser(principal.getSubject());
+        return userdataClient.getUser(principal.getSubject());
+    }
+
+
+    @PatchMapping
+    public UserJson updateUser(@RequestBody UserJson userJson) {
+        return userdataClient.updateUser(userJson);
     }
 }

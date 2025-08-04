@@ -1,5 +1,8 @@
 package timofeyqa.rococo.service;
 
+import timofeyqa.rococo.ex.NotFoundException;
+import jakarta.annotation.Nonnull;
+import jakarta.persistence.EntityNotFoundException;
 import timofeyqa.rococo.data.UserEntity;
 import timofeyqa.rococo.model.UserJson;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -11,6 +14,9 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import timofeyqa.rococo.data.repository.UserRepository;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 @Component
 public class UserService {
@@ -45,4 +51,39 @@ public class UserService {
             }
         );
   }
+
+
+    public @Nonnull UserJson getUser(@Nonnull String username) {
+        Optional<UserEntity> entity = userRepository.findByUsername(username);
+
+        if(entity.isPresent()) {
+            return UserJson.fromEntity(entity.get());
+        } else {
+            throw new NotFoundException("user with provided username: " + username + " not found");
+        }
+    }
+
+    @Transactional @Nonnull
+    public UserJson patchUser(@Nonnull UserJson patchRequest) {
+        UserEntity user = userRepository.findById(patchRequest.id())
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + patchRequest.id()));
+
+        if (!patchRequest.username().equals(user.getUsername())) {
+            throw new IllegalArgumentException("Username can't be updated");
+        }
+
+        if (patchRequest.firstname() != null) {
+            user.setFirstname(patchRequest.firstname());
+        }
+
+        if (patchRequest.lastname() != null) {
+            user.setLastname(patchRequest.lastname());
+        }
+
+        if (patchRequest.avatar() != null && !patchRequest.avatar().isEmpty()) {
+            user.setAvatar(patchRequest.avatar().getBytes(StandardCharsets.UTF_8));
+        }
+
+        return UserJson.fromEntity(userRepository.save(user));
+    }
 }

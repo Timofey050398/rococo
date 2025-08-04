@@ -4,12 +4,14 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RestPage<T> extends PageImpl<T> {
@@ -38,5 +40,10 @@ public class RestPage<T> extends PageImpl<T> {
 
   public RestPage() {
     super(new ArrayList<>());
+  }
+
+  @Override
+  public <U> Page<U> map(Function<? super T, ? extends U> converter) {
+    return super.map(converter);
   }
 }

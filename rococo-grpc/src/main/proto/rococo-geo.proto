@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "rococo-common.proto";
+
+package timofeyqa.grpc.rococo;
+
+option java_multiple_files = true;
+option java_package = "timofeyqa.grpc.rococo";
+option java_outer_classname = "RococoGeoProto";
+
+service RococoGeoService {
+  rpc GetGeo (Uuid) returns (GeoResponse);
+  rpc GetAll(google.protobuf.Empty) returns (GeoListResponse);
+  rpc GetGeosByUuids(UuidList) returns (GeoListResponse);
+}
+
+message GeoResponse {
+  string id = 1;
+  string name = 2;
+}
+
+message GeoListResponse {
+  repeated GeoResponse geo = 1;
+}

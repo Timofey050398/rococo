@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.proxy.HibernateProxy;
+import timofeyqa.rococo.model.UserJson;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -55,5 +56,15 @@ public class UserEntity implements Serializable {
   @Override
   public final int hashCode() {
     return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+  }
+
+  public static UserEntity fromJson(UserJson json) {
+    UserEntity user = new UserEntity();
+    user.setId(json.id());
+    user.setUsername(json.username());
+    user.setFirstname(json.firstname());
+    user.setLastname(json.lastname());
+    user.setAvatar(user.getAvatar());
+    return user;
   }
 }

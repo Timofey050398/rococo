@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package timofeyqa.grpc.rococo;
+
+option java_multiple_files = true;
+option java_package = "timofeyqa.grpc.rococo";
+option java_outer_classname = "RococoCommonProto";
+
+message Uuid {
+  string uuid = 1;
+}
+
+message UuidList {
+  repeated Uuid uuid = 1;
+}
+
+message Pageable {
+  int32 page = 1;
+  int32 size = 2;
+}

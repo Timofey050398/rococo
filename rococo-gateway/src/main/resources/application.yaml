@@ -32,7 +32,19 @@ spring:
 
 grpc:
   client:
-    grpcUserdataClient:
+    grpcMuseumClient:
+      address: "static://127.0.0.1:8095"
+      enableKeepAlive: true
+      negotiationType: plaintext
+    grpcArtisClient:
+      address: "static://127.0.0.1:8095"
+      enableKeepAlive: true
+      negotiationType: plaintext
+    grpcPaintingClient:
+      address: "static://127.0.0.1:8095"
+      enableKeepAlive: true
+      negotiationType: plaintext
+    grpcGeoClient:
       address: "static://127.0.0.1:8095"
       enableKeepAlive: true
       negotiationType: plaintext
@@ -65,10 +77,22 @@ spring:
 
 grpc:
   client:
-    grpcUserdataClient:
-      address: 'static://userdata.rococo.dc:8095'
+    grpcMuseumClient:
+      address: "static://127.0.0.1:8095"
       enableKeepAlive: true
-      negotiationType: PLAINTEXT
+      negotiationType: plaintext
+    grpcArtisClient:
+      address: "static://127.0.0.1:8095"
+      enableKeepAlive: true
+      negotiationType: plaintext
+    grpcPaintingClient:
+      address: "static://127.0.0.1:8095"
+      enableKeepAlive: true
+      negotiationType: plaintext
+    grpcGeoClient:
+      address: "static://127.0.0.1:8095"
+      enableKeepAlive: true
+      negotiationType: plaintext
 
 
 rococo-userdata:
@@ -77,6 +101,4 @@ rococo-front:
   base-uri: 'http://frontend.rococo.dc'
 rococo-gateway:
   base-uri: 'http://gateway.rococo.dc:8090'
-rococo-geo:
-    base-uri: 'http://geo.rococo.dc:8093'
 ---
