@@ -14,7 +14,7 @@ import java.util.Date;
 @RestController
 public class SessionController {
 
-  @GetMapping("/api/session/current")
+  @GetMapping("/api/session")
   public SessionJson session(@AuthenticationPrincipal Jwt principal) {
     if (principal == null) return SessionJson.empty();
 

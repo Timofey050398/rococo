@@ -1,5 +1,7 @@
 package timofeyqa.rococo.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -11,6 +13,8 @@ import timofeyqa.rococo.service.api.RestUserdataClient;
 @RequestMapping("/api/user")
 public class UserController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
+
     private final RestUserdataClient userdataClient;
 
     @Autowired
@@ -20,12 +24,14 @@ public class UserController {
 
     @GetMapping
     public UserJson getUser(@AuthenticationPrincipal Jwt principal) {
-        return userdataClient.getUser(principal.getSubject());
+        final String username = principal.getSubject();
+        LOG.info("try to get user {}", username);
+        return userdataClient.getUser(username);
     }
 
 
     @PatchMapping
-    public UserJson updateUser(@RequestBody UserJson userJson) {
-        return userdataClient.updateUser(userJson);
+    public UserJson updateUser(@RequestBody UserJson userJson, @AuthenticationPrincipal Jwt principal) {
+        return userdataClient.updateUser(userJson, principal.getSubject());
     }
 }

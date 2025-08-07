@@ -69,17 +69,17 @@ services:
     networks:
       - rococo-network
 
-#  artist.rococo.dc:
-#    container_name: artist.rococo.dc
-#    image: ${PREFIX}/rococo-currency-docker:latest
-#    ports:
-#      - 8091:8091
-#    restart: always
-#    depends_on:
-#      rococo-all-db:
-#        condition: service_healthy
-#    networks:
-#      - rococo-network
+  artist.rococo.dc:
+    container_name: artist.rococo.dc
+    image: ${PREFIX}/rococo-artist-docker:latest
+    ports:
+      - 8091:8091
+    restart: always
+    depends_on:
+      rococo-all-db:
+        condition: service_healthy
+    networks:
+      - rococo-network
 
   gateway.rococo.dc:
     container_name: gateway.rococo.dc
@@ -102,7 +102,7 @@ services:
     container_name: geo.rococo.dc
     image: ${PREFIX}/rococo-geo-docker:latest
     ports:
-      - 8093:8093
+      - 8095:8095
     restart: always
     depends_on:
       rococo-all-db:
@@ -110,38 +110,39 @@ services:
     networks:
       - rococo-network
 
-#  museum.rococo.dc:
-#    container_name: museum.rococo.dc
-#    image: ${PREFIX}/rococo-museum-docker:latest
-#    ports:
-#      - 8092:8092
-#    restart: always
-#    depends_on:
-#      rococo-all-db:
-#        condition: service_healthy
-#    networks:
-#      - rococo-network
-#
-#  painting.rococo.dc:
-#    container_name: painting.rococo.dc
-#    image: ${PREFIX}/rococo-painting-docker:latest
-#    ports:
-#      - 8094:8094
-#    restart: always
-#    depends_on:
-#      rococo-all-db:
-#        condition: service_healthy
-#    networks:
-#      - rococo-network
+  museum.rococo.dc:
+    container_name: museum.rococo.dc
+    image: ${PREFIX}/rococo-museum-docker:latest
+    ports:
+      - 8092:8092
+    restart: always
+    depends_on:
+      rococo-all-db:
+        condition: service_healthy
+    networks:
+      - rococo-network
+
+  painting.rococo.dc:
+    container_name: painting.rococo.dc
+    image: ${PREFIX}/rococo-painting-docker:latest
+    ports:
+      - 8094:8094
+    restart: always
+    depends_on:
+      rococo-all-db:
+        condition: service_healthy
+    networks:
+      - rococo-network
 
   userdata.rococo.dc:
     container_name: userdata.rococo.dc
     image: ${PREFIX}/rococo-userdata-docker:latest
     ports:
       - 8089:8089
-      - 8095:8095
     restart: always
     depends_on:
+      rococo-all-db:
+        condition: service_healthy
       auth.rococo.dc:
         condition: service_healthy
     networks:

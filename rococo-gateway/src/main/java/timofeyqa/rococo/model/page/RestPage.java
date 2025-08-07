@@ -41,9 +41,4 @@ public class RestPage<T> extends PageImpl<T> {
   public RestPage() {
     super(new ArrayList<>());
   }
-
-  @Override
-  public <U> Page<U> map(Function<? super T, ? extends U> converter) {
-    return super.map(converter);
-  }
 }

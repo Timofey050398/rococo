@@ -14,6 +14,9 @@ logging:
     org.springframework.security: DEBUG
     org.springframework.security.oauth2: DEBUG
 
+api:
+  version: v1.0
+
 ---
 spring:
   config:
@@ -24,6 +27,8 @@ spring:
       - 'org.springframework.cloud.vault.config.VaultAutoConfiguration'
       - 'org.springframework.cloud.vault.config.VaultObservationAutoConfiguration'
       - 'org.springframework.cloud.vault.config.VaultReactiveAutoConfiguration'
+      - 'org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration'
+      - 'org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration'
   security:
     oauth2:
       resourceserver:
@@ -32,19 +37,19 @@ spring:
 
 grpc:
   client:
-    grpcMuseumClient:
-      address: "static://127.0.0.1:8095"
+    museum-service:
+      address: "static://127.0.0.1:8092"
       enableKeepAlive: true
       negotiationType: plaintext
-    grpcArtisClient:
-      address: "static://127.0.0.1:8095"
+    artist-service:
+      address: "static://127.0.0.1:8091"
       enableKeepAlive: true
       negotiationType: plaintext
-    grpcPaintingClient:
-      address: "static://127.0.0.1:8095"
+    painting-service:
+      address: "static://127.0.0.1:8094"
       enableKeepAlive: true
       negotiationType: plaintext
-    grpcGeoClient:
+    geo-service:
       address: "static://127.0.0.1:8095"
       enableKeepAlive: true
       negotiationType: plaintext
@@ -57,8 +62,6 @@ rococo-front:
   base-uri: 'http://127.0.0.1:3000'
 rococo-gateway:
   base-uri: 'http://127.0.0.1:8090'
-rococo-geo:
-  base-uri: 'http://127.0.0.1:8093'
 ---
 spring:
   config:
@@ -69,6 +72,8 @@ spring:
       - 'org.springframework.cloud.vault.config.VaultAutoConfiguration'
       - 'org.springframework.cloud.vault.config.VaultObservationAutoConfiguration'
       - 'org.springframework.cloud.vault.config.VaultReactiveAutoConfiguration'
+      - 'org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration'
+      - 'org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration'
   security:
     oauth2:
       resourceserver:
@@ -77,20 +82,20 @@ spring:
 
 grpc:
   client:
-    grpcMuseumClient:
-      address: "static://127.0.0.1:8095"
+    museum-service:
+      address: "static://museum.rococo.dc:8092"
       enableKeepAlive: true
       negotiationType: plaintext
-    grpcArtisClient:
-      address: "static://127.0.0.1:8095"
+    artist-service:
+      address: "static://artist.rococo.dc:8091"
       enableKeepAlive: true
       negotiationType: plaintext
-    grpcPaintingClient:
-      address: "static://127.0.0.1:8095"
+    painting-service:
+      address: "static://painting.rococo.dc:8094"
       enableKeepAlive: true
       negotiationType: plaintext
-    grpcGeoClient:
-      address: "static://127.0.0.1:8095"
+    geo-service:
+      address: "static://geo.rococo.dc:8095"
       enableKeepAlive: true
       negotiationType: plaintext
 

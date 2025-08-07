@@ -21,5 +21,5 @@ public record UserJson(
     String lastname,
     @JsonProperty("avatar")
     @Size(max = RococoGatewayServiceConfig.ONE_MB)
-    String avatar) {
+    String avatar)  implements ResponseDto {
 }

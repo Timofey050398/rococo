@@ -19,4 +19,5 @@ message UuidList {
 message Pageable {
   int32 page = 1;
   int32 size = 2;
+  string filter_field = 3;
 }

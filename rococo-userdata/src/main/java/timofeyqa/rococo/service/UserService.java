@@ -2,7 +2,6 @@ package timofeyqa.rococo.service;
 
 import timofeyqa.rococo.ex.NotFoundException;
 import jakarta.annotation.Nonnull;
-import jakarta.persistence.EntityNotFoundException;
 import timofeyqa.rococo.data.UserEntity;
 import timofeyqa.rococo.model.UserJson;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -16,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import timofeyqa.rococo.data.repository.UserRepository;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
 @Component
 public class UserService {
@@ -54,36 +52,36 @@ public class UserService {
 
 
     public @Nonnull UserJson getUser(@Nonnull String username) {
-        Optional<UserEntity> entity = userRepository.findByUsername(username);
-
-        if(entity.isPresent()) {
-            return UserJson.fromEntity(entity.get());
-        } else {
-            throw new NotFoundException("user with provided username: " + username + " not found");
-        }
+        return userRepository.findByUsername(username)
+            .map(UserJson::fromEntity)
+            .orElseThrow(() -> new NotFoundException("User with provided username: " + username + " not found"));
     }
 
     @Transactional @Nonnull
-    public UserJson patchUser(@Nonnull UserJson patchRequest) {
-        UserEntity user = userRepository.findById(patchRequest.id())
-                .orElseThrow(() -> new EntityNotFoundException("User not found: " + patchRequest.id()));
+    public UserJson patchUser(@Nonnull UserJson patchRequest, @Nonnull String username) {
+      UserEntity user = userRepository.findByUsername(username)
+          .orElseThrow(() -> new NotFoundException("User with provided username: " + username + " not found"));
 
-        if (!patchRequest.username().equals(user.getUsername())) {
-            throw new IllegalArgumentException("Username can't be updated");
-        }
+      if (!patchRequest.username().equals(user.getUsername())) {
+        throw new IllegalArgumentException("Username can't be updated");
+      }
 
-        if (patchRequest.firstname() != null) {
-            user.setFirstname(patchRequest.firstname());
-        }
+      if (!patchRequest.id().equals(user.getId())) {
+        throw new IllegalArgumentException("Id can't be updated");
+      }
 
-        if (patchRequest.lastname() != null) {
-            user.setLastname(patchRequest.lastname());
-        }
+      if (patchRequest.firstname() != null && !patchRequest.firstname().isBlank()) {
+        user.setFirstname(patchRequest.firstname());
+      }
 
-        if (patchRequest.avatar() != null && !patchRequest.avatar().isEmpty()) {
-            user.setAvatar(patchRequest.avatar().getBytes(StandardCharsets.UTF_8));
-        }
+      if (patchRequest.lastname() != null && !patchRequest.lastname().isBlank()) {
+        user.setLastname(patchRequest.lastname());
+      }
 
-        return UserJson.fromEntity(userRepository.save(user));
+      if (patchRequest.avatar() != null && !patchRequest.avatar().isEmpty()) {
+        user.setAvatar(patchRequest.avatar().getBytes(StandardCharsets.UTF_8));
+      }
+
+      return UserJson.fromEntity(userRepository.save(user));
     }
 }

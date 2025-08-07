@@ -27,8 +27,6 @@ public class SecurityConfigMain {
     this.corsCustomizer = corsCustomizer;
   }
 
-
-  //TODO проверить
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     corsCustomizer.corsCustomizer(http);
@@ -36,11 +34,11 @@ public class SecurityConfigMain {
     http.authorizeHttpRequests(customizer ->
         customizer.requestMatchers(
                 antMatcher("/api/session/current"),
-                antMatcher("/actuator/health"),
-                antMatcher(HttpMethod.POST, "/graphql"))
+                antMatcher("/actuator/health"))
             .permitAll()
-            .anyRequest()
-            .authenticated()
+            .requestMatchers(HttpMethod.GET, "/api/user").authenticated()
+            .requestMatchers(HttpMethod.GET, "/**").permitAll()
+            .anyRequest().authenticated()
     ).oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()));
     return http.build();
   }

@@ -1,10 +1,9 @@
 package timofeyqa.rococo.service.api.grpc;
 
-import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
+import com.google.common.util.concurrent.ListenableFuture;
 import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -13,51 +12,53 @@ import timofeyqa.grpc.rococo.*;
 import timofeyqa.rococo.model.CountryJson;
 import timofeyqa.rococo.model.GeoJson;
 import timofeyqa.rococo.model.MuseumJson;
+import timofeyqa.rococo.mappers.MuseumMapper;
+import timofeyqa.rococo.mappers.UuidMapper;
 import timofeyqa.rococo.model.page.RestPage;
+import timofeyqa.rococo.validation.IdRequired;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static timofeyqa.rococo.service.utils.Paginate.toGrpcPageable;
+import static timofeyqa.rococo.mappers.PageableMapper.toGrpcPageable;
 import static timofeyqa.rococo.service.utils.ToCompletableFuture.toCf;
-import static timofeyqa.rococo.service.utils.UuidUtil.fromUuidList;
+import static timofeyqa.rococo.mappers.UuidMapper.fromUuidList;
 
 @Service
 @RequiredArgsConstructor
-public class GrpcMuseumClient {
+public class GrpcMuseumClient implements GrpcClient<MuseumJson> {
 
     private static final Logger LOG = LoggerFactory.getLogger(GrpcMuseumClient.class);
 
     private final RococoMuseumServiceGrpc.RococoMuseumServiceFutureStub museumStub;
-    private final RococoMuseumServiceGrpc.RococoMuseumServiceBlockingStub museumBlockingStub;
     private final GrpcGeoClient grpcGeoClient;
 
 
 
-    public @Nonnull CompletableFuture<MuseumJson> getMuseumById(UUID id){
+    @Override
+    public @Nonnull CompletableFuture<MuseumJson> getById(UUID id){
         if (id == null){
             return CompletableFuture.completedFuture(null);
         }
-        return toCf(
-                museumStub.getMuseum(
-                        Uuid.newBuilder()
-                                .setUuid(id.toString())
-                                .build()
-                )
-        ).thenApply(MuseumJson::fromGrpc)
-                .thenCompose(museum ->
-                        grpcGeoClient.getMuseumGeo(museum)
-                                .thenApply(geo -> museum.toBuilder()
-                                        .geo(geo)
-                                        .build())
-                );
+        return getByMuseum(museumStub.getMuseum(UuidMapper.fromUuid(id)));
     }
 
-    public CompletableFuture<RestPage<MuseumJson>> getMuseumPage(Pageable pageable) {
-        return toCf(museumStub.getMuseumPage(toGrpcPageable(pageable)))
-                .thenApply(response -> MuseumJson.fromGrpcPage(response, pageable))
+    private CompletableFuture<MuseumJson> getByMuseum(ListenableFuture<Museum> museum){
+      return toCf(museum)
+          .thenApply(MuseumMapper::fromGrpc)
+          .thenCompose(museumJson->
+              grpcGeoClient.getMuseumGeo(museumJson)
+                  .thenApply(geo -> museumJson.toBuilder()
+                      .geo(geo)
+                      .build())
+          );
+    }
+
+    public CompletableFuture<RestPage<MuseumJson>> getMuseumPage(Pageable pageable, @Nullable String title) {
+        return toCf(museumStub.getMuseumPage(toGrpcPageable(pageable, title)))
+                .thenApply(response -> MuseumMapper.fromGrpcPage(response, pageable))
                 .thenCompose(museumPage ->
                         enrichMuseumsWithCountries(museumPage.getContent())
                                 .thenApply(updated -> new RestPage<>(updated, pageable, museumPage.getTotalElements()))
@@ -73,7 +74,7 @@ public class GrpcMuseumClient {
 
         return toCf(museumStub.getMuseumsByUuids(fromUuidList(ids)))
                 .thenApply(response -> response.getMuseumsList().stream()
-                        .map(MuseumJson::fromGrpc)
+                        .map(MuseumMapper::fromGrpc)
                         .toList())
                 .thenCompose(this::enrichMuseumsWithCountries);
     }
@@ -114,27 +115,22 @@ public class GrpcMuseumClient {
                 });
     }
 
-    public MuseumJson updateMuseum(@Nonnull MuseumJson museumJson) throws BadRequestException {
-        if (museumJson.id() == null) {
-            throw new BadRequestException("id required for this request");
-        }
-        UUID countryId = Optional.ofNullable(museumJson.geo())
-                .map(GeoJson::country)
-                .map(CountryJson::id)
-                .orElse(null);
+  public CompletableFuture<MuseumJson> updateMuseum(@Nonnull @IdRequired MuseumJson museumJson) {
+    Optional
+        .ofNullable(museumJson.geo())
+        .map(GeoJson::country)
+        .ifPresent(grpcGeoClient::validateCountry);
 
-        if (countryId != null) {
-            try {
-                grpcGeoClient.getById(countryId);
-            } catch (StatusRuntimeException e) {
-                if (e.getStatus().getCode() == Status.Code.NOT_FOUND) {
-                    throw new BadRequestException("The specified country does not exist");
-                }
-                throw e;
-            }
-        }
+    return getByMuseum(museumStub.updateMuseum(MuseumMapper.toGrpc(museumJson)));
+  }
 
-        return MuseumJson.fromGrpc(museumBlockingStub.updateMuseum(museumJson.toGrpc()));
-    }
+  public CompletableFuture<MuseumJson> create(@Nonnull @IdRequired MuseumJson museumJson) {
+    Optional
+        .ofNullable(museumJson.geo())
+        .map(GeoJson::country)
+        .ifPresent(grpcGeoClient::validateCountry);
+
+    return getByMuseum(museumStub.addMuseum(MuseumMapper.toPostGrpc(museumJson)));
+  }
 
 }

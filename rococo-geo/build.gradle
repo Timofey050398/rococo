@@ -11,12 +11,8 @@ dependencies {
 	implementation "net.devh:grpc-server-spring-boot-starter:${project.ext.springGrpcVersion}"
 
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation('org.springframework.boot:spring-boot-starter-web-services') {
-		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
-	}
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	implementation "org.springframework.kafka:spring-kafka:${project.ext.springKafkaVersion}"
 	implementation "org.springframework.cloud:spring-cloud-starter-vault-config:${project.ext.springVaultVersion}"
 	implementation "org.flywaydb:flyway-core:${project.ext.flywayVersion}"
 	implementation "org.flywaydb:flyway-mysql:${project.ext.flywayVersion}"
@@ -24,6 +20,7 @@ dependencies {
 	annotationProcessor "org.projectlombok:lombok:${project.ext.lombokVersion}"
 	compileOnly "org.projectlombok:lombok:${project.ext.lombokVersion}"
 	runtimeOnly "com.mysql:mysql-connector-j:${project.ext.mysqlDriverVersion}"
+	implementation "jakarta.validation:jakarta.validation-api:${project.ext.jakartaValidationVersion}"
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation "com.h2database:h2:${project.ext.h2Version}"

@@ -2,7 +2,6 @@ package timofeyqa.rococo.service;
 
 import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
-import jakarta.persistence.EntityNotFoundException;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +28,7 @@ public class GrpcGeoService extends RococoGeoServiceGrpc.RococoGeoServiceImplBas
     public void getGeo(Uuid request, StreamObserver<GeoResponse> responseObserver) {
         LOG.info("Fetching country by ID: {}", request.getUuid());
         final CountryEntity country = countryRepository.findById(UUID.fromString(request.getUuid()))
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(()->new IllegalStateException("Country not found "+ request.getUuid()));
 
         responseObserver.onNext(fromEntity(country));
         responseObserver.onCompleted();
@@ -37,6 +36,7 @@ public class GrpcGeoService extends RococoGeoServiceGrpc.RococoGeoServiceImplBas
 
     @Override
     public void getAll(Empty request, StreamObserver<GeoListResponse> responseObserver) {
+        LOG.info("Get all countries");
         final List<CountryEntity> country = countryRepository.findAll();
         GeoListResponse response = GeoListResponse
                 .newBuilder()

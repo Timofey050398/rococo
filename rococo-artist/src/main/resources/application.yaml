@@ -1,0 +1,71 @@
+grpc:
+  server:
+    port: 8091
+
+spring:
+  application:
+    name: rococo-artist
+  datasource:
+    hikari:
+      connection-timeout: 20000
+      minimum-idle: 10
+      maximum-pool-size: 30
+      idle-timeout: 600000
+      max-lifetime: 300000
+      auto-commit: true
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 0
+    locations: classpath:db/migration/rococo-artist
+  jpa:
+    hibernate:
+      ddl-auto: none
+    generate-ddl: false
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: false
+    open-in-view: false
+
+logging:
+  file:
+    path: ./logs/rococo-artist
+  level:
+    root: INFO
+    org.springframework.kafka: INFO
+    org.springframework.web: INFO
+    org.springframework.ws: INFO
+    org.springframework.boot.autoconfigure: INFO
+
+---
+spring:
+  config:
+    activate:
+      on-profile: 'local'
+  autoconfigure:
+    exclude:
+      - 'org.springframework.cloud.vault.config.VaultAutoConfiguration'
+      - 'org.springframework.cloud.vault.config.VaultObservationAutoConfiguration'
+      - 'org.springframework.cloud.vault.config.VaultReactiveAutoConfiguration'
+  datasource:
+    url: 'jdbc:mysql://localhost:3306/rococo?serverTimezone=UTC&createDatabaseIfNotExist=true'
+    username: root
+    password: secret
+---
+spring:
+  config:
+    activate:
+      on-profile: 'docker'
+  autoconfigure:
+    exclude:
+      - 'org.springframework.cloud.vault.config.VaultAutoConfiguration'
+      - 'org.springframework.cloud.vault.config.VaultObservationAutoConfiguration'
+      - 'org.springframework.cloud.vault.config.VaultReactiveAutoConfiguration'
+  datasource:
+    url: 'jdbc:mysql://rococo-all-db:3306/rococo?serverTimezone=UTC&createDatabaseIfNotExist=true'
+    username: root
+    password: secret

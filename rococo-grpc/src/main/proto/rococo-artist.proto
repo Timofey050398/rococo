@@ -14,10 +14,17 @@ service RococoArtistService {
   rpc GetArtistPage (Pageable) returns (PageArtistResponse);
   rpc GetArtistsByUuids (UuidList) returns (ArtistList);
   rpc UpdateArtist(Artist) returns (Artist);
+  rpc AddArtist(AddArtistRequest) returns (Artist);
 }
 
 message Artist {
   string id = 1;
+  string name = 2;
+  string biography = 3;
+  bytes photo = 4;
+}
+
+message AddArtistRequest {
   string name = 2;
   string biography = 3;
   bytes photo = 4;

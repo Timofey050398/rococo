@@ -4,7 +4,7 @@ import com.google.protobuf.Empty;
 import io.grpc.StatusRuntimeException;
 import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
-import net.devh.boot.grpc.client.inject.GrpcClient;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -12,11 +12,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import timofeyqa.grpc.rococo.*;
-import timofeyqa.rococo.model.ArtistJson;
+import timofeyqa.rococo.ex.BadRequestException;
 import timofeyqa.rococo.model.CountryJson;
 import timofeyqa.rococo.model.GeoJson;
 import timofeyqa.rococo.model.MuseumJson;
-import timofeyqa.rococo.service.utils.UuidUtil;
+import timofeyqa.rococo.mappers.CountryMapper;
+import timofeyqa.rococo.mappers.UuidMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,15 +25,14 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import static timofeyqa.rococo.service.utils.ToCompletableFuture.toCf;
-import static timofeyqa.rococo.service.utils.UuidUtil.fromUuidList;
+import static timofeyqa.rococo.mappers.UuidMapper.fromUuidList;
 
 @Service
 @RequiredArgsConstructor
-public class GrpcGeoClient {
+public class GrpcGeoClient implements GrpcClient<CountryJson> {
 
     private static final Logger LOG = LoggerFactory.getLogger(GrpcGeoClient.class);
 
-    @GrpcClient("grpcGeoClient")
     private final RococoGeoServiceGrpc.RococoGeoServiceBlockingStub geoBlockingStub;
     private final RococoGeoServiceGrpc.RococoGeoServiceFutureStub geoStub;
 
@@ -45,7 +45,7 @@ public class GrpcGeoClient {
                     .getAll(Empty.getDefaultInstance());
             return response.getGeoList()
                     .stream()
-                    .map(CountryJson::fromGrpc)
+                    .map(CountryMapper::fromGrpc)
                     .toList();
         } catch (StatusRuntimeException e) {
             LOG.error("### Error while calling gRPC server ", e);
@@ -53,8 +53,13 @@ public class GrpcGeoClient {
         }
     }
 
-    CountryJson getById(@Nonnull UUID id){
-        return CountryJson.fromGrpc(geoBlockingStub.getGeo(UuidUtil.fromUuid(id)));
+    @Override
+    public @Nonnull CompletableFuture<CountryJson> getById(UUID id){
+        if (id == null){
+            return CompletableFuture.completedFuture(null);
+        }
+        return toCf(geoStub.getGeo(UuidMapper.fromUuid(id)))
+            .thenApply(CountryMapper::fromGrpc);
     }
 
     @Nonnull
@@ -72,7 +77,7 @@ public class GrpcGeoClient {
                                 .setUuid(countryId.toString())
                                 .build()
                 )
-        ).thenApply(CountryJson::fromGrpc)
+        ).thenApply(CountryMapper::fromGrpc)
                 .thenApply(country -> museum.geo().toBuilder()
                         .country(country)
                         .build());
@@ -90,8 +95,25 @@ public class GrpcGeoClient {
                 .thenApply(geoList -> geoList
                         .getGeoList()
                         .stream()
-                        .map(CountryJson::fromGrpc)
+                        .map(CountryMapper::fromGrpc)
                         .toList()
                 );
     }
+
+    void validateCountry(CountryJson country) {
+        validateChildObject(country);
+
+        if (country == null || country.id() == null) {
+            return;
+        }
+
+        String actualName = geoBlockingStub
+            .getGeo(UuidMapper.fromUuid(country.id()))
+            .getName();
+
+        if (!StringUtils.isEmpty(country.name()) && !actualName.equals(country.name())) {
+            throw new BadRequestException("Country with provided combination of id and name does not exist");
+        }
+    }
+
 }

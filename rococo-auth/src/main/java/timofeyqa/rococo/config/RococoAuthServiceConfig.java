@@ -134,7 +134,7 @@ public class RococoAuthServiceConfig {
                         .build()
                 )
                 .tokenSettings(TokenSettings.builder()
-                        .accessTokenTimeToLive(Duration.of(2, ChronoUnit.HOURS))
+                        .accessTokenTimeToLive(Duration.of(12, ChronoUnit.HOURS))
                         .build())
                 .build();
 

@@ -30,6 +30,11 @@ public class GrpcClientConfig {
     }
 
     @Bean
+    public RococoPaintingServiceGrpc.RococoPaintingServiceBlockingStub paintingBlockingStub() {
+        return RococoPaintingServiceGrpc.newBlockingStub(paintingChannel);
+    }
+
+    @Bean
     public RococoArtistServiceGrpc.RococoArtistServiceFutureStub artistStub() {
         return RococoArtistServiceGrpc.newFutureStub(artistChannel);
     }
@@ -46,7 +51,7 @@ public class GrpcClientConfig {
 
     @Bean
     public RococoMuseumServiceGrpc.RococoMuseumServiceBlockingStub museumBlockingStub() {
-        return RococoMuseumServiceGrpc.newBlockingStub(artistChannel);
+        return RococoMuseumServiceGrpc.newBlockingStub(museumChannel);
     }
 
     @Bean

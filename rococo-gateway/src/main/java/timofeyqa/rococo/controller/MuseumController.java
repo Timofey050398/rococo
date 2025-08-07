@@ -3,9 +3,9 @@ package timofeyqa.rococo.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import timofeyqa.rococo.ex.BadRequestException;
 import timofeyqa.rococo.model.MuseumJson;
 import timofeyqa.rococo.model.page.RestPage;
 import timofeyqa.rococo.service.api.grpc.GrpcMuseumClient;
@@ -28,25 +28,31 @@ public class MuseumController {
 
     @GetMapping("/{id}")
     public CompletableFuture<ResponseEntity<MuseumJson>> getMuseum(@PathVariable("id") String id) {
-        if (id == null || id.isEmpty()) {
-            return CompletableFuture.completedFuture(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+        if (id.isEmpty()) {
+            throw new BadRequestException("Museum ID must not be empty");
         }
-        return museumClient.getMuseumById(UUID.fromString(id))
-                .thenApply(ResponseEntity::ok)
-                .exceptionally(e -> ResponseEntity.status(500).build());
+        return museumClient.getById(UUID.fromString(id))
+                .thenApply(ResponseEntity::ok);
     }
 
 
     @GetMapping
-    public CompletableFuture<ResponseEntity<RestPage<MuseumJson>>> getAll(@PageableDefault Pageable pageable) {
-        return museumClient.getMuseumPage(pageable)
-                .thenApply(ResponseEntity::ok)
-                .exceptionally(e -> ResponseEntity.status(500).build());
+    public CompletableFuture<ResponseEntity<RestPage<MuseumJson>>> getAll(
+        @PageableDefault Pageable pageable,
+        @RequestParam(required = false) String title) {
+        return museumClient.getMuseumPage(pageable, title)
+                .thenApply(ResponseEntity::ok);
     }
 
-    //TODO доделать запросы ниже
     @PatchMapping
-    public MuseumJson updateMuseum(@RequestBody MuseumJson museumJson) {
-        return museumJson;
+    public CompletableFuture<ResponseEntity<MuseumJson>> updateMuseum(@RequestBody MuseumJson museumJson) {
+        return museumClient.updateMuseum(museumJson)
+            .thenApply(ResponseEntity::ok);
+   }
+
+    @PostMapping
+    public CompletableFuture<ResponseEntity<MuseumJson>> createMuseum(@RequestBody MuseumJson museumJson) {
+        return museumClient.create(museumJson)
+            .thenApply(ResponseEntity::ok);
     }
 }

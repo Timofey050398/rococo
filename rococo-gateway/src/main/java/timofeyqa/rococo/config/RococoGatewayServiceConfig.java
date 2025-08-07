@@ -20,6 +20,9 @@ public class RococoGatewayServiceConfig {
     public static final int ONE_MB = 1024 * 1024;
     public static final String OPEN_API_AUTH_SCHEME = "bearer";
 
+    @Value("${api.version}")
+    private String apiVersion;
+
     private final String rococoUserdataBaseUri;
     private final String rococoGatewayBaseUri;
 
