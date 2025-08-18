@@ -12,15 +12,18 @@ import timofeyqa.rococo.data.repository.AuthUserRepository;
 import timofeyqa.rococo.data.repository.UserRepository;
 import timofeyqa.rococo.data.tpl.XaTransactionTemplate;
 import timofeyqa.rococo.model.rest.UserJson;
+import timofeyqa.rococo.service.DeletableClient;
 import timofeyqa.rococo.service.UserClient;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @ParametersAreNonnullByDefault
-public class UsersDbClient implements UserClient {
+public class UsersDbClient implements UserClient, DeletableClient<UserJson> {
 
     private static final Config CFG = Config.getInstance();
     private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -63,6 +66,18 @@ public class UsersDbClient implements UserClient {
         ));
     }
 
+    @Override
+    @Step("Delete user {user}")
+    public void remove(UserJson user){
+        xaTransactionTemplate.execute(() -> {
+            AuthUserEntity authUserEntity = authUserRepository.findByUsername(user.username())
+                .orElseThrow();
+            authUserRepository.remove(authUserEntity);
+            userRepository.remove(UserEntity.fromJson(user));
+            return null;
+        });
+    }
+
     private AuthUserEntity authUserEntity(String username, String password) {
         AuthUserEntity authUser = new AuthUserEntity();
         authUser.setUsername(username);
@@ -88,5 +103,10 @@ public class UsersDbClient implements UserClient {
         UserEntity ue = new UserEntity();
         ue.setUsername(username);
         return ue;
+    }
+
+    @Override
+    public void deleteList(List<UUID> uuidList) {
+        throw new RuntimeException("Not implemented");
     }
 }

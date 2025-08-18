@@ -6,7 +6,9 @@ import timofeyqa.rococo.data.entity.PaintingEntity;
 import timofeyqa.rococo.data.repository.MuseumRepository;
 import timofeyqa.rococo.data.repository.PaintingRepository;
 import timofeyqa.rococo.data.tpl.XaTransactionTemplate;
+import timofeyqa.rococo.model.rest.ArtistJson;
 import timofeyqa.rococo.model.rest.MuseumJson;
+import timofeyqa.rococo.service.DeletableClient;
 import timofeyqa.rococo.service.MuseumClient;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -15,7 +17,7 @@ import java.util.*;
 import static timofeyqa.rococo.model.rest.MuseumJson.fromEntity;
 
 @ParametersAreNonnullByDefault
-public class MuseumDbClient implements MuseumClient {
+public class MuseumDbClient implements MuseumClient, DeletableClient<MuseumJson> {
 
   private final MuseumRepository museumRepository = new MuseumRepository();
   private final PaintingRepository paintingRepository = new PaintingRepository();
@@ -37,13 +39,14 @@ public class MuseumDbClient implements MuseumClient {
     );
   }
 
-  public void deleteList(List<UUID> list) {
-    var paintingUuids = getPaintingUuids(list);
+  @Override
+  public void deleteList(List<UUID> uuidList) {
+    var paintingUuids = getPaintingUuids(uuidList);
     xaTransactionTemplate.execute(() -> {
       if (!CollectionUtils.isEmpty(paintingUuids)) {
         paintingRepository.removeByUuidList(paintingUuids);
       }
-      museumRepository.removeByUuidList(list);
+      museumRepository.removeByUuidList(uuidList);
       return null;
     });
   }
@@ -57,5 +60,13 @@ public class MuseumDbClient implements MuseumClient {
         .flatMap(Set::stream)
         .map(PaintingEntity::getId)
         .toList();
+  }
+
+  @Override
+  public void remove(MuseumJson museum) {
+    xaTransactionTemplate.execute(()-> {
+      museumRepository.remove(museum.toEntity());
+      return null;
+    });
   }
 }

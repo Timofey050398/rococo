@@ -1,7 +1,5 @@
 package timofeyqa.rococo.service.db;
 
-import org.hibernate.Hibernate;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import timofeyqa.rococo.config.Config;
 import timofeyqa.rococo.data.entity.PaintingEntity;
@@ -10,12 +8,13 @@ import timofeyqa.rococo.data.repository.PaintingRepository;
 import timofeyqa.rococo.data.tpl.XaTransactionTemplate;
 import timofeyqa.rococo.model.rest.ArtistJson;
 import timofeyqa.rococo.service.ArtistClient;
+import timofeyqa.rococo.service.DeletableClient;
 
 import java.util.*;
 
 import static timofeyqa.rococo.model.rest.ArtistJson.fromEntity;
 
-public class ArtistDbClient implements ArtistClient {
+public class ArtistDbClient implements ArtistClient, DeletableClient<ArtistJson> {
   private final ArtistRepository artistRepository = new ArtistRepository();
   private final PaintingRepository paintingRepository = new PaintingRepository();
   private static final Config CFG = Config.getInstance();
@@ -35,13 +34,22 @@ public class ArtistDbClient implements ArtistClient {
     );
   }
 
-  public void deleteList(List<UUID> list) {
-    var paintingUuids = getPaintingUuids(list);
+  @Override
+  public void deleteList(List<UUID> uuidList) {
+    var paintingUuids = getPaintingUuids(uuidList);
     xaTransactionTemplate.execute(() -> {
       if (!CollectionUtils.isEmpty(paintingUuids)) {
         paintingRepository.removeByUuidList(paintingUuids);
       }
-      artistRepository.removeByUuidList(list);
+      artistRepository.removeByUuidList(uuidList);
+      return null;
+    });
+  }
+
+  @Override
+  public void remove(ArtistJson artist) {
+    xaTransactionTemplate.execute(()-> {
+      artistRepository.remove(artist.toEntity());
       return null;
     });
   }

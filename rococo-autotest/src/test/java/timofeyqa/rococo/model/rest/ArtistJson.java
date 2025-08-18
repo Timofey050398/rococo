@@ -7,7 +7,7 @@ import timofeyqa.rococo.data.entity.ArtistEntity;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static timofeyqa.rococo.utils.ToEntityPhotoConverter.convert;
+import static timofeyqa.rococo.utils.PhotoConverter.convert;
 
 @Builder(toBuilder=true)
 public record ArtistJson(
@@ -27,7 +27,7 @@ public record ArtistJson(
         artistEntity.getId(),
         artistEntity.getName(),
         artistEntity.getBiography(),
-        Arrays.toString(artistEntity.getPhoto()),
+        convert(artistEntity.getPhoto()),
         artistEntity.getPaintings()
             .stream()
             .map(PaintingJson::fromEntity)

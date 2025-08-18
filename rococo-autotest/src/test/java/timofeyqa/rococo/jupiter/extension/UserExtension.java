@@ -4,23 +4,28 @@ import org.apache.commons.lang3.StringUtils;
 import timofeyqa.rococo.config.Config;
 import timofeyqa.rococo.jupiter.annotation.User;
 import timofeyqa.rococo.model.rest.UserJson;
+import timofeyqa.rococo.service.DeletableClient;
 import timofeyqa.rococo.service.UserClient;
 import timofeyqa.rococo.service.db.UsersDbClient;
 import timofeyqa.rococo.utils.RandomDataUtils;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
+import static timofeyqa.rococo.utils.PhotoConverter.loadImageAsString;
+
 public class UserExtension implements
         BeforeEachCallback,
+        AfterEachCallback,
         ParameterResolver {
 
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(UserExtension.class);
+
     private static final Config CFG = Config.getInstance();
 
     private final UserClient usersClient = new UsersDbClient();
 
     @Override
-    public void beforeEach(ExtensionContext context) throws Exception {
+    public void beforeEach(ExtensionContext context) {
         AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), User.class)
                 .ifPresent(userAnno -> {
                     if ("".equals(userAnno.username())) {
@@ -42,12 +47,14 @@ public class UserExtension implements
                             needToUpdate = true;
                         }
                         if (!StringUtils.isBlank(userAnno.avatar())) {
-                            userBuilder.avatar(userAnno.avatar());
+                            userBuilder.avatar(loadImageAsString(userAnno.avatar()));
                             needToUpdate = true;
                         }
 
-                        if(needToUpdate){
-                            user = usersClient.updateUser(userBuilder.build());
+                        if (needToUpdate) {
+                            final String password = user.password();
+                            user = usersClient.updateUser(userBuilder.build())
+                                .withPassword(password);
                         }
 
                         context.getStore(NAMESPACE).put(
@@ -56,6 +63,17 @@ public class UserExtension implements
                         );
                     }
                 });
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    @Override
+    public void afterEach(ExtensionContext context) {
+        if (usersClient instanceof DeletableClient deletable) {
+            UserJson user = context.getStore(NAMESPACE).get(context.getUniqueId(), UserJson.class);
+            if (user != null && user.username() != null) {
+                deletable.remove(user);
+            }
+        }
     }
 
     @Override

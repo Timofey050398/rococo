@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import static timofeyqa.rococo.jupiter.extension.ContentExtension.content;
+import static timofeyqa.rococo.utils.PhotoConverter.loadImageAsString;
 
 public class ArtistExtension implements BeforeEachCallback {
 
@@ -35,21 +36,22 @@ public class ArtistExtension implements BeforeEachCallback {
 
                             ArtistJson artistJson = artistClient.findByName(name)
                                 .orElseGet(() -> {
-                                    final String biography = "".equals(artistAnno.biography())
-                                        ? RandomDataUtils.randomDescription()
-                                        : artistAnno.biography();
+                                  final String biography = "".equals(artistAnno.biography())
+                                      ? RandomDataUtils.randomDescription()
+                                      : artistAnno.biography();
 
-                                    final String photo = artistAnno.photo();
+                                  final String photo = "".equals(artistAnno.photo())
+                                      ? null
+                                      : loadImageAsString(artistAnno.photo());
 
-                                    return artistClient.create(new ArtistJson(
-                                        null,
-                                        name,
-                                        biography,
-                                        photo,
-                                        new HashSet<>()
-                                    ));
+                                  return artistClient.create(new ArtistJson(
+                                      null,
+                                      name,
+                                      biography,
+                                      photo,
+                                      new HashSet<>()
+                                  ));
                                 });
-
                             createdArtists.add(artistJson);
                         }
                         content().artists().addAll(createdArtists);

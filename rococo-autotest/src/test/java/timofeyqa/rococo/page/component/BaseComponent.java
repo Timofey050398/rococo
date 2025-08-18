@@ -14,4 +14,12 @@ public abstract class BaseComponent<T extends BaseComponent<?>> {
     protected BaseComponent(SelenideElement self) {
         this.self = self;
     }
+
+    public <T> T toPage(Class<T> clazz) {
+        try {
+            return clazz.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot create instance of " + clazz, e);
+        }
+    }
 }

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
+import timofeyqa.rococo.data.entity.UserEntity;
+import timofeyqa.rococo.model.rest.UserJson;
 
 import java.io.Serializable;
 import java.util.ArrayList;

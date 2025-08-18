@@ -4,6 +4,7 @@ import timofeyqa.rococo.config.Config;
 import timofeyqa.rococo.data.repository.PaintingRepository;
 import timofeyqa.rococo.data.tpl.XaTransactionTemplate;
 import timofeyqa.rococo.model.rest.PaintingJson;
+import timofeyqa.rococo.service.DeletableClient;
 import timofeyqa.rococo.service.PaintingClient;
 
 import java.util.Optional;
@@ -12,7 +13,7 @@ import java.util.List;
 
 import static timofeyqa.rococo.model.rest.PaintingJson.fromEntity;
 
-public class PaintingDbClient implements PaintingClient {
+public class PaintingDbClient implements PaintingClient, DeletableClient<PaintingJson> {
 
   private final PaintingRepository paintingRepository = new PaintingRepository();
 
@@ -32,9 +33,18 @@ public class PaintingDbClient implements PaintingClient {
     );
   }
 
-  public void deleteList(List<UUID> list){
+  @Override
+  public void deleteList(List<UUID> uuidList){
     xaTransactionTemplate.execute(() -> {
-      paintingRepository.removeByUuidList(list);
+      paintingRepository.removeByUuidList(uuidList);
+      return null;
+    });
+  }
+
+  @Override
+  public void remove(PaintingJson painting) {
+    xaTransactionTemplate.execute(()-> {
+      paintingRepository.remove(painting.toEntity());
       return null;
     });
   }

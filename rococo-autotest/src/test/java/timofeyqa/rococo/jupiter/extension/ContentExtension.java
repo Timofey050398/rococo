@@ -3,6 +3,10 @@ package timofeyqa.rococo.jupiter.extension;
 import org.junit.jupiter.api.extension.*;
 import timofeyqa.rococo.model.ContentJson;
 import timofeyqa.rococo.model.rest.ContentImpl;
+import timofeyqa.rococo.service.ArtistClient;
+import timofeyqa.rococo.service.DeletableClient;
+import timofeyqa.rococo.service.MuseumClient;
+import timofeyqa.rococo.service.PaintingClient;
 import timofeyqa.rococo.service.db.ArtistDbClient;
 import timofeyqa.rococo.service.db.MuseumDbClient;
 import timofeyqa.rococo.service.db.PaintingDbClient;
@@ -15,9 +19,9 @@ import java.util.UUID;
 public class ContentExtension implements ParameterResolver, AfterEachCallback {
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(ContentExtension.class);
 
-  private final ArtistDbClient artistClient = new ArtistDbClient();
-  private final MuseumDbClient museumClient = new MuseumDbClient();
-  private final PaintingDbClient paintingClient = new PaintingDbClient();
+  private final ArtistClient artistClient = new ArtistDbClient();
+  private final MuseumClient museumClient = new MuseumDbClient();
+  private final PaintingClient paintingClient = new PaintingDbClient();
 
   public static ContentJson content() {
     final ExtensionContext context = TestMethodContextExtension.context();
@@ -48,9 +52,15 @@ public class ContentExtension implements ParameterResolver, AfterEachCallback {
   public void afterEach(ExtensionContext context) {
     ContentJson content = context.getStore(NAMESPACE).get(context.getUniqueId(), ContentJson.class);
     if (content != null) {
-      paintingClient.deleteList(contentUuids(content.paintings()));
-      museumClient.deleteList(contentUuids(content.allMuseums()));
-      artistClient.deleteList(contentUuids(content.allArtists()));
+      if (paintingClient instanceof DeletableClient deletable) {
+        deletable.deleteList(contentUuids(content.paintings()));
+      }
+      if (museumClient instanceof DeletableClient deletable) {
+        deletable.deleteList(contentUuids(content.allMuseums()));
+      }
+      if (artistClient instanceof DeletableClient deletable) {
+        deletable.deleteList(contentUuids(content.allArtists()));
+      }
     }
   }
 

@@ -8,7 +8,7 @@ import timofeyqa.rococo.data.entity.MuseumEntity;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static timofeyqa.rococo.utils.ToEntityPhotoConverter.convert;
+import static timofeyqa.rococo.utils.PhotoConverter.convert;
 
 
 @Builder(toBuilder = true)
@@ -35,7 +35,7 @@ public record MuseumJson(
         museumEntity.getId(),
         museumEntity.getTitle(),
         museumEntity.getDescription(),
-        Arrays.toString(museumEntity.getPhoto()),
+        convert(museumEntity.getPhoto()),
         new GeoJson(
             museumEntity.getCity(),
             CountryJson.fromEntity(museumEntity.getCountry())

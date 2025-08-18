@@ -4,11 +4,14 @@ import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 import timofeyqa.rococo.page.BasePage;
 
+import java.awt.image.BufferedImage;
+
 import static com.codeborne.selenide.Selenide.$;
+import static timofeyqa.rococo.condition.ScreenshotCondition.image;
 
 public class ProfileModal extends BaseComponent<ProfileModal> {
 
-  private final SelenideElement avatarImage = self.$("figure.avatar img.avatar-image");
+  private final SelenideElement avatarImage = self.$("figure.avatar img.avatar-image, svg.avatar-initials");
   private final SelenideElement usernameLabel = self.$("h4.text-center");
   private final SelenideElement updatePhotoInput = self.$("input[name='content']");
   private final SelenideElement firstNameInput = self.$("input[name='firstname']");
@@ -21,9 +24,10 @@ public class ProfileModal extends BaseComponent<ProfileModal> {
     super($("div.card.p-4.w-modal.shadow-xl.space-y-4"));
   }
 
-  @Step("Get avatar image element")
-  public SelenideElement getAvatarImage() {
-    return avatarImage;
+  @Step("Check avatar image element")
+  public ProfileModal checkAvatarImage(BufferedImage expected) {
+    avatarImage.shouldBe(image(expected));
+    return this;
   }
 
   @Step("Get username label text")

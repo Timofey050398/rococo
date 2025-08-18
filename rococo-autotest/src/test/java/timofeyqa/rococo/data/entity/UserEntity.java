@@ -7,11 +7,14 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.proxy.HibernateProxy;
 import timofeyqa.rococo.model.rest.UserJson;
+import timofeyqa.rococo.utils.PhotoConverter;
 
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
+
+import static timofeyqa.rococo.utils.PhotoConverter.convert;
 
 @Getter
 @Setter
@@ -65,7 +68,7 @@ public class UserEntity implements Serializable {
     user.setUsername(json.username());
     user.setFirstname(json.firstname());
     user.setLastname(json.lastname());
-    user.setAvatar(user.getAvatar());
+    user.setAvatar(convert(json.avatar()));
     return user;
   }
 }

@@ -12,7 +12,7 @@ public class NotFoundPage extends BasePage<NotFoundPage> {
   private final SelenideElement mainPageButton = $(byText("На главную страницу"));
   private final SelenideElement title = $(byText("Страница не найдена"));
 
-
+  public static final String URL = CFG.frontUrl()+"randomsentence";
   @Override
   public NotFoundPage checkThatPageLoaded() {
     header.getSelf().should(visible)

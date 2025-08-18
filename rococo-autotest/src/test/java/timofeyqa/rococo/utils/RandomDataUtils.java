@@ -39,4 +39,16 @@ public class RandomDataUtils {
 
         return sentence.toString().trim();
     }
+
+    public static String randomWord(int length) {
+        String chars = "abcdefghijklmnopqrstuvwxyz";
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < length; i++) {
+            sb.append(chars.charAt(random.nextInt(chars.length())));
+        }
+
+        return sb.toString();
+    }
 }

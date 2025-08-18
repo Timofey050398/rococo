@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import static timofeyqa.rococo.jupiter.extension.ContentExtension.content;
+import static timofeyqa.rococo.utils.PhotoConverter.loadImageAsString;
 
 public class PaintingExtension implements BeforeEachCallback {
 
@@ -52,7 +53,9 @@ public class PaintingExtension implements BeforeEachCallback {
                                         ? RandomDataUtils.randomDescription()
                                         : paintingAnno.description();
 
-                                    final String photo = paintingAnno.content();
+                                    final String photo = "".equals(paintingAnno.content())
+                                        ? null
+                                        : loadImageAsString(paintingAnno.content());
 
                                     String artistName = StringUtils.isEmpty(paintingAnno.artist())
                                         ? RandomDataUtils.randomName()

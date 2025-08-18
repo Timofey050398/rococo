@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import static timofeyqa.rococo.jupiter.extension.ContentExtension.content;
+import static timofeyqa.rococo.utils.PhotoConverter.loadImageAsString;
 
 public class MuseumExtension implements BeforeEachCallback {
 
@@ -45,7 +46,9 @@ public class MuseumExtension implements BeforeEachCallback {
                                         ? RandomDataUtils.randomDescription()
                                         : museumAnno.description();
 
-                                    final String photo = museumAnno.photo();
+                                  final String photo = "".equals(museumAnno.photo())
+                                      ? null
+                                      : loadImageAsString(museumAnno.photo());
 
                                     final String city = "".equals(museumAnno.city())
                                         ? null

@@ -1,21 +1,28 @@
 package timofeyqa.rococo.page;
 
 import com.codeborne.selenide.SelenideElement;
+import io.qameta.allure.Step;
+import lombok.Getter;
 import timofeyqa.rococo.page.component.Header;
 import timofeyqa.rococo.page.component.cards.MainPageCard;
 import timofeyqa.rococo.page.lists.ArtistPage;
 import timofeyqa.rococo.page.lists.MuseumPage;
 import timofeyqa.rococo.page.lists.PaintingsPage;
 
+import java.awt.image.BufferedImage;
+
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
+import static timofeyqa.rococo.condition.ScreenshotCondition.image;
 
 public class MainPage extends BasePage<MainPage> {
   public static final String URL = CFG.frontUrl();
+  @Getter
   protected final Header header = new Header();
   private final MainPageCard paintings = new MainPageCard("Картины");
   private final MainPageCard artists = new MainPageCard("Художники");
   private final MainPageCard museums = new MainPageCard("Музеи");
+  private final SelenideElement root =  $("body");
   public final SelenideElement title = $("main nav p.text-3xl");
 
   @Override
@@ -33,6 +40,30 @@ public class MainPage extends BasePage<MainPage> {
   public PaintingsPage clickPaintingsCard() {
     paintings.getSelf().click();
     return new PaintingsPage();
+  }
+
+  @Step("Check painting image equals expected image")
+  public MainPage checkPaintingsImage(BufferedImage expected){
+    paintings.getImage().shouldHave(image(expected));
+    return this;
+  }
+
+  @Step("Check artist image equals expected image")
+  public MainPage checkArtistsImage(BufferedImage expected){
+    artists.getImage().shouldHave(image(expected));
+    return this;
+  }
+
+  @Step("Check museum image equals expected image")
+  public MainPage checkMuseumsImage(BufferedImage expected){
+    museums.getImage().shouldHave(image(expected));
+    return this;
+  }
+
+  @Step("Check theme")
+  public MainPage checkTheme(BufferedImage expected){
+    root.shouldHave(image(expected));
+    return this;
   }
 
   public ArtistPage clickArtistsCard() {

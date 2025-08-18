@@ -31,8 +31,8 @@ public class ScreenshotCondition {
       @Override
       public CheckResult check(Driver driver, WebElement element) {
         ScreenDiffResult screenDiffResult = new ScreenDiffResult(
-            chartScreenshot(driver, element),
-            expectedImage
+            expectedImage,
+            chartScreenshot(driver, element)
         );
         return new CheckResult(
             !screenDiffResult.getAsBoolean(),

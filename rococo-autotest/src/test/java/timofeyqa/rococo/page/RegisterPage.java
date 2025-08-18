@@ -3,12 +3,17 @@ package timofeyqa.rococo.page;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
+import java.awt.image.BufferedImage;
+
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
+import static timofeyqa.rococo.condition.ScreenshotCondition.image;
 
 public class RegisterPage extends BasePage<RegisterPage>{
 
+  private final SelenideElement successRegisterHeader = $("p.form__subheader");
   private final SelenideElement usernameInput = $("input#username");
   private final SelenideElement passwordInput = $("input#password");
   private final SelenideElement passwordSubmitInput = $("input#passwordSubmit");
@@ -17,6 +22,8 @@ public class RegisterPage extends BasePage<RegisterPage>{
   private final SelenideElement loginLink = $("p.form__paragraph a.form__link");
 
   private final SelenideElement image = $("img.content__image");
+
+  public static final String URL = CFG.authUrl()+"register";
 
   @Override
   public RegisterPage checkThatPageLoaded() {
@@ -50,6 +57,13 @@ public class RegisterPage extends BasePage<RegisterPage>{
     return this;
   }
 
+  public RegisterPage submitRegister(String username, String password, String passwordSubmit){
+    return setUsername(username)
+        .setPassword(password)
+        .setPasswordSubmit(passwordSubmit)
+        .register();
+  }
+
   @Step("Войти в систему")
   public LoginPage submit() {
     submitButton.click();
@@ -65,6 +79,19 @@ public class RegisterPage extends BasePage<RegisterPage>{
   @Step("Проверить отображение картинки регистрации")
   public boolean isImageVisible() {
     return image.isDisplayed();
+  }
+
+  @Step("Check that register page has expected image")
+  public RegisterPage checkRenuarImage(BufferedImage expected){
+    image.shouldHave(image(expected));
+    return this;
+  }
+
+  @Step("Assert success register screen")
+  public RegisterPage assertSuccessRegisterScreen(){
+    successRegisterHeader.shouldHave(text("Добро пожаловать в Rococo"));
+    submitButton.shouldBe(visible);
+    return this;
   }
 }
 

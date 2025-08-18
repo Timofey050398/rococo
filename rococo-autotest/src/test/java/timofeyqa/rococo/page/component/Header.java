@@ -2,9 +2,14 @@ package timofeyqa.rococo.page.component;
 
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
+import timofeyqa.rococo.page.LoginPage;
 
+import java.awt.image.BufferedImage;
+
+import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+import static timofeyqa.rococo.condition.ScreenshotCondition.image;
 
 public class Header extends BaseComponent<Header> {
   public Header(){
@@ -16,8 +21,9 @@ public class Header extends BaseComponent<Header> {
   private final SelenideElement museumsLink = self.$("nav.list-nav a[href='/museum']");
   private final SelenideElement lightSwitch = self.$("div.lightswitch-track");
   private final SelenideElement loginButton = self.$("button.btn.variant-filled-primary");
-  private final SelenideElement avatarImage = self.$("img.avatar-image");
+  private final SelenideElement avatarImage = self.$("img.avatar-image, svg.avatar-initials");
   private final SelenideElement profileButton = self.$("figure").parent();
+
   @Step("Click menu button")
   public Header clickMenuButton() {
     menuButton.click();
@@ -49,9 +55,11 @@ public class Header extends BaseComponent<Header> {
   }
 
   @Step("Click login button")
-  public Header clickLoginButton() {
-    loginButton.click();
-    return this;
+  public LoginPage clickLoginButton() {
+    loginButton
+        .shouldBe(visible)
+        .click();
+    return new LoginPage();
   }
 
   @Step("Check that avatar image is visible")
@@ -60,9 +68,21 @@ public class Header extends BaseComponent<Header> {
     return this;
   }
 
+  @Step("Check avatar image")
+  public Header checkAvatarImage(BufferedImage expected) {
+    avatarImage.shouldBe(image(expected));
+    return this;
+  }
+
   public ProfileModal openProfile(){
     profileButton.shouldBe(visible)
         .click();
     return new ProfileModal();
+  }
+
+  @Step("Assert that user authorized")
+  public Header assertAuthorized(){
+    profileButton.shouldBe(exist);
+    return this;
   }
 }

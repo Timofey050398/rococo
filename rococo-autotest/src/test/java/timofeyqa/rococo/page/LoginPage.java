@@ -3,13 +3,14 @@ package timofeyqa.rococo.page;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
+import java.awt.image.BufferedImage;
+
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+import static timofeyqa.rococo.condition.ScreenshotCondition.image;
 
 public class LoginPage extends BasePage<LoginPage>{
-  @Override
-  public LoginPage checkThatPageLoaded() {
-    return null;
-  }
+
   private final SelenideElement usernameInput = $("input[name='username']");
   private final SelenideElement passwordInput = $("input[name='password']");
   private final SelenideElement passwordToggleButton = $(".form__password-button");
@@ -17,7 +18,14 @@ public class LoginPage extends BasePage<LoginPage>{
   private final SelenideElement registerLink = $(".form__link");
   private final SelenideElement hermitageImage = $("img[alt='Эрмитаж']");
 
-  public static final String URL = CFG.authUrl()+"/login";
+  public static final String URL = CFG.authUrl()+"login";
+
+  @Override
+  public LoginPage checkThatPageLoaded() {
+    usernameInput.shouldBe(visible);
+    passwordInput.shouldBe(visible);
+    return this;
+  }
 
   @Step("Set username: {username}")
   public LoginPage setUsername(String username) {
@@ -54,6 +62,12 @@ public class LoginPage extends BasePage<LoginPage>{
   public RegisterPage clickRegister() {
     registerLink.click();
     return new RegisterPage();
+  }
+
+  @Step("Check that login page has expected image")
+  public LoginPage checkHermitageImage(BufferedImage expected){
+    hermitageImage.shouldHave(image(expected));
+    return this;
   }
 
 }

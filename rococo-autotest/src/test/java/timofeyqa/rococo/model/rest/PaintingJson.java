@@ -8,7 +8,7 @@ import timofeyqa.rococo.data.entity.PaintingEntity;
 import java.util.Arrays;
 import java.util.UUID;
 
-import static timofeyqa.rococo.utils.ToEntityPhotoConverter.convert;
+import static timofeyqa.rococo.utils.PhotoConverter.convert;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder(toBuilder = true)
@@ -37,7 +37,7 @@ public record PaintingJson(
             paintingEntity.getDescription(),
             ArtistJson.fromEntity(paintingEntity.getArtist()),
             museumJson,
-            Arrays.toString(paintingEntity.getContent())
+            convert(paintingEntity.getContent())
         );
     }
 

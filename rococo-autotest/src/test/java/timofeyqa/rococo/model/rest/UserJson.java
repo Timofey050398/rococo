@@ -9,6 +9,8 @@ import timofeyqa.rococo.data.entity.UserEntity;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
+import static timofeyqa.rococo.utils.PhotoConverter.convert;
+
 @Builder(toBuilder = true)
 public record UserJson(
     @JsonProperty("id")
@@ -30,7 +32,7 @@ public record UserJson(
         entity.getUsername(),
         entity.getFirstname(),
         entity.getLastname(),
-        entity.getAvatar() != null && entity.getAvatar().length > 0 ? new String(entity.getAvatar(), StandardCharsets.UTF_8) : null,
+        convert(entity.getAvatar()),
         null
     );
   }
