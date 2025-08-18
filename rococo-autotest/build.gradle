@@ -27,14 +27,10 @@ buildscript {
 plugins {
     id 'io.qameta.allure' version '2.12.0'
     id 'io.qameta.allure-adapter' version '2.12.0'
-    id 'com.apollographql.apollo' version '4.1.0'
 }
 
 group = 'timofeyqa'
 version = '0.0.1-SNAPSHOT'
-
-dependencies {
-}
 
 allure {
     version.set("${allureVersion}")
@@ -42,6 +38,78 @@ allure {
         aspectjVersion.set("1.9.22")
         aspectjWeaver.set(true)
     }
+}
+
+
+dependencies {
+    testImplementation project(':rococo-grpc')
+    // Logs
+    testImplementation "ch.qos.logback:logback-classic:${logbackVersion}"
+    testImplementation "org.slf4j:slf4j-api:${slf4jVersion}"
+    // JUnit
+    testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
+    // REST
+    testImplementation "com.squareup.okhttp3:okhttp:${okhttp3Version}"
+    testImplementation "com.squareup.okhttp3:logging-interceptor:${okhttp3Version}"
+    testImplementation "com.squareup.okhttp3:okhttp-urlconnection:${okhttp3Version}"
+    testImplementation("com.squareup.retrofit2:retrofit:${retrofitVersion}") {
+        exclude group: "com.squareup.okhttp3"
+    }
+    testImplementation("com.squareup.retrofit2:converter-jackson:${retrofitVersion}") {
+        exclude group: "com.squareup.okhttp3"
+    }
+    testImplementation("com.squareup.retrofit2:converter-scalars:${retrofitVersion}") {
+        exclude group: "com.squareup.okhttp3"
+    }
+    testImplementation "org.springframework.data:spring-data-commons:${springDataCommonsVersion}"
+
+    // DB
+    testImplementation "org.springframework:spring-jdbc:${springJdbcVersion}"
+    testImplementation "com.mysql:mysql-connector-j:${project.ext.mysqlDriverVersion}"
+    testImplementation "p6spy:p6spy:${p6spyVersion}"
+    testImplementation "org.hibernate:hibernate-core:${hibernateVersion}"
+    testImplementation "org.springframework.security:spring-security-crypto:${springCryptoVersion}"
+
+    // Allure
+    testImplementation "io.qameta.allure:allure-attachments:${allureVersion}"
+    testImplementation("io.qameta.allure:allure-junit5:${allureVersion}") {
+        exclude group: "org.junit.jupiter"
+    }
+    testImplementation "io.qameta.allure:allure-okhttp3:${allureVersion}"
+    testImplementation "io.qameta.allure:allure-grpc:${allureVersion}"
+    testImplementation("io.qameta.allure:allure-selenide:${allureVersion}") {
+        exclude group: 'com.codeborne'
+    }
+    //atomicOs
+    testImplementation "com.atomikos:transactions-jta:${atomicosVersion}:jakarta"
+    testImplementation "com.atomikos:transactions-hibernate4:${atomicosVersion}:jakarta"
+    testImplementation "com.atomikos:transactions-jdbc:${atomicosVersion}"
+    // WEB
+    testImplementation "com.codeborne:selenide:${selenideVersion}"
+    // Utils
+    testImplementation "ru.yandex.qatools.ashot:ashot:${ashotVersion}"
+    testImplementation("com.github.javafaker:javafaker:${fakerVersion}") {
+        exclude group: 'org.yaml'
+    }
+    testImplementation 'commons-io:commons-io:2.16.1'
+    testImplementation 'com.google.code.findbugs:jsr305:3.0.2'
+    testImplementation 'com.github.vertical-blank:sql-formatter:2.0.5'
+    testImplementation 'com.github.h-thurow:simple-jndi:0.24.0'
+
+    // gRPC
+    testImplementation "net.devh:grpc-client-spring-boot-starter:${project.ext.springGrpcVersion}"
+    testImplementation "com.google.protobuf:protobuf-java-util:3.25.3"
+
+    // Kafka
+    testImplementation "org.apache.kafka:kafka-clients:${kafkaClientsVersion}"
+    //AssertJ
+    testImplementation "org.assertj:assertj-core:3.24.2"
+    // Wiremock
+    testImplementation "com.github.tomakehurst:wiremock-jre8:${wiremockVersion}"
+    testImplementation "com.github.tomakehurst:wiremock-standalone:${wiremockVersion}"
+    // Lombok
+    testAnnotationProcessor "org.projectlombok:lombok:${project.ext.lombokVersion}"
+    testCompileOnly "org.projectlombok:lombok:${project.ext.lombokVersion}"
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -52,10 +120,6 @@ tasks.register('printVersion') {
     doLast {
         println project.version
     }
-}
-
-tasks.named { it == "generateRococoApolloSources" }.configureEach {
-    dependsOn("downloadRococoApolloSchemaFromIntrospection")
 }
 
 test {

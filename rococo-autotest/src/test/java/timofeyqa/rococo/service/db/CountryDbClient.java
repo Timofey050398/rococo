@@ -1,0 +1,25 @@
+package timofeyqa.rococo.service.db;
+
+import timofeyqa.rococo.config.Config;
+import timofeyqa.rococo.data.entity.Country;
+import timofeyqa.rococo.data.repository.CountryRepository;
+import timofeyqa.rococo.data.tpl.XaTransactionTemplate;
+import timofeyqa.rococo.model.rest.CountryJson;
+import timofeyqa.rococo.service.CountryClient;
+
+import java.util.Optional;
+
+public class CountryDbClient implements CountryClient {
+
+  private final CountryRepository countryRepository = new CountryRepository();
+
+  private static final Config CFG = Config.getInstance();
+  private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(CFG.jdbcUrl());
+
+  @Override
+  public Optional<CountryJson> getByName(Country country) {
+    return xaTransactionTemplate.execute(() -> countryRepository.findByName(country)
+        .map(CountryJson::fromEntity)
+    );
+  }
+}
