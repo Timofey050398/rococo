@@ -10,16 +10,21 @@ import org.springframework.data.domain.Pageable;
 import timofeyqa.grpc.rococo.*;
 import timofeyqa.rococo.data.MuseumEntity;
 import timofeyqa.rococo.data.repository.MuseumRepository;
+import timofeyqa.rococo.mappers.MuseumMapper;
 
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@SuppressWarnings("unchecked")
 class GrpcMuseumServiceTest {
 
   @Mock
   private MuseumRepository museumRepository;
+
+  @Mock
+  private MuseumMapper museumMapper;
 
   @InjectMocks
   private GrpcMuseumService grpcMuseumService;
@@ -154,6 +159,7 @@ class GrpcMuseumServiceTest {
   void updateMuseum_updatesAndReturns() {
     UUID id = UUID.randomUUID();
 
+    // Существующая сущность
     MuseumEntity existing = new MuseumEntity();
     existing.setId(id);
     existing.setTitle("OldTitle");
@@ -162,9 +168,25 @@ class GrpcMuseumServiceTest {
     existing.setPhoto(new byte[]{1, 2});
     existing.setCountryId(UUID.randomUUID());
 
+    // Моки репозитория
     when(museumRepository.findById(id)).thenReturn(Optional.of(existing));
+    when(museumRepository.findByTitle(any())).thenReturn(Optional.empty());
     when(museumRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
+    // Мок mapper
+    doAnswer(invocation -> {
+      Museum requestArg = invocation.getArgument(0);
+      MuseumEntity entityArg = invocation.getArgument(1);
+
+      entityArg.setTitle(requestArg.getTitle());
+      entityArg.setDescription(requestArg.getDescription());
+      entityArg.setCity(requestArg.getCity());
+      entityArg.setPhoto(requestArg.getPhoto().toByteArray());
+      entityArg.setCountryId(UUID.fromString(requestArg.getCountryId()));
+      return null;
+    }).when(museumMapper).updateEntityFromMuseum(any(Museum.class), any(MuseumEntity.class));
+
+    // Запрос на обновление
     Museum request = Museum.newBuilder()
         .setId(id.toString())
         .setTitle("NewTitle")
@@ -176,8 +198,10 @@ class GrpcMuseumServiceTest {
 
     StreamObserver<Museum> observer = mock(StreamObserver.class);
 
+    // Вызов сервиса
     grpcMuseumService.updateMuseum(request, observer);
 
+    // Проверка ответа
     ArgumentCaptor<Museum> captor = ArgumentCaptor.forClass(Museum.class);
     verify(observer).onNext(captor.capture());
     verify(observer).onCompleted();
@@ -190,6 +214,7 @@ class GrpcMuseumServiceTest {
     assertEquals(request.getPhoto(), updated.getPhoto());
     assertEquals(request.getCountryId(), updated.getCountryId());
   }
+
 
   @Test
   void updateMuseum_notFound_throws() {

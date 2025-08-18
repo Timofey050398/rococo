@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import timofeyqa.grpc.rococo.*;
 import timofeyqa.rococo.model.CountryJson;
 import timofeyqa.rococo.model.GeoJson;
@@ -17,6 +18,7 @@ import timofeyqa.rococo.mappers.UuidMapper;
 import timofeyqa.rococo.model.page.RestPage;
 import timofeyqa.rococo.validation.IdRequired;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -25,9 +27,12 @@ import java.util.stream.Collectors;
 import static timofeyqa.rococo.mappers.PageableMapper.toGrpcPageable;
 import static timofeyqa.rococo.service.utils.ToCompletableFuture.toCf;
 import static timofeyqa.rococo.mappers.UuidMapper.fromUuidList;
+import static timofeyqa.rococo.service.utils.UuidListExtractor.extractUuids;
 
 @Service
+@Validated
 @RequiredArgsConstructor
+@ParametersAreNonnullByDefault
 public class GrpcMuseumClient implements GrpcClient<MuseumJson> {
 
     private static final Logger LOG = LoggerFactory.getLogger(GrpcMuseumClient.class);
@@ -35,14 +40,9 @@ public class GrpcMuseumClient implements GrpcClient<MuseumJson> {
     private final RococoMuseumServiceGrpc.RococoMuseumServiceFutureStub museumStub;
     private final GrpcGeoClient grpcGeoClient;
 
-
-
     @Override
-    public @Nonnull CompletableFuture<MuseumJson> getById(UUID id){
-        if (id == null){
-            return CompletableFuture.completedFuture(null);
-        }
-        return getByMuseum(museumStub.getMuseum(UuidMapper.fromUuid(id)));
+    public CompletableFuture<MuseumJson> getById(UUID id){
+      return getByMuseum(museumStub.getMuseum(UuidMapper.fromUuid(id)));
     }
 
     private CompletableFuture<MuseumJson> getByMuseum(ListenableFuture<Museum> museum){
@@ -67,11 +67,10 @@ public class GrpcMuseumClient implements GrpcClient<MuseumJson> {
 
 
     @Nonnull
-    public CompletableFuture<List<MuseumJson>> getMuseumsByIds(@Nonnull List<UUID> ids) {
+    public CompletableFuture<List<MuseumJson>> getMuseumsByIds(List<UUID> ids) {
         if (ids.isEmpty()) {
             return CompletableFuture.completedFuture(List.of());
         }
-
         return toCf(museumStub.getMuseumsByUuids(fromUuidList(ids)))
                 .thenApply(response -> response.getMuseumsList().stream()
                         .map(MuseumMapper::fromGrpc)
@@ -79,43 +78,43 @@ public class GrpcMuseumClient implements GrpcClient<MuseumJson> {
                 .thenCompose(this::enrichMuseumsWithCountries);
     }
 
-    private CompletableFuture<List<MuseumJson>> enrichMuseumsWithCountries(List<MuseumJson> museums) {
-        List<UUID> countryIds = museums.stream()
-                .map(p -> Optional.ofNullable(p.geo())
-                        .map(GeoJson::country)
-                        .map(CountryJson::id)
-                        .orElse(null))
-                .filter(Objects::nonNull)
-                .distinct()
-                .toList();
+  private CompletableFuture<List<MuseumJson>> enrichMuseumsWithCountries(List<MuseumJson> museums) {
+    List<UUID> countryIds = extractUuids(
+        museums,
+        m -> Optional.ofNullable(m.geo())
+            .map(GeoJson::country)
+            .orElse(null)
+    );
 
-
-        if (countryIds.isEmpty()) {
-            return CompletableFuture.completedFuture(museums);
-        }
-
-        return grpcGeoClient.getCountriesByIds(countryIds)
-                .thenApply(countries -> {
-                    Map<UUID, CountryJson> countryMap = countries.stream()
-                            .collect(Collectors.toMap(CountryJson::id, Function.identity()));
-
-                    return museums.stream()
-                            .map(museum -> {
-                                CountryJson country = countryMap.get(museum.geo().country().id());
-                                if (country != null) {
-                                    return museum.toBuilder()
-                                            .geo(museum.geo().toBuilder()
-                                                    .country(country)
-                                                    .build())
-                                            .build();
-                                }
-                                return museum;
-                            })
-                            .toList();
-                });
+    if (countryIds.isEmpty()) {
+      return CompletableFuture.completedFuture(museums);
     }
 
-  public CompletableFuture<MuseumJson> updateMuseum(@Nonnull @IdRequired MuseumJson museumJson) {
+    return grpcGeoClient.getCountriesByIds(countryIds)
+        .thenApply(countries -> {
+          Map<UUID, CountryJson> countryMap = countries.stream()
+              .collect(Collectors.toMap(CountryJson::id, Function.identity()));
+
+          return museums.stream()
+              .map(museum -> Optional.ofNullable(museum.geo())
+                  .map(geo -> Optional.ofNullable(geo.country())
+                    .map(CountryJson::id)
+                    .map(countryMap::get)
+                    .map(country -> museum.toBuilder()
+                        .geo(museum.geo()
+                            .toBuilder()
+                            .country(country)
+                            .build())
+                        .build())
+                    .orElse(museum)
+                  )
+                  .orElse(museum))
+              .toList();
+        });
+  }
+
+
+  public CompletableFuture<MuseumJson> updateMuseum(@IdRequired MuseumJson museumJson) {
     Optional
         .ofNullable(museumJson.geo())
         .map(GeoJson::country)
@@ -124,7 +123,7 @@ public class GrpcMuseumClient implements GrpcClient<MuseumJson> {
     return getByMuseum(museumStub.updateMuseum(MuseumMapper.toGrpc(museumJson)));
   }
 
-  public CompletableFuture<MuseumJson> create(@Nonnull @IdRequired MuseumJson museumJson) {
+  public CompletableFuture<MuseumJson> create(MuseumJson museumJson) {
     Optional
         .ofNullable(museumJson.geo())
         .map(GeoJson::country)

@@ -10,16 +10,21 @@ import timofeyqa.grpc.rococo.*;
 import timofeyqa.grpc.rococo.Pageable;
 import timofeyqa.rococo.data.PaintingEntity;
 import timofeyqa.rococo.data.repository.PaintingRepository;
+import timofeyqa.rococo.mappers.PaintingMapper;
 
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@SuppressWarnings("unchecked")
 class GrpcPaintingServiceTest {
 
   @Mock
   private PaintingRepository paintingRepository;
+
+  @Mock
+  private PaintingMapper paintingMapper;
 
   @InjectMocks
   private GrpcPaintingService grpcPaintingService;
@@ -135,14 +140,31 @@ class GrpcPaintingServiceTest {
     when(paintingRepository.findById(paintingId)).thenReturn(Optional.of(existing));
     when(paintingRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
-    StreamObserver<Painting> observer = mock(StreamObserver.class);
+    doAnswer(invocation -> {
+      Painting proto = invocation.getArgument(0);
+      PaintingEntity entity = invocation.getArgument(1);
 
+      entity.setTitle(proto.getTitle());
+      entity.setArtistId(UUID.fromString(proto.getArtistId()));
+      entity.setContent(proto.getContent().toByteArray());
+
+      return null;
+    }).when(paintingMapper).updateEntityFromPainting(any(Painting.class), any(PaintingEntity.class));
+
+    StreamObserver<Painting> observer = mock(StreamObserver.class);
+    ArgumentCaptor<Painting> paintingCaptor = ArgumentCaptor.forClass(Painting.class);
+
+    // Вызов сервиса
     grpcPaintingService.updatePainting(updatedProto, observer);
 
+    // Проверка, что observer получил обновлённую сущность
     verify(observer).onNext(paintingCaptor.capture());
     verify(observer).onCompleted();
 
     Painting result = paintingCaptor.getValue();
     assertEquals("New Title", result.getTitle());
+    assertEquals(existing.getArtistId().toString(), result.getArtistId());
+    assertArrayEquals("newdata".getBytes(), result.getContent().toByteArray());
   }
+
 }

@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import timofeyqa.rococo.ex.BadRequestException;
 import timofeyqa.rococo.model.MuseumJson;
 import timofeyqa.rococo.model.page.RestPage;
 import timofeyqa.rococo.service.api.grpc.GrpcMuseumClient;
@@ -14,6 +15,7 @@ import timofeyqa.rococo.service.api.grpc.GrpcMuseumClient;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -30,20 +32,18 @@ class MuseumControllerTest {
   }
 
   @Test
-  void getMuseum_withNullId_returnsBadRequest() {
-    CompletableFuture<ResponseEntity<MuseumJson>> response = museumController.getMuseum(null);
+  void getMuseum_withEmptyId_throwsBadRequestException() {
+    // передаём пустой path variable
+    BadRequestException ex = assertThrows(
+        BadRequestException.class,
+        () -> museumController.getMuseum("").join() // join здесь просто для получения результата, но исключение будет выброшено сразу
+    );
 
-    ResponseEntity<MuseumJson> entity = response.join();
-    assertEquals(HttpStatus.BAD_REQUEST, entity.getStatusCode());
+    assertEquals("Museum ID must not be empty", ex.getMessage());
   }
 
-  @Test
-  void getMuseum_withEmptyId_returnsBadRequest() {
-    CompletableFuture<ResponseEntity<MuseumJson>> response = museumController.getMuseum("");
 
-    ResponseEntity<MuseumJson> entity = response.join();
-    assertEquals(HttpStatus.BAD_REQUEST, entity.getStatusCode());
-  }
+
 
   @Test
   void getMuseum_withValidId_returnsMuseum() {
@@ -61,17 +61,17 @@ class MuseumControllerTest {
   }
 
   @Test
-  void getMuseum_whenException_returnsInternalServerError() {
+  void getMuseum_callsClient() {
     UUID id = UUID.randomUUID();
-    when(museumClient.getById(id)).thenReturn(CompletableFuture.failedFuture(new RuntimeException("fail")));
+    MuseumJson museum = mock(MuseumJson.class);
+    when(museumClient.getById(id)).thenReturn(CompletableFuture.completedFuture(museum));
 
     CompletableFuture<ResponseEntity<MuseumJson>> response = museumController.getMuseum(id.toString());
 
-    ResponseEntity<MuseumJson> entity = response.join();
-    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
-
+    assertEquals(museum, response.join().getBody());
     verify(museumClient, times(1)).getById(id);
   }
+
 
   @Test
   void getAll_returnsPagedMuseumList() {
@@ -93,30 +93,35 @@ class MuseumControllerTest {
   }
 
   @Test
-  void getAll_whenException_returnsInternalServerError() {
+  void getAll_whenException_throwsCompletionException() {
     Pageable pageable = PageRequest.of(0, 10);
-
-    when(museumClient.getMuseumPage(pageable, null)).thenReturn(CompletableFuture.failedFuture(new RuntimeException("fail")));
+    when(museumClient.getMuseumPage(pageable, null))
+        .thenReturn(CompletableFuture.failedFuture(new RuntimeException("fail")));
 
     CompletableFuture<ResponseEntity<RestPage<MuseumJson>>> response = museumController.getAll(pageable, null);
 
-    ResponseEntity<RestPage<MuseumJson>> entity = response.join();
-    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
+    CompletionException ex = assertThrows(CompletionException.class, response::join);
+    assertInstanceOf(RuntimeException.class, ex.getCause());
+    assertEquals("fail", ex.getCause().getMessage());
 
     verify(museumClient, times(1)).getMuseumPage(pageable, null);
   }
 
   @Test
-  @Disabled
   void updateMuseum_callsClientAndReturnsResult() {
-//    MuseumJson input = new MuseumJson(UUID.randomUUID(), "Title", "Desc", null, null);
-//    MuseumJson updated = input.toBuilder().title("Updated").build();
-//
-//    when(museumClient.updateMuseum(input)).thenReturn(updated);
-//
-//    MuseumJson result = museumController.updateMuseum(input);
-//
-//    assertEquals(updated, result);
-//    verify(museumClient, times(1)).updateMuseum(input);
+    MuseumJson input = new MuseumJson(UUID.randomUUID(), "Title", "Desc", null, null);
+    MuseumJson updated = input.toBuilder().title("Updated").build();
+
+    // Мокируем клиент на возврат MuseumJson, без ResponseEntity
+    when(museumClient.updateMuseum(input))
+        .thenReturn(CompletableFuture.completedFuture(updated));
+
+    ResponseEntity<MuseumJson> response = museumController.updateMuseum(input).join();
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(updated, response.getBody());
+
+    verify(museumClient, times(1)).updateMuseum(input);
   }
+
 }

@@ -21,6 +21,7 @@ import timofeyqa.rococo.mappers.UuidMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -55,32 +56,23 @@ public class GrpcGeoClient implements GrpcClient<CountryJson> {
 
     @Override
     public @Nonnull CompletableFuture<CountryJson> getById(UUID id){
-        if (id == null){
-            return CompletableFuture.completedFuture(null);
-        }
         return toCf(geoStub.getGeo(UuidMapper.fromUuid(id)))
             .thenApply(CountryMapper::fromGrpc);
     }
 
     @Nonnull
-    CompletableFuture<GeoJson> getMuseumGeo(MuseumJson museum) {
-        if (museum.geo() == null || museum.geo().country() == null){
-            return CompletableFuture.completedFuture(museum.geo());
-        }
-        final UUID countryId = museum.geo().country().id();
-        if (countryId == null){
-            return CompletableFuture.completedFuture(museum.geo());
-        }
-        return toCf(
-                geoStub.getGeo(
-                        Uuid.newBuilder()
-                                .setUuid(countryId.toString())
-                                .build()
-                )
-        ).thenApply(CountryMapper::fromGrpc)
-                .thenApply(country -> museum.geo().toBuilder()
-                        .country(country)
-                        .build());
+    CompletableFuture<GeoJson> getMuseumGeo(@Nonnull MuseumJson museum) {
+        var geo = museum.geo();
+        return Optional.ofNullable(geo)
+            .map(GeoJson::country)
+            .map(CountryJson::id)
+            .map(UuidMapper::fromUuid)
+            .map(uuid -> toCf(geoStub.getGeo(uuid))
+                .thenApply(CountryMapper::fromGrpc)
+                .thenApply(country -> geo.toBuilder()
+                    .country(country)
+                    .build()))
+            .orElseGet(() -> CompletableFuture.completedFuture(geo));
     }
 
     @Nonnull

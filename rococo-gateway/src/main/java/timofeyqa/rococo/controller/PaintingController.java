@@ -1,5 +1,6 @@
 package timofeyqa.rococo.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -34,7 +35,7 @@ public class PaintingController {
     }
 
     @GetMapping("/author/{artistId}")
-    public CompletableFuture<ResponseEntity<RestPage<PaintingJson>>> getPaintingByArtist(@PageableDefault Pageable pageable,@PathVariable("artistId") String artistId) {
+    public CompletableFuture<ResponseEntity<RestPage<PaintingJson>>> getPaintingByArtist(@PageableDefault Pageable pageable, @PathVariable("artistId") String artistId) {
         if (artistId.isEmpty()) {
             throw new BadRequestException("Artist Id in path variable must not be empty");
         }
@@ -51,13 +52,13 @@ public class PaintingController {
     }
 
     @PatchMapping
-    public CompletableFuture<ResponseEntity<PaintingJson>> updatePainting(@RequestBody PaintingJson paintingJson) {
+    public CompletableFuture<ResponseEntity<PaintingJson>> updatePainting(@RequestBody @Valid PaintingJson paintingJson) {
         return paintingClient.updatePainting(paintingJson)
             .thenApply(ResponseEntity::ok);
     }
 
     @PostMapping
-    public CompletableFuture<ResponseEntity<PaintingJson>> createPainting(@RequestBody PaintingJson paintingJson) {
+    public CompletableFuture<ResponseEntity<PaintingJson>> createPainting(@RequestBody @Valid PaintingJson paintingJson) {
         return paintingClient.create(paintingJson)
             .thenApply(ResponseEntity::ok);
     }

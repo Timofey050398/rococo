@@ -50,7 +50,6 @@ public class UserService {
         );
   }
 
-
     public @Nonnull UserJson getUser(@Nonnull String username) {
         return userRepository.findByUsername(username)
             .map(UserJson::fromEntity)

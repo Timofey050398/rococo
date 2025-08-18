@@ -18,6 +18,7 @@ import java.util.List;
 @Configuration
 public class RococoGatewayServiceConfig {
     public static final int ONE_MB = 1024 * 1024;
+    public static final long FIVE_MB = 5 * ONE_MB;
     public static final String OPEN_API_AUTH_SCHEME = "bearer";
 
     @Value("${api.version}")

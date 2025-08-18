@@ -3,6 +3,7 @@ package timofeyqa.rococo.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.google.protobuf.ByteString;
 import io.grpc.stub.StreamObserver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -163,11 +164,21 @@ class GrpcArtistServiceTest {
     when(artistRepository.findById(id)).thenReturn(Optional.of(existing));
     when(artistRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
+    doAnswer(invocation -> {
+      Artist request = invocation.getArgument(0);
+      ArtistEntity entity = invocation.getArgument(1);
+
+      entity.setName(request.getName());
+      entity.setBiography(request.getBiography());
+      entity.setPhoto(request.getPhoto().toByteArray());
+      return null;
+    }).when(artistMapper).updateEntityFromArtist(any(), any());
+
     Artist request = Artist.newBuilder()
         .setId(id.toString())
         .setName("New Name")
         .setBiography("New Bio")
-        .setPhoto(com.google.protobuf.ByteString.copyFrom(new byte[]{2, 2, 2}))
+        .setPhoto(ByteString.copyFrom(new byte[]{2, 2, 2}))
         .build();
 
     grpcArtistService.updateArtist(request, artistObserver);
@@ -181,6 +192,7 @@ class GrpcArtistServiceTest {
     assertEquals("New Bio", updated.getBiography());
     assertArrayEquals(new byte[]{2, 2, 2}, updated.getPhoto().toByteArray());
   }
+
 
   @Test
   void updateArtist_artistNotFound_throwsException() {

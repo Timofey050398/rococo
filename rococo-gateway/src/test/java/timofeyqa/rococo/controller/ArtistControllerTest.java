@@ -6,6 +6,7 @@ import org.mockito.*;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import timofeyqa.rococo.ex.BadRequestException;
 import timofeyqa.rococo.model.ArtistJson;
 import timofeyqa.rococo.model.page.RestPage;
 import timofeyqa.rococo.service.api.grpc.GrpcArtistClient;
@@ -13,8 +14,10 @@ import timofeyqa.rococo.service.api.grpc.GrpcArtistClient;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(org.mockito.junit.jupiter.MockitoExtension.class)
@@ -27,7 +30,7 @@ class ArtistControllerTest {
   private ArtistController artistController;
 
   @Test
-  void getArtist_withValidId_returnsArtist() {
+  void getArtistWithValidIdReturnsArtist() {
     UUID id = UUID.randomUUID();
     ArtistJson expectedArtist = new ArtistJson(id, "Name", "Bio", null);
 
@@ -43,16 +46,15 @@ class ArtistControllerTest {
   }
 
   @Test
-  void getArtist_withEmptyId_returnsBadRequest() {
-    CompletableFuture<ResponseEntity<ArtistJson>> futureResponse = artistController.getArtist("");
-
-    ResponseEntity<ArtistJson> response = futureResponse.join();
-
-    assertThat(response.getStatusCode().value()).isEqualTo(400);
+  void getArtistWithEmptyIdThrowsBadRequestException() {
+    assertThatThrownBy(() -> artistController.getArtist(""))
+        .isInstanceOf(BadRequestException.class)
+        .hasMessage("Artist Id at request path must not be empty");
   }
 
+
   @Test
-  void getArtist_whenExceptionThrown_returnsStatus500() {
+  void getArtistWhenExceptionThrownPropagatesCompletionException() {
     UUID id = UUID.randomUUID();
 
     when(artistClient.getById(id))
@@ -60,13 +62,14 @@ class ArtistControllerTest {
 
     CompletableFuture<ResponseEntity<ArtistJson>> futureResponse = artistController.getArtist(id.toString());
 
-    ResponseEntity<ArtistJson> response = futureResponse.join();
-
-    assertThat(response.getStatusCode().value()).isEqualTo(500);
+    assertThatThrownBy(futureResponse::join)
+        .isInstanceOf(CompletionException.class)
+        .hasCauseInstanceOf(RuntimeException.class)
+        .hasRootCauseMessage("fail");
   }
 
   @Test
-  void getAll_returnsPageOfArtists() {
+  void getAllReturnsPageOfArtists() {
     Pageable pageable = PageRequest.of(0, 10);
     ArtistJson artist = new ArtistJson(UUID.randomUUID(), "Name", "Bio", null);
     RestPage<ArtistJson> page = new RestPage<>(List.of(artist), pageable, 1);
@@ -83,17 +86,18 @@ class ArtistControllerTest {
   }
 
   @Test
-  void getAll_whenExceptionThrown_returnsStatus500() {
+  void getAllWhenExceptionThrownReturnsStatus500() {
     Pageable pageable = PageRequest.of(0, 10);
 
     when(artistClient.getArtistPage(pageable, null))
         .thenReturn(CompletableFuture.failedFuture(new RuntimeException("fail")));
 
-    CompletableFuture<ResponseEntity<RestPage<ArtistJson>>> futureResponse = artistController.getAll(pageable,null);
+    CompletableFuture<ResponseEntity<RestPage<ArtistJson>>> futureResponse = artistController.getAll(pageable, null);
 
-    ResponseEntity<RestPage<ArtistJson>> response = futureResponse.join();
-
-    assertThat(response.getStatusCode().value()).isEqualTo(500);
+    assertThatThrownBy(futureResponse::join)
+        .isInstanceOf(CompletionException.class)
+        .hasCauseInstanceOf(RuntimeException.class)
+        .hasRootCauseMessage("fail");
   }
 
   @Test

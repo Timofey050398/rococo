@@ -4,12 +4,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
+import lombok.extern.jackson.Jacksonized;
 import timofeyqa.rococo.config.RococoGatewayServiceConfig;
 
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder(toBuilder = true)
+@Jacksonized
 public record PaintingJson(
     @JsonProperty("id")
     UUID id,

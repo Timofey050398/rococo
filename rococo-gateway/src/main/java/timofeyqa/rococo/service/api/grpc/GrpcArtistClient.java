@@ -1,18 +1,19 @@
 package timofeyqa.rococo.service.api.grpc;
 
-import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import timofeyqa.grpc.rococo.*;
 import timofeyqa.rococo.model.ArtistJson;
 import timofeyqa.rococo.mappers.ArtistMapper;
 import timofeyqa.rococo.model.page.RestPage;
 import timofeyqa.rococo.validation.IdRequired;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -23,7 +24,9 @@ import static timofeyqa.rococo.service.utils.ToCompletableFuture.toCf;
 import static timofeyqa.rococo.mappers.UuidMapper.fromUuidList;
 
 @Service
+@Validated
 @RequiredArgsConstructor
+@ParametersAreNonnullByDefault
 public class GrpcArtistClient implements GrpcClient<ArtistJson> {
 
     private static final Logger LOG = LoggerFactory.getLogger(GrpcArtistClient.class);
@@ -32,10 +35,7 @@ public class GrpcArtistClient implements GrpcClient<ArtistJson> {
     private final RococoArtistServiceGrpc.RococoArtistServiceBlockingStub artistBlockingStub;
 
     @Override
-    public @Nonnull CompletableFuture<ArtistJson> getById(UUID id){
-        if(id == null){
-            return CompletableFuture.completedFuture(null);
-        }
+    public CompletableFuture<ArtistJson> getById(UUID id){
         return toCf(
                 artistStub.getArtist(
                         Uuid.newBuilder()
@@ -50,8 +50,7 @@ public class GrpcArtistClient implements GrpcClient<ArtistJson> {
                 .thenApply(response -> ArtistMapper.fromGrpcPage(response, pageable));
     }
 
-    @Nonnull
-    CompletableFuture<List<ArtistJson>> getArtistsByIds(@Nonnull List<UUID> ids){
+    CompletableFuture<List<ArtistJson>> getArtistsByIds(List<UUID> ids){
         if(ids.isEmpty()){
             return CompletableFuture.completedFuture(new ArrayList<>());
         }
@@ -66,11 +65,11 @@ public class GrpcArtistClient implements GrpcClient<ArtistJson> {
                 );
     }
 
-    public ArtistJson updateArtist(@Nonnull @IdRequired ArtistJson artistJson) {
+    public ArtistJson updateArtist(@IdRequired ArtistJson artistJson) {
         return ArtistMapper.fromGrpc(artistBlockingStub.updateArtist(ArtistMapper.toGrpc(artistJson)));
     }
 
-    public ArtistJson create(@Nonnull @IdRequired ArtistJson artistJson) {
+    public ArtistJson create(ArtistJson artistJson) {
         return ArtistMapper.fromGrpc(artistBlockingStub.addArtist(ArtistMapper.toPostGrpc(artistJson)));
     }
 }

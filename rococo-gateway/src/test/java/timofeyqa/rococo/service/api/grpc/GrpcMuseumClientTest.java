@@ -5,8 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.data.domain.PageRequest;
@@ -15,7 +16,6 @@ import timofeyqa.grpc.rococo.*;
 import timofeyqa.rococo.model.GeoJson;
 import timofeyqa.rococo.model.MuseumJson;
 import timofeyqa.rococo.model.CountryJson;
-import timofeyqa.rococo.mappers.MuseumMapper;
 import timofeyqa.rococo.model.page.RestPage;
 
 import java.util.*;
@@ -26,8 +26,6 @@ class GrpcMuseumClientTest {
   @Mock
   private RococoMuseumServiceGrpc.RococoMuseumServiceFutureStub museumStub;
   @Mock
-  private RococoMuseumServiceGrpc.RococoMuseumServiceBlockingStub museumBlockingStub;
-  @Mock
   private GrpcGeoClient grpcGeoClient;
 
   @InjectMocks
@@ -36,13 +34,6 @@ class GrpcMuseumClientTest {
   @BeforeEach
   void setup() {
     MockitoAnnotations.openMocks(this);
-  }
-
-  @Test
-  void getById_nullId_returnsCompletedFutureWithNull() {
-    CompletableFuture<MuseumJson> future = client.getById(null);
-    assertThat(future).isCompletedWithValue(null);
-    verifyNoInteractions(museumStub, grpcGeoClient);
   }
 
   @Test
@@ -113,9 +104,6 @@ class GrpcMuseumClientTest {
 
     when(museumStub.getMuseumPage(any()))
         .thenReturn(com.google.common.util.concurrent.Futures.immediateFuture(pageMuseum));
-
-    List<MuseumJson> museumList = List.of(MuseumMapper.fromGrpc(grpcMuseum));
-
     when(grpcGeoClient.getCountriesByIds(anyList()))
         .thenReturn(CompletableFuture.completedFuture(List.of(
             CountryJson.builder()
@@ -129,7 +117,7 @@ class GrpcMuseumClientTest {
     RestPage<MuseumJson> page = future.join();
 
     assertThat(page.getContent()).hasSize(1);
-    MuseumJson enrichedMuseum = page.getContent().get(0);
+    MuseumJson enrichedMuseum = page.getContent().getFirst();
     assertThat(enrichedMuseum.geo().country().name()).isEqualTo("countryName");
 
     verify(museumStub).getMuseumPage(any());
@@ -161,10 +149,6 @@ class GrpcMuseumClientTest {
     when(museumStub.getMuseumsByUuids(any()))
         .thenReturn(com.google.common.util.concurrent.Futures.immediateFuture(grpcList));
 
-    MuseumJson baseMuseum = MuseumMapper.fromGrpc(grpcMuseum).toBuilder()
-        .geo(GeoJson.builder().city(null).country(CountryJson.builder().id(countryId).name(null).build()).build())
-        .build();
-
     when(grpcGeoClient.getCountriesByIds(List.of(countryId)))
         .thenReturn(CompletableFuture.completedFuture(List.of(
             CountryJson.builder()
@@ -178,36 +162,47 @@ class GrpcMuseumClientTest {
     List<MuseumJson> result = future.join();
 
     assertThat(result).hasSize(1);
-    assertThat(result.get(0).geo().country().name()).isEqualTo("CountryName");
+    assertThat(result.getFirst().geo().country().name()).isEqualTo("CountryName");
 
     verify(museumStub).getMuseumsByUuids(any());
     verify(grpcGeoClient).getCountriesByIds(anyList());
   }
 
   @Test
-  @Disabled
   void updateMuseum_callsBlockingStubAndValidatesCountry() {
-//    UUID countryId = UUID.randomUUID();
-//
-//    MuseumJson input = MuseumJson.builder()
-//        .id(UUID.randomUUID())
-//        .geo(GeoJson.builder()
-//            .country(CountryJson.builder()
-//                .id(countryId)
-//                .name("countryName")
-//                .build())
-//            .build())
-//        .build();
-//
-//    Museum grpcResponse = Museum.newBuilder().setId(input.id().toString()).build();
-//
-//    when(museumBlockingStub.updateMuseum(any())).thenReturn(grpcResponse);
-//
-//    MuseumJson result = client.updateMuseum(input);
-//
-//    assertThat(result.id()).isEqualTo(input.id());
-//
-//    verify(grpcGeoClient).validateCountry(input.geo().country());
-//    verify(museumBlockingStub).updateMuseum(any());
+    UUID countryId = UUID.randomUUID();
+    MuseumJson input = MuseumJson.builder()
+        .id(UUID.randomUUID())
+        .geo(GeoJson.builder()
+            .country(CountryJson.builder()
+                .id(countryId)
+                .name("countryName")
+                .build())
+            .build())
+        .build();
+
+    // grpc-ответ
+    Museum grpcResponse = Museum.newBuilder()
+        .setId(input.id().toString())
+        .build();
+
+    // Мокаем ListenableFuture для updateMuseum
+    ListenableFuture<Museum> grpcFuture = Futures.immediateFuture(grpcResponse);
+    when(museumStub.updateMuseum(any())).thenReturn(grpcFuture);
+
+    // Мокаем grpcGeoClient.getMuseumGeo, чтобы он возвращал CompletableFuture
+    when(grpcGeoClient.getMuseumGeo(any()))
+        .thenReturn(CompletableFuture.completedFuture(input.geo()));
+
+    // Вызов метода
+    CompletableFuture<MuseumJson> future = client.updateMuseum(input);
+    MuseumJson result = future.join();
+
+    // Проверки
+    assertThat(result.id()).isEqualTo(input.id());
+    verify(grpcGeoClient).validateCountry(input.geo().country());
+    verify(museumStub).updateMuseum(any());
+    verify(grpcGeoClient).getMuseumGeo(any()); // Проверяем, что вызов был
   }
+
 }

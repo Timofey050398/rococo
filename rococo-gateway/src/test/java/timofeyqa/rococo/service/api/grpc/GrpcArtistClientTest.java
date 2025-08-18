@@ -42,13 +42,6 @@ class GrpcArtistClientTest {
   }
 
   @Test
-  void getById_withNullId_returnsCompletedFutureWithNull() {
-    CompletableFuture<ArtistJson> future = grpcArtistClient.getById(null);
-    assertTrue(future.isDone());
-    assertNull(future.join());
-  }
-
-  @Test
   void getById_withValidId_returnsArtistJson() {
     UUID id = UUID.randomUUID();
     Artist grpcArtist = Artist.newBuilder()

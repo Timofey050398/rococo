@@ -1,7 +1,6 @@
 package timofeyqa.rococo.service.api.grpc;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -9,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import timofeyqa.grpc.rococo.*;
 import timofeyqa.rococo.model.*;
 import timofeyqa.rococo.mappers.PaintingMapper;
@@ -16,24 +16,26 @@ import timofeyqa.rococo.mappers.UuidMapper;
 import timofeyqa.rococo.model.page.RestPage;
 import timofeyqa.rococo.validation.IdRequired;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static timofeyqa.rococo.mappers.PageableMapper.toGrpcPageable;
 import static timofeyqa.rococo.service.utils.ToCompletableFuture.toCf;
+import static timofeyqa.rococo.service.utils.UuidListExtractor.extractUuids;
 
 @Service
+@Validated
 @RequiredArgsConstructor
+@ParametersAreNonnullByDefault
 public class GrpcPaintingClient implements GrpcClient<PaintingJson> {
 
     private static final Logger LOG = LoggerFactory.getLogger(GrpcPaintingClient.class);
 
     private final RococoPaintingServiceGrpc.RococoPaintingServiceFutureStub paintingStub;
-    private final RococoPaintingServiceGrpc.RococoPaintingServiceBlockingStub paintingBlockingStub;
     private final GrpcMuseumClient grpcMuseumClient;
     private final GrpcArtistClient grpcArtistClient;
 
@@ -46,9 +48,15 @@ public class GrpcPaintingClient implements GrpcClient<PaintingJson> {
       return toCf(painting).thenCompose(paintingResp -> {
         PaintingJson json = PaintingMapper.fromGrpc(paintingResp);
 
-        CompletableFuture<ArtistJson> artistF = grpcArtistClient.getById(json.artist().id());
+        CompletableFuture<ArtistJson> artistF = Optional.ofNullable(json.artist())
+            .map(ArtistJson::id)
+            .map(grpcArtistClient::getById)
+            .orElse(CompletableFuture.completedFuture(null));
 
-        CompletableFuture<MuseumJson> museumF = grpcMuseumClient.getById(json.museum().id());
+        CompletableFuture<MuseumJson> museumF = Optional.ofNullable(json.museum())
+            .map(MuseumJson::id)
+            .map(grpcMuseumClient::getById)
+            .orElse(CompletableFuture.completedFuture(null));
 
         return artistF.thenCombine(museumF, (artist, museum) ->
             json.toBuilder()
@@ -66,7 +74,7 @@ public class GrpcPaintingClient implements GrpcClient<PaintingJson> {
         );
     }
 
-    public CompletableFuture<RestPage<PaintingJson>> getPaintingByArtist(Pageable pageable,@Nonnull UUID artistId) {
+    public CompletableFuture<RestPage<PaintingJson>> getPaintingByArtist(Pageable pageable, UUID artistId) {
         var request = GetPaintingsByArtistRequest.newBuilder()
                 .setUuid(
                         Uuid.newBuilder()
@@ -82,14 +90,14 @@ public class GrpcPaintingClient implements GrpcClient<PaintingJson> {
         );
     }
 
-    public CompletableFuture<PaintingJson> updatePainting(@Nonnull @IdRequired PaintingJson paintingJson) {
+    public CompletableFuture<PaintingJson> updatePainting(@IdRequired PaintingJson paintingJson) {
         grpcMuseumClient.validateChildObject(paintingJson.museum());
         grpcArtistClient.validateChildObject(paintingJson.artist());
 
         return getByPainting(paintingStub.updatePainting(PaintingMapper.toGrpc(paintingJson)));
     }
 
-  public CompletableFuture<PaintingJson> create(@Nonnull @IdRequired PaintingJson paintingJson) {
+  public CompletableFuture<PaintingJson> create(PaintingJson paintingJson) {
     grpcMuseumClient.validateChildObject(paintingJson.museum());
     grpcArtistClient.validateChildObject(paintingJson.artist());
 
@@ -101,20 +109,15 @@ public class GrpcPaintingClient implements GrpcClient<PaintingJson> {
                 .thenCompose(pagePaintingResponse -> {
                     RestPage<PaintingJson> page = PaintingMapper.fromGrpcPage(pagePaintingResponse, pageable);
 
-                    List<UUID> artistIds = page.getContent().stream()
-                            .map(p -> Optional.ofNullable(p.artist()).map(ArtistJson::id).orElse(null))
-                            .filter(Objects::nonNull)
-                            .distinct()
-                            .toList();
+                    List<UUID> artistIds = extractUuids(
+                        page.getContent(),
+                        PaintingJson::artist
+                    );
 
-
-                    List<UUID> museumIds = page.getContent().stream()
-                            .map(p -> Optional.ofNullable(p.museum()).map(MuseumJson::id).orElse(null))
-                            .filter(Objects::nonNull)
-                            .distinct()
-                            .toList();
-
-
+                    List<UUID> museumIds = extractUuids(
+                        page.getContent(),
+                        PaintingJson::museum
+                    );
 
                     CompletableFuture<List<ArtistJson>> artistFList = grpcArtistClient.getArtistsByIds(artistIds);
 
@@ -122,21 +125,8 @@ public class GrpcPaintingClient implements GrpcClient<PaintingJson> {
 
                     return artistFList.thenCombine(museumFList, (artists, museums) -> {
                         Page<PaintingJson> enriched = page.map(painting -> {
-                            ArtistJson artist = artists.stream()
-                                    .filter(a -> a.id().equals(Optional.ofNullable(painting.artist())
-                                            .map(ArtistJson::id)
-                                            .orElse(null))
-                                    )
-                                    .findFirst()
-                                    .orElse(null);
-
-                            MuseumJson museum = museums.stream()
-                                    .filter(m -> m.id().equals(Optional.ofNullable(painting.museum())
-                                            .map(MuseumJson::id)
-                                            .orElse(null))
-                                    )
-                                    .findFirst()
-                                    .orElse(null);
+                            ArtistJson artist = findCorrect(artists,painting.artist());
+                            MuseumJson museum = findCorrect(museums,painting.museum());
 
                             return painting.toBuilder()
                                     .artist(artist)
@@ -146,6 +136,21 @@ public class GrpcPaintingClient implements GrpcClient<PaintingJson> {
                         return new RestPage<>(enriched.getContent(), pageable, page.getTotalElements());
                     });
                 });
+    }
+
+    private <T extends ResponseDto> T findCorrect(List<T> list, @Nullable T expected){
+      UUID expectedId = Optional.ofNullable(expected)
+          .map(ResponseDto::id)
+          .orElse(null);
+
+      if (expectedId == null) {
+        return null;
+      }
+
+      return list.stream()
+          .filter(resp -> Objects.equals(resp.id(), expectedId))
+          .findFirst()
+          .orElse(null);
     }
 
 }

@@ -1,5 +1,6 @@
 package timofeyqa.rococo.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -42,12 +43,12 @@ public class ArtistController {
     }
 
     @PatchMapping
-    public ArtistJson updateArtist(@RequestBody ArtistJson artistJson) {
+    public ArtistJson updateArtist(@RequestBody @Valid ArtistJson artistJson) {
         return artistClient.updateArtist(artistJson);
     }
 
     @PostMapping
-    public ArtistJson createArtist(@RequestBody ArtistJson artistJson) {
+    public ArtistJson createArtist(@RequestBody @Valid ArtistJson artistJson) {
         return artistClient.create(artistJson);
     }
 }

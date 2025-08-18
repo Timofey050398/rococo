@@ -1,5 +1,6 @@
 package timofeyqa.rococo.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -45,13 +46,13 @@ public class MuseumController {
     }
 
     @PatchMapping
-    public CompletableFuture<ResponseEntity<MuseumJson>> updateMuseum(@RequestBody MuseumJson museumJson) {
+    public CompletableFuture<ResponseEntity<MuseumJson>> updateMuseum(@RequestBody @Valid MuseumJson museumJson) {
         return museumClient.updateMuseum(museumJson)
             .thenApply(ResponseEntity::ok);
    }
 
     @PostMapping
-    public CompletableFuture<ResponseEntity<MuseumJson>> createMuseum(@RequestBody MuseumJson museumJson) {
+    public CompletableFuture<ResponseEntity<MuseumJson>> createMuseum(@RequestBody @Valid MuseumJson museumJson) {
         return museumClient.create(museumJson)
             .thenApply(ResponseEntity::ok);
     }

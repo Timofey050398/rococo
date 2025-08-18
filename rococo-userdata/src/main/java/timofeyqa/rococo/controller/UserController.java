@@ -23,12 +23,17 @@ public class UserController {
 
     @GetMapping
     public @Nonnull UserJson getUser(@RequestParam String username){
-        LOG.info("try to get user {}", username);
+        logUsername(username);
         return userService.getUser(username);
     }
 
     @PatchMapping
     public @Nonnull UserJson updateUser(@RequestBody UserJson user, @RequestParam String username){
+        logUsername(username);
         return userService.patchUser(user, username);
+    }
+
+    private void logUsername(String username){
+        LOG.info("try to get user {}", username);
     }
 }

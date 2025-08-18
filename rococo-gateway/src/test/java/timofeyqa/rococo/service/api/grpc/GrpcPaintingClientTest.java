@@ -2,8 +2,8 @@ package timofeyqa.rococo.service.api.grpc;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import timofeyqa.grpc.rococo.*;
@@ -11,6 +11,7 @@ import timofeyqa.rococo.model.*;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -20,9 +21,6 @@ class GrpcPaintingClientTest {
 
   @Mock
   private RococoPaintingServiceGrpc.RococoPaintingServiceFutureStub paintingStub;
-
-  @Mock
-  private RococoPaintingServiceGrpc.RococoPaintingServiceBlockingStub paintingBlockingStub;
 
   @Mock
   private GrpcMuseumClient grpcMuseumClient;
@@ -90,43 +88,54 @@ class GrpcPaintingClientTest {
   }
 
   @Test
-  @Disabled
   void updatePainting_shouldCallBlockingStubAndReturnUpdatedPainting() {
-//    UUID paintingId = UUID.randomUUID();
-//    UUID artistId = UUID.randomUUID();
-//    UUID museumId = UUID.randomUUID();
-//
-//    // Создаем PaintingJson для обновления
-//    PaintingJson inputPainting = PaintingJson.builder()
-//        .id(paintingId)
-//        .title("Title")
-//        .description("Desc")
-//        .artist(new ArtistJson(artistId, "Artist", null, null))
-//        .museum(new MuseumJson(museumId, "Museum", null, null,null))
-//        .build();
-//
-//    // Заглушка результата updatePainting
-//    Painting grpcPainting = Painting.newBuilder()
-//        .setId(paintingId.toString())
-//        .setTitle("Title")
-//        .setDescription("Desc")
-//        .setArtistId(artistId.toString())
-//        .setMuseumId(museumId.toString())
-//        .build();
-//
-//    when(paintingBlockingStub.updatePainting(any()))
-//        .thenReturn(grpcPainting);
-//
-//    // Чтобы не выбрасывались ошибки валидации child объектов
-//    doNothing().when(grpcArtistClient).validateChildObject(any());
-//    doNothing().when(grpcMuseumClient).validateChildObject(any());
-//
-//    PaintingJson updated = grpcPaintingClient.updatePainting(inputPainting);
-//
-//    assertNotNull(updated);
-//    assertEquals(paintingId, updated.id());
-//    assertEquals("Title", updated.title());
-//    assertEquals(artistId, updated.artist().id());
-//    assertEquals(museumId, updated.museum().id());
+    UUID paintingId = UUID.randomUUID();
+    UUID artistId = UUID.randomUUID();
+    UUID museumId = UUID.randomUUID();
+
+    PaintingJson inputPainting = PaintingJson.builder()
+        .id(paintingId)
+        .title("Title")
+        .description("Desc")
+        .artist(new ArtistJson(artistId, "Artist", null, null))
+        .museum(new MuseumJson(museumId, "Museum", null, null, null))
+        .build();
+
+    Painting grpcPainting = Painting.newBuilder()
+        .setId(paintingId.toString())
+        .setTitle("Title")
+        .setDescription("Desc")
+        .setArtistId(artistId.toString())
+        .setMuseumId(museumId.toString())
+        .build();
+
+    SettableFuture<Painting> future = SettableFuture.create();
+    future.set(grpcPainting);
+    when(paintingStub.updatePainting(any())).thenReturn(future);
+
+    doNothing().when(grpcArtistClient).validateChildObject(any());
+    doNothing().when(grpcMuseumClient).validateChildObject(any());
+
+    when(grpcArtistClient.getById(artistId)).thenReturn(CompletableFuture.completedFuture(
+        new ArtistJson(artistId, "Artist", null, null)
+    ));
+    when(grpcMuseumClient.getById(museumId)).thenReturn(CompletableFuture.completedFuture(
+        new MuseumJson(museumId, "Museum", null, null, null)
+    ));
+
+    PaintingJson updated;
+    try {
+      updated = grpcPaintingClient.updatePainting(inputPainting).get();
+    } catch (InterruptedException | ExecutionException e) {
+      throw new RuntimeException(e);
+    }
+
+    assertNotNull(updated);
+    assertEquals(paintingId, updated.id());
+    assertEquals("Title", updated.title());
+    assertEquals(artistId, updated.artist().id());
+    assertEquals(museumId, updated.museum().id());
   }
+
+
 }

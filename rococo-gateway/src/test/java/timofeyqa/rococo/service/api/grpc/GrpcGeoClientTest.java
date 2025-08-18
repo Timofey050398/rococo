@@ -1,13 +1,14 @@
 package timofeyqa.rococo.service.api.grpc;
 
+import static com.google.common.util.concurrent.Futures.immediateFuture;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.google.common.util.concurrent.SettableFuture;
 import com.google.protobuf.Empty;
 import io.grpc.StatusRuntimeException;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import timofeyqa.grpc.rococo.GeoResponse;
@@ -74,7 +75,7 @@ class GrpcGeoClientTest {
         .setName("TestCountry")
         .build();
 
-    when(futureStub.getGeo(any())).thenReturn(com.google.common.util.concurrent.Futures.immediateFuture(grpcResponse));
+    when(futureStub.getGeo(any())).thenReturn(immediateFuture(grpcResponse));
 
     CompletableFuture<CountryJson> future = grpcGeoClient.getById(id);
 
@@ -83,12 +84,6 @@ class GrpcGeoClientTest {
     assertNotNull(country);
     assertEquals(id, country.id());
     assertEquals("TestCountry", country.name());
-  }
-
-  @Test
-  void getById_nullId_returnsCompletedFutureWithNull() throws Exception {
-    CompletableFuture<CountryJson> future = grpcGeoClient.getById(null);
-    assertNull(future.get());
   }
 
   @Test
@@ -103,7 +98,7 @@ class GrpcGeoClientTest {
         .setName("NewCountryName")
         .build();
 
-    when(futureStub.getGeo(any())).thenReturn(com.google.common.util.concurrent.Futures.immediateFuture(grpcResponse));
+    when(futureStub.getGeo(any())).thenReturn(immediateFuture(grpcResponse));
 
     CompletableFuture<GeoJson> future = grpcGeoClient.getMuseumGeo(museum);
     GeoJson updatedGeo = future.get();
@@ -133,7 +128,7 @@ class GrpcGeoClientTest {
 
     GeoListResponse response = GeoListResponse.newBuilder().addGeo(grpc1).addGeo(grpc2).build();
 
-    when(futureStub.getGeosByUuids(any())).thenReturn(com.google.common.util.concurrent.Futures.immediateFuture(response));
+    when(futureStub.getGeosByUuids(any())).thenReturn(immediateFuture(response));
 
     CompletableFuture<List<CountryJson>> future = grpcGeoClient.getCountriesByIds(List.of(id1, id2));
     List<CountryJson> countries = future.get();
@@ -151,28 +146,47 @@ class GrpcGeoClientTest {
   }
 
   @Test
-  @Disabled
   void validateCountry_validatesSuccessfully() {
     UUID id = UUID.randomUUID();
     CountryJson country = new CountryJson(id, "CorrectName");
 
-    GeoResponse grpcResponse = GeoResponse.newBuilder().setId(id.toString()).setName("CorrectName").build();
+    GeoResponse grpcResponse = GeoResponse.newBuilder()
+        .setId(id.toString())
+        .setName("CorrectName")
+        .build();
+
+    SettableFuture<GeoResponse> future = SettableFuture.create();
+    future.set(grpcResponse);
+
+    when(futureStub.getGeo(any())).thenReturn(future);
+
+
     when(blockingStub.getGeo(any())).thenReturn(grpcResponse);
 
     assertDoesNotThrow(() -> grpcGeoClient.validateCountry(country));
   }
 
+
   @Test
-  @Disabled
   void validateCountry_throwsBadRequestException_whenNameMismatch() {
     UUID id = UUID.randomUUID();
     CountryJson country = new CountryJson(id, "WrongName");
 
-    GeoResponse grpcResponse = GeoResponse.newBuilder().setId(id.toString()).setName("ActualName").build();
+    GrpcGeoClient spyClient = Mockito.spy(grpcGeoClient);
+
+    GeoResponse grpcResponse = GeoResponse.newBuilder()
+        .setId(id.toString())
+        .setName("ActualName")
+        .build();
     when(blockingStub.getGeo(any())).thenReturn(grpcResponse);
 
-    BadRequestException ex = assertThrows(BadRequestException.class, () -> grpcGeoClient.validateCountry(country));
-    assertTrue(ex.getMessage().contains("Country with provided combination of id and name does not exist"));
+    doNothing().when(spyClient).validateChildObject(any());
+
+    BadRequestException ex = assertThrows(BadRequestException.class,
+        () -> spyClient.validateCountry(country));
+
+    assertTrue(ex.getMessage().contains(
+        "Country with provided combination of id and name does not exist"));
   }
 
   @Test

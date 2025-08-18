@@ -1,0 +1,1 @@
+UPDATE country SET name = 'Шри-Ланка' WHERE name = 'Флаг Шри-Ланки';

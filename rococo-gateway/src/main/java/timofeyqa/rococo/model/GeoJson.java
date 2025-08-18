@@ -2,10 +2,12 @@ package timofeyqa.rococo.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
+import lombok.extern.jackson.Jacksonized;
 
 import java.util.UUID;
 
 @Builder(toBuilder = true)
+@Jacksonized
 public record GeoJson(
         @JsonProperty("city")
         String city,

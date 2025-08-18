@@ -1,5 +1,6 @@
 package timofeyqa.rococo.controller;
 
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class UserController {
 
 
     @PatchMapping
-    public UserJson updateUser(@RequestBody UserJson userJson, @AuthenticationPrincipal Jwt principal) {
+    public UserJson updateUser(@RequestBody @Valid UserJson userJson, @AuthenticationPrincipal Jwt principal) {
         return userdataClient.updateUser(userJson, principal.getSubject());
     }
 }
