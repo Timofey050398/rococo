@@ -38,18 +38,22 @@ spring:
 grpc:
   client:
     museum-service:
+      max-inbound-message-size: 15728640
       address: "static://127.0.0.1:8092"
       enableKeepAlive: true
       negotiationType: plaintext
     artist-service:
+      max-inbound-message-size: 15728640
       address: "static://127.0.0.1:8091"
       enableKeepAlive: true
       negotiationType: plaintext
     painting-service:
+      max-inbound-message-size: 15728640
       address: "static://127.0.0.1:8094"
       enableKeepAlive: true
       negotiationType: plaintext
     geo-service:
+      max-inbound-message-size: 15728640
       address: "static://127.0.0.1:8095"
       enableKeepAlive: true
       negotiationType: plaintext
@@ -83,18 +87,22 @@ spring:
 grpc:
   client:
     museum-service:
+      max-inbound-message-size: 15728640
       address: "static://museum.rococo.dc:8092"
       enableKeepAlive: true
       negotiationType: plaintext
     artist-service:
+      max-inbound-message-size: 15728640
       address: "static://artist.rococo.dc:8091"
       enableKeepAlive: true
       negotiationType: plaintext
     painting-service:
+      max-inbound-message-size: 15728640
       address: "static://painting.rococo.dc:8094"
       enableKeepAlive: true
       negotiationType: plaintext
     geo-service:
+      max-inbound-message-size: 15728640
       address: "static://geo.rococo.dc:8095"
       enableKeepAlive: true
       negotiationType: plaintext

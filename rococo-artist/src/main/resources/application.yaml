@@ -1,5 +1,6 @@
 grpc:
   server:
+    max-inbound-message-size: 15728640
     port: 8091
 
 spring:
