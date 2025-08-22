@@ -11,6 +11,8 @@ import java.util.UUID;
     nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface MuseumMapper {
 
+
+  @Mapping(target = "id", source = "id", qualifiedByName = "stringToUUID")
   @Mapping(target = "title",source = "title",qualifiedByName = "blankToNull")
   @Mapping(target = "description",source = "description",qualifiedByName = "blankToNull")
   @Mapping(target = "city", source = "city", qualifiedByName = "blankToNull")

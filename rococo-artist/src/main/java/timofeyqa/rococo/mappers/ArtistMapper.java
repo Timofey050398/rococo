@@ -5,14 +5,22 @@ import org.mapstruct.*;
 import timofeyqa.grpc.rococo.Artist;
 import timofeyqa.rococo.data.ArtistEntity;
 
+import java.util.UUID;
+
 @Mapper(componentModel = "spring",
     nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ArtistMapper {
 
+  @Mapping(target = "id", source = "id", qualifiedByName = "stringToUUID")
   @Mapping(target = "name",source = "name",qualifiedByName = "blankToNull")
   @Mapping(target = "biography",source = "biography",qualifiedByName = "blankToNull")
   @Mapping(target = "photo", source = "photo", qualifiedByName = "byteStringToBytes")
   void updateEntityFromArtist(Artist artist, @MappingTarget ArtistEntity entity);
+
+  @Named("stringToUUID")
+  static UUID stringToUUID(String id) {
+    return (id == null || id.trim().isBlank()) ? null : UUID.fromString(id);
+  }
 
   @Named("byteStringToBytes")
   static byte[] byteStringToBytes(ByteString content) {

@@ -11,6 +11,7 @@ import java.util.UUID;
     nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface PaintingMapper {
 
+  @Mapping(target = "id", source = "id", qualifiedByName = "stringToUUID")
   @Mapping(target = "title",source = "title",qualifiedByName = "blankToNull")
   @Mapping(target = "description",source = "description",qualifiedByName = "blankToNull")
   @Mapping(target = "artistId", source = "artistId", qualifiedByName = "stringToUUID")
@@ -18,9 +19,10 @@ public interface PaintingMapper {
   @Mapping(target = "content", source = "content", qualifiedByName = "byteStringToBytes")
   void updateEntityFromPainting(Painting painting, @MappingTarget PaintingEntity entity);
 
+
   @Named("stringToUUID")
   static UUID stringToUUID(String id) {
-    return (id == null || id.isBlank()) ? null : UUID.fromString(id);
+    return (id == null || id.trim().isBlank()) ? null : UUID.fromString(id);
   }
 
   @Named("byteStringToBytes")
@@ -30,6 +32,6 @@ public interface PaintingMapper {
 
   @Named("blankToNull")
   static String blankToNull(String string) {
-    return (string == null || string.isBlank()) ? null : string;
+    return (string == null || string.trim().isBlank()) ? null : string;
   }
 }
