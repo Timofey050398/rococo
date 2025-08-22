@@ -15,13 +15,17 @@ public class GrpcGlobalExceptionHandler {
 
   @GrpcExceptionHandler(IllegalArgumentException.class)
   public Status handleInvalidArgument(IllegalArgumentException e) {
-    LOG.warn("Invalid argument: {}", e.getMessage());
+    LOG.warn("Invalid argument caught: {} ({})", e.getMessage(), e, e);
+
+    if (e.getCause() != null) {
+      LOG.warn("Cause: {}", e.getCause().toString(), e.getCause());
+    }
     return Status.INVALID_ARGUMENT.withDescription(e.getMessage()).withCause(e);
   }
 
   @GrpcExceptionHandler(IllegalStateException.class)
   public Status handleNotFound(IllegalStateException e) {
-    LOG.warn("Not found: {}", e.getMessage());
+    LOG.warn("Not found: {} ()", e.getMessage());
     return Status.NOT_FOUND.withDescription(e.getMessage()).withCause(e);
   }
 
