@@ -5,17 +5,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import timofeyqa.rococo.ex.BadRequestException;
 import timofeyqa.rococo.model.ArtistJson;
 import timofeyqa.rococo.model.page.RestPage;
 import timofeyqa.rococo.service.api.grpc.GrpcArtistClient;
+import timofeyqa.rococo.validation.SizeLimited;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/artist")
+@Validated
 public class ArtistController {
 
     private final GrpcArtistClient artistClient;
@@ -36,7 +39,7 @@ public class ArtistController {
 
     @GetMapping
     public CompletableFuture<ResponseEntity<RestPage<ArtistJson>>> getAll(
-        @PageableDefault Pageable pageable,
+        @PageableDefault  @SizeLimited Pageable pageable,
         @RequestParam(required = false) String name) {
         return artistClient.getArtistPage(pageable, name)
                 .thenApply(ResponseEntity::ok);

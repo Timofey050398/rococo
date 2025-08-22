@@ -6,6 +6,7 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -22,7 +23,12 @@ public class RococoGatewayServiceConfig {
     public static final String OPEN_API_AUTH_SCHEME = "bearer";
 
     @Value("${api.version}")
+    @Getter
     private String apiVersion;
+
+    @Getter
+    @Value("${api.pageMaxSize}")
+    private int pageMaxSize;
 
     private final String rococoUserdataBaseUri;
     private final String rococoGatewayBaseUri;

@@ -2,7 +2,6 @@ package timofeyqa.rococo.service;
 
 import com.google.protobuf.ByteString;
 import io.grpc.stub.StreamObserver;
-import jakarta.annotation.Nonnull;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
