@@ -16,6 +16,7 @@ logging:
 
 api:
   version: v1.0
+  pageMaxSize: 10
 
 ---
 spring:
