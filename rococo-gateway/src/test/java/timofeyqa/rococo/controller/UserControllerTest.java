@@ -9,6 +9,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import timofeyqa.rococo.config.RococoGatewayServiceConfig;
 import timofeyqa.rococo.model.UserJson;
 import timofeyqa.rococo.service.api.RestUserdataClient;
 
@@ -32,6 +33,9 @@ class UserControllerTest {
   private RestUserdataClient userdataClient;
 
   private UserController userController;
+
+  @MockitoBean
+  private RococoGatewayServiceConfig config;
 
   private Jwt jwt;
 
