@@ -28,9 +28,4 @@ public class UserRepository implements HibernateRepository<UserEntity> {
   public Optional<UserEntity> findByUsername(String username) {
     return findByParam(username,"username");
   }
-  public UserEntity create(UserEntity user) {
-    em.joinTransaction();
-    em.persist(user);
-    return user;
-  }
 }
