@@ -1,8 +1,13 @@
 package timofeyqa.rococo.utils;
 
 import com.github.javafaker.Faker;
+import net.javacrumbs.jsonunit.core.util.ResourceUtils;
 
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class RandomDataUtils {
     private static final Faker faker = new Faker();
@@ -10,6 +15,10 @@ public class RandomDataUtils {
 
     public static String randomUsername(){
         return faker.name().username();
+    }
+
+    public static String randomFirstname(){
+        return faker.name().firstName();
     }
     public static String randomName(){
         return faker.name().fullName();
@@ -50,5 +59,32 @@ public class RandomDataUtils {
         }
 
         return sb.toString();
+    }
+
+    public static String randomFilePath(String folderName) {
+        folderName = "img/content/" + folderName;
+        URL resource = ResourceUtils.class.getClassLoader().getResource(folderName);
+        if (resource == null) {
+            throw new IllegalArgumentException("Folder not found: " + folderName);
+        }
+
+        File folder;
+        try {
+            folder = new File(resource.toURI());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (!folder.isDirectory()) {
+            throw new IllegalArgumentException(folderName + " is not a directory");
+        }
+
+        File[] files = folder.listFiles();
+        if (files == null || files.length == 0) {
+            throw new IllegalStateException("No files in folder: " + folderName);
+        }
+
+        File randomFile = files[ThreadLocalRandom.current().nextInt(files.length)];
+        return folderName + "/" + randomFile.getName();
     }
 }
