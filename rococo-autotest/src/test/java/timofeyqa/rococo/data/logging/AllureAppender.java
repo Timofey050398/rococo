@@ -20,9 +20,16 @@ public class AllureAppender extends StdoutLogger {
     @Override
     public void logSQL(int connectionId, String now, long elapsed, Category category, String prepared, String sql, String url) {
         if(isNoneEmpty(sql)){
+            String safeSql = sql.replaceAll("(?i)'data:image[^']*'", "'<IMAGE_DATA>'");
+
+            int maxLength = 10000;
+            if (safeSql.length() > maxLength) {
+                safeSql = safeSql.substring(0, maxLength) + "... <TRUNCATED>";
+            }
+
             final SqlAttachmentData attachmentData = new SqlAttachmentData(
-                sql.split("\\s+")[0].toUpperCase() + "query to: " + StringUtils.substringBetween(url,"5432/","?"),
-                    SqlFormatter.of(Dialect.PostgreSql).format(sql)
+                safeSql.split("\\s+")[0].toUpperCase() + "query to: " + StringUtils.substringBetween(url,"5432/","?"),
+                    SqlFormatter.of(Dialect.PostgreSql).format(safeSql)
             );
             attachmentProcessor.addAttachment(
                     attachmentData,
