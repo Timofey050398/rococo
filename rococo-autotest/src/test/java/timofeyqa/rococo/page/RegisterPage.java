@@ -57,6 +57,7 @@ public class RegisterPage extends BasePage<RegisterPage>{
     return this;
   }
 
+  @Step("Register with data {username}, {password}, {passwordSubmit}")
   public RegisterPage submitRegister(String username, String password, String passwordSubmit){
     return setUsername(username)
         .setPassword(password)
@@ -74,11 +75,6 @@ public class RegisterPage extends BasePage<RegisterPage>{
   public LoginPage goToLoginPage() {
     loginLink.click();
     return  new LoginPage();
-  }
-
-  @Step("Проверить отображение картинки регистрации")
-  public boolean isImageVisible() {
-    return image.isDisplayed();
   }
 
   @Step("Check that register page has expected image")
