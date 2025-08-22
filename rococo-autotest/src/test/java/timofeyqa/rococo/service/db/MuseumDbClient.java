@@ -6,7 +6,6 @@ import timofeyqa.rococo.data.entity.PaintingEntity;
 import timofeyqa.rococo.data.repository.MuseumRepository;
 import timofeyqa.rococo.data.repository.PaintingRepository;
 import timofeyqa.rococo.data.tpl.XaTransactionTemplate;
-import timofeyqa.rococo.model.rest.ArtistJson;
 import timofeyqa.rococo.model.rest.MuseumJson;
 import timofeyqa.rococo.service.DeletableClient;
 import timofeyqa.rococo.service.MuseumClient;

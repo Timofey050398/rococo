@@ -37,6 +37,7 @@ public class MainPage extends BasePage<MainPage> {
     return this;
   }
 
+  @Step("Click paintings card")
   public PaintingsPage clickPaintingsCard() {
     paintings.getSelf().click();
     return new PaintingsPage();
@@ -66,11 +67,13 @@ public class MainPage extends BasePage<MainPage> {
     return this;
   }
 
+  @Step("Click artist card")
   public ArtistPage clickArtistsCard() {
     artists.getSelf().click();
     return new ArtistPage();
   }
 
+  @Step("Click museum card")
   public MuseumPage clickMuseumsCard() {
     museums.getSelf().click();
     return new MuseumPage();

@@ -15,7 +15,7 @@ public abstract class BaseComponent<T extends BaseComponent<?>> {
         this.self = self;
     }
 
-    public <T> T toPage(Class<T> clazz) {
+    public <B> B toPage(Class<B> clazz) {
         try {
             return clazz.getDeclaredConstructor().newInstance();
         } catch (Exception e) {

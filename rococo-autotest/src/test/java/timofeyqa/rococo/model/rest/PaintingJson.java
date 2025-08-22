@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import timofeyqa.rococo.data.entity.PaintingEntity;
 
-import java.util.Arrays;
 import java.util.UUID;
 
 import static timofeyqa.rococo.utils.PhotoConverter.convert;
@@ -23,7 +22,7 @@ public record PaintingJson(
     ArtistJson artist,
     @JsonProperty("museum")
     MuseumJson museum,
-    @JsonProperty("content")
+    @JsonProperty("img/content")
     String content) implements ContentImpl {
 
     public static PaintingJson fromEntity(PaintingEntity paintingEntity) {

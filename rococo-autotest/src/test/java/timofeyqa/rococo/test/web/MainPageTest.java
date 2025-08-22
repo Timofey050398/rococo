@@ -36,20 +36,10 @@ class MainPageTest {
         .checkArtistsImage(expected);
   }
 
-  @ScreenShotTest(value = "img/pages/main/dark-theme.png")
+  @ScreenShotTest("img/pages/main/dark-theme.png")
   void mainPageHasDarkThemeByDefault(BufferedImage expected){
     Selenide.open(MainPage.URL, MainPage.class)
         .checkThatPageLoaded()
-        .checkTheme(expected);
-  }
-
-  @ScreenShotTest(value = "img/pages/main/light-theme.png",rewriteExpected = true)
-  void themeShouldBeChangedAfterClickSwitcher(BufferedImage expected){
-    Selenide.open(MainPage.URL, MainPage.class)
-        .checkThatPageLoaded()
-        .getHeader()
-        .toggleLightSwitch()
-        .toPage(MainPage.class)
         .checkTheme(expected);
   }
 

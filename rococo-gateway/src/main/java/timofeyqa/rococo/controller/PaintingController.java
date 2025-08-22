@@ -5,17 +5,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import timofeyqa.rococo.ex.BadRequestException;
 import timofeyqa.rococo.model.PaintingJson;
 import timofeyqa.rococo.model.page.RestPage;
 import timofeyqa.rococo.service.api.grpc.GrpcPaintingClient;
+import timofeyqa.rococo.validation.SizeLimited;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/painting")
+@Validated
 public class PaintingController {
 
     private final GrpcPaintingClient paintingClient;
@@ -35,7 +38,7 @@ public class PaintingController {
     }
 
     @GetMapping("/author/{artistId}")
-    public CompletableFuture<ResponseEntity<RestPage<PaintingJson>>> getPaintingByArtist(@PageableDefault Pageable pageable, @PathVariable("artistId") String artistId) {
+    public CompletableFuture<ResponseEntity<RestPage<PaintingJson>>> getPaintingByArtist(@PageableDefault @SizeLimited Pageable pageable, @PathVariable("artistId") String artistId) {
         if (artistId.isEmpty()) {
             throw new BadRequestException("Artist Id in path variable must not be empty");
         }
@@ -45,7 +48,7 @@ public class PaintingController {
 
     @GetMapping
     public CompletableFuture<ResponseEntity<RestPage<PaintingJson>>> getAll(
-        @PageableDefault Pageable pageable,
+        @PageableDefault  @SizeLimited Pageable pageable,
         @RequestParam(required = false) String title) {
         return paintingClient.getPaintingPage(pageable, title)
                 .thenApply(ResponseEntity::ok);

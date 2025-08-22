@@ -26,6 +26,7 @@ import java.util.List;
 
 import static timofeyqa.rococo.jupiter.extension.ContentExtension.content;
 import static timofeyqa.rococo.utils.PhotoConverter.loadImageAsString;
+import static timofeyqa.rococo.utils.RandomDataUtils.*;
 
 public class PaintingExtension implements BeforeEachCallback {
 
@@ -35,107 +36,126 @@ public class PaintingExtension implements BeforeEachCallback {
     private final CountryClient countryClient = new CountryDbClient();
 
     @Override
-    public void beforeEach(ExtensionContext context) {
+    public synchronized void beforeEach(ExtensionContext context) {
         AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), Content.class)
                 .ifPresent(content -> {
-                    if (ArrayUtils.isNotEmpty(content.paintings())) {
-                        final ContentJson contentJson = content();
-                        final List<PaintingJson> createdPaintings = new ArrayList<>();
+                  final List<PaintingJson> createdPaintings = new ArrayList<>();
+                  final ContentJson contentJson = content();
+                  if (ArrayUtils.isNotEmpty(content.paintings())) {
 
-                        for (Painting paintingAnno : content.paintings()) {
-                            final String title = "".equals(paintingAnno.title())
-                                    ? RandomDataUtils.randomPaintingTitle()
-                                    : paintingAnno.title();
+                    for (Painting paintingAnno : content.paintings()) {
+                      final String title = "".equals(paintingAnno.title())
+                          ? randomPaintingTitle()
+                          : paintingAnno.title();
 
-                            PaintingJson paintingJson = paintingClient.findByTitle(title)
-                                .orElseGet(() -> {
-                                    final String description = "".equals(paintingAnno.description())
-                                        ? RandomDataUtils.randomDescription()
-                                        : paintingAnno.description();
+                      PaintingJson paintingJson = paintingClient.findByTitle(title)
+                          .orElseGet(() -> {
+                            final String description = "".equals(paintingAnno.description())
+                                ? randomDescription()
+                                : paintingAnno.description();
 
-                                    final String photo = "".equals(paintingAnno.content())
-                                        ? null
-                                        : loadImageAsString(paintingAnno.content());
+                            final String photo = "".equals(paintingAnno.content())
+                                ? null
+                                : loadImageAsString(paintingAnno.content());
 
-                                    String artistName = StringUtils.isEmpty(paintingAnno.artist())
-                                        ? RandomDataUtils.randomName()
-                                        : paintingAnno.artist();
+                            String artistName = StringUtils.isEmpty(paintingAnno.artist())
+                                ? randomName()
+                                : paintingAnno.artist();
 
-                                    //Артист обязателен
-                                    ArtistJson artist = contentJson.artists()
-                                        .stream()
-                                        // Сначала ищем артиста в приложении
-                                        .filter(artistJson -> artistJson.name().equals(artistName))
-                                        .findFirst()
-                                        // Если нет - ищем в базе
-                                        .orElseGet(() -> artistClient.findByName(artistName)
-                                            // Если нет - создаём
-                                            .orElseGet(()-> artistClient.create(new ArtistJson(
-                                                null,
-                                                artistName,
-                                                RandomDataUtils.randomDescription(),
-                                                null,
-                                                new HashSet<>()
-                                            )))
-                                        );
-
-                                    //Музей не обязателен
-                                    MuseumJson museumJson;
-                                    if(!StringUtils.isEmpty(paintingAnno.museum())) {
-                                        String museumName = paintingAnno.museum();
-                                        museumJson = contentJson.museums()
-                                            .stream()
-                                            // Сначала ищем музей в приложении
-                                            .filter(museum -> museum.title().equals(museumName))
-                                            .findFirst()
-                                            // Если нет - ищем в базе
-                                            .orElseGet(() -> museumClient.findByTitle(museumName)
-                                                // Если нет - создаём
-                                                .orElseGet(()-> museumClient.create(new MuseumJson(
-                                                    null,
-                                                    museumName,
-                                                    RandomDataUtils.randomDescription(),
-                                                    null,
-                                                    new GeoJson(
-                                                        RandomDataUtils.randomCity(),
-                                                        countryClient.getByName(Country.random())
-                                                            .orElseThrow()
-                                                    ),
-                                                    new HashSet<>()
-                                                )))
-                                            );
-                                    } else {
-                                        museumJson = null;
-                                    }
-
-                                    return paintingClient.create(
-                                        new PaintingJson(
-                                            null,
-                                            title,
-                                            description,
-                                            artist,
-                                            museumJson,
-                                            photo
-                                        )
-                                    );
-                                });
-
-                            contentJson.artists().stream()
-                                .filter(artistJson -> artistJson.name().equals(paintingJson.artist().name()))
+                            //Артист обязателен
+                            ArtistJson artist = contentJson.artists()
+                                .stream()
+                                // Сначала ищем артиста в приложении
+                                .filter(artistJson -> artistJson.name().equals(artistName))
                                 .findFirst()
-                                .ifPresent(artistJson -> artistJson.paintings().add(paintingJson));
+                                // Если нет - ищем в базе
+                                .orElseGet(() -> artistClient.findByName(artistName)
+                                    // Если нет - создаём
+                                    .orElseGet(()-> artistClient.create(new ArtistJson(
+                                        null,
+                                        artistName,
+                                        randomDescription(),
+                                        null,
+                                        new HashSet<>()
+                                    )))
+                                );
 
-                            if(!StringUtils.isEmpty(paintingAnno.museum())){
-                                contentJson.museums().stream()
-                                    .filter(museumJson1 -> museumJson1.title().equals(paintingJson.museum().title()))
-                                    .findFirst()
-                                    .ifPresent(museumJson1 -> museumJson1.paintings().add(paintingJson));
+                            //Музей не обязателен
+                            MuseumJson museumJson;
+                            if(!StringUtils.isEmpty(paintingAnno.museum())) {
+                              String museumName = paintingAnno.museum();
+                              museumJson = contentJson.museums()
+                                  .stream()
+                                  // Сначала ищем музей в приложении
+                                  .filter(museum -> museum.title().equals(museumName))
+                                  .findFirst()
+                                  // Если нет - ищем в базе
+                                  .orElseGet(() -> museumClient.findByTitle(museumName)
+                                      // Если нет - создаём
+                                      .orElseGet(()-> museumClient.create(new MuseumJson(
+                                          null,
+                                          museumName,
+                                          RandomDataUtils.randomDescription(),
+                                          null,
+                                          new GeoJson(
+                                              RandomDataUtils.randomCity(),
+                                              countryClient.getByName(Country.random())
+                                                  .orElseThrow()
+                                          ),
+                                          new HashSet<>()
+                                      )))
+                                  );
+                            } else {
+                              museumJson = null;
                             }
 
-                            createdPaintings.add(paintingJson);
-                        }
-                        contentJson.paintings().addAll(createdPaintings);
+                            return paintingClient.create(
+                                new PaintingJson(
+                                    null,
+                                    title,
+                                    description,
+                                    artist,
+                                    museumJson,
+                                    photo
+                                )
+                            );
+                          });
+
+                      contentJson.artists().stream()
+                          .filter(artistJson -> artistJson.name().equals(paintingJson.artist().name()))
+                          .findFirst()
+                          .ifPresent(artistJson -> artistJson.paintings().add(paintingJson));
+
+                      if(!StringUtils.isEmpty(paintingAnno.museum())){
+                        contentJson.museums().stream()
+                            .filter(museumJson1 -> museumJson1.title().equals(paintingJson.museum().title()))
+                            .findFirst()
+                            .ifPresent(museumJson1 -> museumJson1.paintings().add(paintingJson));
+                      }
+
+                      createdPaintings.add(paintingJson);
                     }
+                  }
+
+                  for (int i = 0; i < content.paintingCount(); i++) {
+                    createdPaintings
+                        .add(paintingClient.create(new PaintingJson(
+                            null,
+                            randomName(),
+                            randomDescription(),
+                            artistClient.create(new ArtistJson(
+                                null,
+                                randomName(),
+                                randomDescription(),
+                                null,
+                                new HashSet<>()
+                            )),
+                            null,
+                            loadImageAsString(randomFilePath("paintings"))
+                        )));
+                  }
+
+                  contentJson.paintings().addAll(createdPaintings);
                 });
     }
 }

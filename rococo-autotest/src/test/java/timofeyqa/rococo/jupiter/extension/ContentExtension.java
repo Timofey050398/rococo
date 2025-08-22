@@ -48,6 +48,7 @@ public class ContentExtension implements ParameterResolver, AfterEachCallback {
     return extensionContext.getStore(NAMESPACE).get(extensionContext.getUniqueId(), ContentJson.class);
   }
 
+  @SuppressWarnings({"unchecked", "rawtypes"})
   @Override
   public void afterEach(ExtensionContext context) {
     ContentJson content = context.getStore(NAMESPACE).get(context.getUniqueId(), ContentJson.class);

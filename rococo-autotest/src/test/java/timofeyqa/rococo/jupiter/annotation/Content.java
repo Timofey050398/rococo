@@ -12,5 +12,7 @@ public @interface Content {
   Artist[] artists()  default {};
   Museum[] museums() default {};
   Painting[] paintings() default {};
-  boolean deleteAfterTest() default true;
+  int artistCount() default 0;
+  int museumCount() default 0;
+  int paintingCount() default 0;
 }

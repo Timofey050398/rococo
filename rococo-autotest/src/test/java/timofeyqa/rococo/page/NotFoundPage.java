@@ -1,6 +1,7 @@
 package timofeyqa.rococo.page;
 
 import com.codeborne.selenide.SelenideElement;
+import io.qameta.allure.Step;
 import timofeyqa.rococo.page.component.Header;
 
 import static com.codeborne.selenide.Condition.*;
@@ -23,6 +24,7 @@ public class NotFoundPage extends BasePage<NotFoundPage> {
     return this;
   }
 
+  @Step("click main page button")
   public MainPage clickMainPageButton() {
     mainPageButton.should(clickable).click();
     return new MainPage();

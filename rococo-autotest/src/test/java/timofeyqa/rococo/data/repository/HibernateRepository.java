@@ -3,11 +3,7 @@ package timofeyqa.rococo.data.repository;
 import jakarta.persistence.EntityManager;
 import org.springframework.util.CollectionUtils;
 
-import java.nio.ByteBuffer;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public interface HibernateRepository<T> {
 
@@ -24,6 +20,18 @@ public interface HibernateRepository<T> {
     em().persist(entity);
     return entity;
   }
+
+  default List<T> createBatch(List<T> entities) {
+    em().joinTransaction();
+    List<T> result = new ArrayList<>(entities.size());
+
+    for (T entity : entities) {
+      result.add(em().merge(entity));
+    }
+
+    return result;
+  }
+
 
   default T update(T entity) {
     em().joinTransaction();

@@ -2,10 +2,13 @@ package timofeyqa.rococo.page.component;
 
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
-import timofeyqa.rococo.page.BasePage;
+import timofeyqa.rococo.page.MainPage;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.net.URL;
 
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 import static timofeyqa.rococo.condition.ScreenshotCondition.image;
 
@@ -30,14 +33,14 @@ public class ProfileModal extends BaseComponent<ProfileModal> {
     return this;
   }
 
-  @Step("Get username label text")
-  public String getUsername() {
-    return usernameLabel.getText();
-  }
-
   @Step("Upload profile photo from file {filePath}")
   public ProfileModal uploadProfilePhoto(String filePath) {
-    updatePhotoInput.uploadFile(new java.io.File(filePath));
+    URL resource = getClass().getClassLoader().getResource(filePath);
+    if (resource == null) {
+      throw new IllegalArgumentException("File not found in resources: " + filePath);
+    }
+    File file = new File(resource.getFile());
+    updatePhotoInput.uploadFile(file);
     return this;
   }
 
@@ -54,20 +57,47 @@ public class ProfileModal extends BaseComponent<ProfileModal> {
   }
 
   @Step("Click 'Выйти' button and return page instance")
-  public <T extends BasePage> T clickLogoutButton(T page) {
+  public MainPage clickLogoutButton() {
     logoutButton.click();
-    return page;
+    return new MainPage();
   }
 
   @Step("Click 'Закрыть' button and return page instance")
-  public <T extends BasePage> T clickCloseButton(T page) {
+  public ProfileModal clickCloseButton() {
     closeButton.click();
-    return page;
+    return this;
+  }
+
+  public MainPage compareModalClosed(){
+    self.shouldBe(not(visible));
+    return new MainPage();
+  }
+
+  @Step("Compare username")
+  public ProfileModal compareUsername(String username) {
+    usernameLabel.shouldHave(text("@"+username));
+    return this;
+  }
+
+  @Step("Compare firstname")
+  public ProfileModal compareFirstname(String firstname) {
+    firstNameInput.shouldHave(attribute("value",firstname));
+    return this;
+  }
+
+  @Step("Compare surname")
+  public ProfileModal compareSurname(String surname) {
+    surnameInput.shouldHave(attribute("value",surname));
+    return this;
   }
 
   @Step("Click 'Обновить профиль' button and return page instance")
-  public <T extends BasePage> T clickUpdateProfileButton(T page) {
+  public <T> T clickUpdateProfileButton(Class<T> page) {
     updateProfileButton.click();
-    return page;
+    try {
+      return page.getDeclaredConstructor().newInstance();
+    } catch (Exception e) {
+      throw new RuntimeException("Cannot create instance of " + page, e);
+    }
   }
 }

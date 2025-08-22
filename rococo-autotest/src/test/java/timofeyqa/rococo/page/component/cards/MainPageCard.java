@@ -1,5 +1,7 @@
 package timofeyqa.rococo.page.component.cards;
 
+import timofeyqa.rococo.page.detail.DetailPage;
+
 public class MainPageCard extends Card<MainPageCard> {
   private final static String TITLE_TAG = "div";
 
@@ -10,5 +12,11 @@ public class MainPageCard extends Card<MainPageCard> {
   @Override
   public String titleTag() {
     return TITLE_TAG;
+  }
+
+
+  @Override
+  public DetailPage openDetail() {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 }

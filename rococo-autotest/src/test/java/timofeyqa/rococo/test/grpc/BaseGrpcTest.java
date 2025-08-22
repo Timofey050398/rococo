@@ -12,6 +12,7 @@ import timofeyqa.rococo.utils.GrpcConsoleInterceptor;
 
 @GrpcTest
 public abstract class BaseGrpcTest {
+
     protected static final Config CFG = Config.getInstance();
 
     protected static final Channel museumChannel = channel(CFG.museumGrpcUrl(), CFG.museumGrpcPort());
@@ -21,7 +22,6 @@ public abstract class BaseGrpcTest {
     protected static final Channel geoChannel = channel(CFG.geoGrpcUrl(), CFG.geoGrpcPort());
 
     protected static final Channel paintingChannel = channel(CFG.paintingGrpcUrl(), CFG.paintingGrpcPort());
-
 
     protected static RococoArtistServiceGrpc.RococoArtistServiceBlockingStub artistStub
             = RococoArtistServiceGrpc.newBlockingStub(artistChannel);

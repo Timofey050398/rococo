@@ -4,10 +4,14 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import lombok.Getter;
 import timofeyqa.rococo.page.component.BaseComponent;
+import timofeyqa.rococo.page.detail.DetailPage;
+import timofeyqa.rococo.page.detail.PaintingDetailPage;
 
 import java.awt.image.BufferedImage;
+import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$$;
 import static timofeyqa.rococo.condition.ScreenshotCondition.image;
 
@@ -19,11 +23,11 @@ public abstract class Card<T extends Card<?>> extends BaseComponent<T> {
   protected final SelenideElement title = self.$x(String.format("./%s[0]",titleTag()));
 
   public static ElementsCollection cards() {
-    return $$("ul li a");
+    return $$("ul.grid li a");
   }
 
   protected Card(String title, String titleTag) {
-    super($$("ul li a "+titleTag)
+    super($$("ul.grid li a "+titleTag)
         .findBy(text(title))
         .parent()
     );
@@ -44,4 +48,12 @@ public abstract class Card<T extends Card<?>> extends BaseComponent<T> {
   public String getTitle(){
     return title.getText();
   }
+
+  @SuppressWarnings("unchecked")
+  public T visible(){
+    self.shouldBe(visible, Duration.ofSeconds(10));
+    return (T) this;
+  }
+
+  public abstract DetailPage openDetail();
 }

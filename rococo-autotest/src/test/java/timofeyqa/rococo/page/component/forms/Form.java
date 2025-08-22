@@ -15,4 +15,6 @@ public abstract class Form<T extends Form<?>> extends BaseComponent<T> {
   public Form() {
     super($("div.card.p-4"));
   }
+
+  public abstract T checkThatPageLoaded();
 }
