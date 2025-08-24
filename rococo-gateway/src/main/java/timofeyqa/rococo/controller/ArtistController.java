@@ -39,7 +39,7 @@ public class ArtistController {
 
     @GetMapping
     public CompletableFuture<ResponseEntity<RestPage<ArtistJson>>> getAll(
-        @PageableDefault  @SizeLimited Pageable pageable,
+        @PageableDefault  @SizeLimited(max = 18) Pageable pageable,
         @RequestParam(required = false) String name) {
         return artistClient.getArtistPage(pageable, name)
                 .thenApply(ResponseEntity::ok);

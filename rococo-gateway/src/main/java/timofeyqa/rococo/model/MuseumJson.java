@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
-import timofeyqa.rococo.config.RococoGatewayServiceConfig;
+import timofeyqa.rococo.validation.FileSize;
 
 import java.util.UUID;
 
@@ -22,7 +22,7 @@ public record MuseumJson(
     @Size(max = 1000, message = "Description name can`t be longer than 1000 characters")
     String description,
     @JsonProperty("photo")
-    @Size(max = RococoGatewayServiceConfig.ONE_MB)
+    @FileSize
     String photo,
     @JsonProperty("geo")
     GeoJson geo) implements ResponseDto {

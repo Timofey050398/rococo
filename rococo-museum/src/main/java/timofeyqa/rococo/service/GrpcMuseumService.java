@@ -106,8 +106,8 @@ public class GrpcMuseumService extends RococoMuseumServiceGrpc.RococoMuseumServi
 
     @Override @Transactional
     public void addMuseum(AddMuseumRequest request, StreamObserver<Museum> responseObserver) {
-        MuseumEntity create =new MuseumEntity();
-        if (!request.getTitle().isBlank()) {
+        MuseumEntity create = new MuseumEntity();
+        if (request.getTitle().isBlank()) {
             throw new IllegalStateException("Title required");
         } else {
             museumRepository.findByTitle(request.getTitle())

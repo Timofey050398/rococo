@@ -12,7 +12,8 @@ import java.lang.annotation.Target;
 @Target({ ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SizeLimited {
-  String message() default "Page size can't be greater than 10";
+  String message() default "Page size exceeds maximum";
   Class<?>[] groups() default {};
   Class<? extends Payload>[] payload() default {};
+  int max() default -1;
 }

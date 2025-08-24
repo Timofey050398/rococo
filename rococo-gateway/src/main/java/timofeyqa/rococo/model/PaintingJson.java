@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
-import timofeyqa.rococo.config.RococoGatewayServiceConfig;
+import timofeyqa.rococo.validation.FileSize;
 
 import java.util.UUID;
 
@@ -25,7 +25,7 @@ public record PaintingJson(
     ArtistJson artist,
     @JsonProperty("museum")
     MuseumJson museum,
-    @Size(max = RococoGatewayServiceConfig.ONE_MB)
+    @FileSize
     @JsonProperty("content")
     String content) implements ResponseDto{
 

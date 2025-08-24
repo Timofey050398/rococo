@@ -4,15 +4,20 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Component;
 import timofeyqa.rococo.config.RococoGatewayServiceConfig;
 
+@Component
 public class PageableSizeValidator implements ConstraintValidator<SizeLimited, Pageable> {
 
-  private final RococoGatewayServiceConfig config;
-
   @Autowired
-  public PageableSizeValidator(RococoGatewayServiceConfig config) {
-    this.config = config;
+  private RococoGatewayServiceConfig config;
+
+  private int max;
+
+  @Override
+  public void initialize(SizeLimited constraintAnnotation) {
+    this.max = constraintAnnotation.max();
   }
 
   @Override
@@ -20,6 +25,15 @@ public class PageableSizeValidator implements ConstraintValidator<SizeLimited, P
     if (pageable == null) {
       return true;
     }
-    return pageable.getPageSize() <= config.getPageMaxSize();
+    int effectiveMax = (max == -1) ? config.getPageMaxSize() : max;
+    if (pageable.getPageSize() > effectiveMax) {
+      context.disableDefaultConstraintViolation();
+      context.buildConstraintViolationWithTemplate(
+          "Page size can't be greater than " + effectiveMax
+      ).addConstraintViolation();
+      return false;
+    }
+
+    return true;
   }
 }

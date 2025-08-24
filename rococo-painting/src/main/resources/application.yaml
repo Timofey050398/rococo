@@ -25,10 +25,8 @@ spring:
       ddl-auto: none
     generate-ddl: false
     properties:
-      hibernate:
-        jdbc:
-          lob:
-            non_contextual_creation: true
+      javax.persistence.validation.mode: CALLBACK
+      hibernate.jdbc.lob.non_contextual_creation: true
     database-platform: org.hibernate.dialect.MySQLDialect
     show-sql: false
     open-in-view: false

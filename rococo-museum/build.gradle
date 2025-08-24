@@ -21,6 +21,8 @@ dependencies {
 	compileOnly "org.projectlombok:lombok:${project.ext.lombokVersion}"
 	runtimeOnly "com.mysql:mysql-connector-j:${project.ext.mysqlDriverVersion}"
 	implementation "jakarta.validation:jakarta.validation-api:${project.ext.jakartaValidationVersion}"
+	implementation "org.glassfish:jakarta.el:${project.ext.jakartaElVersion}"
+	implementation "org.hibernate.validator:hibernate-validator:${project.ext.hibernateValidatorVersion}"
 	implementation "org.mapstruct:mapstruct:${project.ext.mapstructVersion}"
 	annotationProcessor "org.mapstruct:mapstruct-processor:${project.ext.mapstructVersion}"
 

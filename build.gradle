@@ -39,6 +39,8 @@ subprojects {
         h2Version = '2.3.232'
         jakartaValidationVersion = '3.0.2'
         mapstructVersion = '1.5.5.Final'
+        hibernateValidatorVersion = '8.0.1.Final'
+        jakartaElVersion = '5.0.0-M1'
 
         dockerImage = System.getProperty("os.arch") == "aarch64" || System.getProperty("os.arch") == "arm64"
                 ? "arm64v8/eclipse-temurin:21-jdk"
