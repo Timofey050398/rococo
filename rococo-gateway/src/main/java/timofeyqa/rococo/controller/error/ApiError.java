@@ -9,12 +9,10 @@ import java.util.Map;
 public class ApiError {
 
     private final String apiVersion;
-    private final Error error;
-
-    public ApiError(String apiVersion, Error error) {
-        this.apiVersion = apiVersion;
-        this.error = error;
-    }
+    private final String code;
+    private final String message;
+    private final String domain;
+    private final List<String> errors;
 
     public ApiError(String apiVersion,
                     String code,
@@ -22,17 +20,10 @@ public class ApiError {
                     String domain,
                     String reason) {
         this.apiVersion = apiVersion;
-        this.error = new Error(
-                code,
-                message,
-                List.of(
-                        new ErrorItem(
-                                domain,
-                                reason,
-                                message
-                        )
-                )
-        );
+        this.code = code;
+        this.message = message;
+        this.domain = domain;
+        this.errors = List.of(reason);
     }
 
     public static ApiError fromAttributesMap(String apiVersion, Map<String, Object> attributesMap) {
@@ -47,14 +38,11 @@ public class ApiError {
 
     public Map<String, Object> toAttributesMap() {
         return Map.of(
-                "apiVersion", apiVersion,
-                "error", error
+            "apiVersion", apiVersion,
+            "code", code,
+            "message", message,
+            "domain", domain,
+            "errors", errors
         );
-    }
-
-    private record Error(String code, String message, List<ErrorItem> errors) {
-    }
-
-    private record ErrorItem(String domain, String reason, String message) {
     }
 }
