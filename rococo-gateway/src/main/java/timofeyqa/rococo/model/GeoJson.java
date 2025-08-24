@@ -11,6 +11,7 @@ import java.util.UUID;
 public record GeoJson(
         @JsonProperty("city")
         String city,
+
         @JsonProperty("country")
         CountryJson country
 ) {

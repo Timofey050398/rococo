@@ -15,17 +15,22 @@ import java.util.UUID;
 public record MuseumJson(
     @JsonProperty("id")
     UUID id,
+
     @JsonProperty("title")
     @Size(max = 256, message = "Title name can`t be longer than 256 characters")
     String title,
+
     @JsonProperty("description")
     @Size(max = 1000, message = "Description name can`t be longer than 1000 characters")
     String description,
+
     @JsonProperty("photo")
     @FileSize
     String photo,
+
     @JsonProperty("geo")
-    GeoJson geo) implements ResponseDto {
+    GeoJson geo
+) implements ResponseDto {
 
   public MuseumJson(UUID id){
       this(id, null,null,null,null);

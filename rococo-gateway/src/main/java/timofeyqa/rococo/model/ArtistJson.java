@@ -17,6 +17,7 @@ public record ArtistJson(
     UUID id,
 
     @JsonProperty("name")
+    @Size(max = 255, message = "Name can`t be longer than 255 characters")
     String name,
 
     @JsonProperty("biography")
