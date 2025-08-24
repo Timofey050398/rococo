@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import timofeyqa.grpc.rococo.*;
 import timofeyqa.rococo.data.MuseumEntity;
 import timofeyqa.rococo.data.repository.MuseumRepository;
@@ -45,9 +46,14 @@ public class GrpcMuseumService extends RococoMuseumServiceGrpc.RococoMuseumServi
 
     @Override
     public void getMuseumPage(timofeyqa.grpc.rococo.Pageable request, StreamObserver<PageMuseum> responseObserver) {
-        var enitityPage = request.getFilterField().isBlank()
-            ? museumRepository.findAll(PageRequest.of(request.getPage(),request.getSize()))
-            : museumRepository.findByTitleContainingIgnoreCase(request.getFilterField(), PageRequest.of(request.getPage(),request.getSize()));
+        PageRequest pageRequest = PageRequest.of(
+            request.getPage(),
+            request.getSize(),
+            Sort.by("title").ascending()
+        );
+        Page<MuseumEntity> enitityPage = request.getFilterField().isBlank()
+            ? museumRepository.findAll(pageRequest)
+            : museumRepository.findByTitleContainingIgnoreCase(request.getFilterField(), pageRequest);
 
         Page<Museum> museumPage = enitityPage
             .map(this::fromEntity);

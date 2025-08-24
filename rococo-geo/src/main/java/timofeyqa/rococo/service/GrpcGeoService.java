@@ -6,6 +6,7 @@ import net.devh.boot.grpc.server.service.GrpcService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import timofeyqa.grpc.rococo.*;
 import timofeyqa.rococo.data.CountryEntity;
 import timofeyqa.rococo.data.repository.CountryRepository;
@@ -37,7 +38,7 @@ public class GrpcGeoService extends RococoGeoServiceGrpc.RococoGeoServiceImplBas
     @Override
     public void getAll(Empty request, StreamObserver<GeoListResponse> responseObserver) {
         LOG.info("Get all countries");
-        final List<CountryEntity> country = countryRepository.findAll();
+        final List<CountryEntity> country = countryRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
         GeoListResponse response = GeoListResponse
                 .newBuilder()
                 .addAllGeo(

@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import timofeyqa.grpc.rococo.*;
 import timofeyqa.rococo.data.ArtistEntity;
 import timofeyqa.rococo.data.repository.ArtistRepository;
@@ -46,9 +47,14 @@ public class GrpcArtistService extends RococoArtistServiceGrpc.RococoArtistServi
 
     @Override
     public void getArtistPage(timofeyqa.grpc.rococo.Pageable request, StreamObserver<PageArtistResponse> responseObserver) {
+        PageRequest pageRequest = PageRequest.of(
+            request.getPage(),
+            request.getSize(),
+            Sort.by("name").ascending()
+        );
         var entityPage = request.getFilterField().isBlank()
-            ? artistRepository.findAll(PageRequest.of(request.getPage(),request.getSize()))
-            : artistRepository.findByNameContainingIgnoreCase(request.getFilterField(), PageRequest.of(request.getPage(),request.getSize()));
+            ? artistRepository.findAll(pageRequest)
+            : artistRepository.findByNameContainingIgnoreCase(request.getFilterField(), pageRequest);
 
 
         Page<Artist> artistPage =  entityPage.map(this::fromEntity);
