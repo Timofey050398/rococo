@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import timofeyqa.rococo.data.entity.PaintingEntity;
 
+import java.util.Collections;
 import java.util.UUID;
 
 import static timofeyqa.rococo.utils.PhotoConverter.convert;
@@ -28,17 +29,22 @@ public record PaintingJson(
     public static PaintingJson fromEntity(PaintingEntity paintingEntity) {
         MuseumJson museumJson = paintingEntity.getMuseum() == null
             ? null
-            : MuseumJson.fromEntity(paintingEntity.getMuseum());
+            : MuseumJson.fromEntitySafe(paintingEntity.getMuseum());
+
+        ArtistJson artistJson = paintingEntity.getArtist() == null
+            ? null
+            : ArtistJson.fromEntitySafe(paintingEntity.getArtist());
 
         return new PaintingJson(
             paintingEntity.getId(),
             paintingEntity.getTitle(),
             paintingEntity.getDescription(),
-            ArtistJson.fromEntity(paintingEntity.getArtist()),
+            artistJson,
             museumJson,
             convert(paintingEntity.getContent())
         );
     }
+
 
     public PaintingEntity toEntity() {
         PaintingEntity paintingEntity = new PaintingEntity();

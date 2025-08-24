@@ -1,6 +1,7 @@
 package timofeyqa.rococo.test.web.museum;
 
 import com.codeborne.selenide.Selenide;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import timofeyqa.rococo.jupiter.annotation.*;
 import timofeyqa.rococo.jupiter.annotation.meta.WebTest;
@@ -11,6 +12,7 @@ import timofeyqa.rococo.page.detail.MuseumDetailPage;
 import java.awt.image.BufferedImage;
 
 @WebTest
+@DisplayName("Тесты детальной страницы музея")
 public class MuseumDetailPageTest {
 
   @ScreenShotTest("img/pages/museums-list/hermitage.png")
@@ -24,6 +26,7 @@ public class MuseumDetailPageTest {
           )
       }
   )
+  @DisplayName("Детальная страница должна отображаться")
   void museumDetailShouldBeShown(ContentJson content, BufferedImage expected) {
     final MuseumJson museum = content.museums().iterator().next();
     Selenide.open(MuseumDetailPage.url(museum.id()),MuseumDetailPage.class)
@@ -36,6 +39,7 @@ public class MuseumDetailPageTest {
   @User
   @ApiLogin
   @Content(museumCount = 1)
+  @DisplayName("Авторизованный пользователь может открыть форму изменения музея")
   void authorizedUserShouldCanOpenEditMuseumPage(ContentJson content) {
     final MuseumJson museum = content.museums().iterator().next();
     Selenide.open(MuseumDetailPage.url(museum.id()),MuseumDetailPage.class)

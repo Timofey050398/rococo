@@ -31,21 +31,30 @@ public record MuseumJson(
   }
 
   public static MuseumJson fromEntity(MuseumEntity museumEntity){
+    Set<PaintingJson> paintings = Optional.ofNullable(museumEntity.getPaintings())
+        .map(ps -> ps.stream()
+            .map(PaintingJson::fromEntity)
+            .collect(Collectors.toSet()))
+        .orElse(Collections.emptySet());
+
+    return fromEntity(museumEntity,paintings);
+  }
+
+  public static MuseumJson fromEntitySafe(MuseumEntity museumEntity) {
+    return fromEntity(museumEntity,Collections.emptySet());
+  }
+
+  public static MuseumJson fromEntity(MuseumEntity museumEntity , Set<PaintingJson> paintings) {
     return new MuseumJson(
         museumEntity.getId(),
         museumEntity.getTitle(),
         museumEntity.getDescription(),
         convert(museumEntity.getPhoto()),
-        new GeoJson(
-            museumEntity.getCity(),
-            CountryJson.fromEntity(museumEntity.getCountry())
-        ),
-        museumEntity.getPaintings()
-            .stream()
-            .map(PaintingJson::fromEntity)
-            .collect(Collectors.toSet())
+        new GeoJson(museumEntity.getCity(), CountryJson.fromEntity(museumEntity.getCountry())),
+        paintings
     );
   }
+
 
   public MuseumEntity toEntity(){
     MuseumEntity museumEntity = new MuseumEntity();

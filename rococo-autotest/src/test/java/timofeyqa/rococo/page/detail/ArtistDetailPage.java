@@ -9,17 +9,19 @@ import timofeyqa.rococo.page.component.Header;
 import timofeyqa.rococo.page.component.cards.PaintingCard;
 import timofeyqa.rococo.page.component.forms.ArtistForm;
 import timofeyqa.rococo.page.component.forms.PaintingForm;
+import timofeyqa.rococo.page.lists.CardListPage;
 
 import java.awt.image.BufferedImage;
 import java.util.UUID;
 
+import static com.codeborne.selenide.CollectionCondition.size;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 import static timofeyqa.rococo.condition.ScreenshotCondition.image;
 
-public class ArtistDetailPage extends BasePage<ArtistDetailPage> implements DetailPage {
+public class ArtistDetailPage extends BasePage<ArtistDetailPage> implements DetailPage, CardListPage<ArtistDetailPage, PaintingCard> {
 
   @Getter
   protected final Header header = new Header();
@@ -28,6 +30,9 @@ public class ArtistDetailPage extends BasePage<ArtistDetailPage> implements Deta
   private final SelenideElement biography = $("article p");
   private final SelenideElement addPaintingButton = $(byText("Добавить картину"));
   private final SelenideElement editArtistButton = $("button[data-testid='edit-artist']");
+  private final SelenideElement emptyPageText = $(byText("Пока что список картин этого художника пуст"));
+
+
 
   @Override
   public ArtistDetailPage checkThatPageLoaded() {
@@ -39,8 +44,40 @@ public class ArtistDetailPage extends BasePage<ArtistDetailPage> implements Deta
     return this;
   }
 
+  @Override
+  public PaintingCard getCard(String title){
+    var card = new PaintingCard(title);
+    card.visible();
+    return card;
+  }
+
+  @Override
+  public int pageSize() {
+    return 9;
+  }
+
+  @Override
   public ElementsCollection cards(){
     return PaintingCard.cards();
+  }
+
+  @Override
+  public ArtistDetailPage comparePageIsEmpty() {
+    cards().shouldHave(size(0));
+    emptyPageText.shouldBe(visible);
+    return this;
+  }
+
+  @Step("Compare that name is {name}")
+  public ArtistDetailPage compareName(String name){
+    this.name.shouldHave(text(name));
+    return this;
+  }
+
+  @Step("Compare that biography is {biography}")
+  public ArtistDetailPage compareBiography(String biography){
+    this.biography.shouldHave(text(biography));
+    return this;
   }
 
   @Step("Compare detail page museum image")
@@ -59,6 +96,11 @@ public class ArtistDetailPage extends BasePage<ArtistDetailPage> implements Deta
   public PaintingForm openPaintingForm(){
     addPaintingButton.shouldBe(visible).click();
     return new PaintingForm();
+  }
+
+  @Override
+  public ArtistDetailPage compareCardNotFound() {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
   public static String url(UUID id){

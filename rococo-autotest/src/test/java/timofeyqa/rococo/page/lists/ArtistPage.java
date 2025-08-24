@@ -5,8 +5,6 @@ import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 import lombok.Getter;
 import timofeyqa.rococo.page.component.forms.ArtistForm;
-import timofeyqa.rococo.page.component.forms.PaintingForm;
-import timofeyqa.rococo.page.detail.ArtistDetailPage;
 import timofeyqa.rococo.page.BasePage;
 import timofeyqa.rococo.page.component.*;
 import timofeyqa.rococo.page.component.cards.ArtistCard;
@@ -17,7 +15,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 
-public class ArtistPage extends BasePage<ArtistPage> implements ListPage<ArtistPage> {
+public class ArtistPage extends BasePage<ArtistPage> implements CardListPage<ArtistPage, ArtistCard> {
   public static final String URL = CFG.frontUrl()+"artist";
   @Getter
   protected final Header header = new Header();
@@ -53,6 +51,7 @@ public class ArtistPage extends BasePage<ArtistPage> implements ListPage<ArtistP
     return this;
   }
 
+  @Override
   public ArtistCard getCard(String name){
     searchBar.search(name);
     var card = new ArtistCard(name);

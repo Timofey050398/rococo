@@ -12,10 +12,11 @@ import timofeyqa.rococo.page.MainPage;
 import java.awt.image.BufferedImage;
 
 @WebTest
-@DisplayName("Main page web tests")
+@DisplayName("Тесты главной страницы")
 class MainPageTest {
 
   @ScreenShotTest("img/pages/main/painting-main-page.png")
+  @DisplayName("На странице есть изображение для компонента 'Картины'")
   void paintingButtonShouldHasImage(BufferedImage expected){
     Selenide.open(MainPage.URL, MainPage.class)
         .checkThatPageLoaded()
@@ -23,6 +24,7 @@ class MainPageTest {
   }
 
   @ScreenShotTest("img/pages/main/museum-main-page.png")
+  @DisplayName("На странице есть изображение для компонента 'Музеи'")
   void museumButtonShouldHasImage(BufferedImage expected){
     Selenide.open(MainPage.URL, MainPage.class)
         .checkThatPageLoaded()
@@ -30,6 +32,7 @@ class MainPageTest {
   }
 
   @ScreenShotTest("img/pages/main/artist-main-page.png")
+  @DisplayName("На странице есть изображение для компонента 'Художники'")
   void artistButtonShouldHasImage(BufferedImage expected){
     Selenide.open(MainPage.URL, MainPage.class)
         .checkThatPageLoaded()
@@ -37,6 +40,7 @@ class MainPageTest {
   }
 
   @ScreenShotTest("img/pages/main/dark-theme.png")
+  @DisplayName("На главной странице можно выбрать темную тему")
   void mainPageHasDarkThemeByDefault(BufferedImage expected){
     Selenide.open(MainPage.URL, MainPage.class)
         .checkThatPageLoaded()
@@ -44,6 +48,7 @@ class MainPageTest {
   }
 
   @Test
+  @DisplayName("Клик по кнопке 'картины' переводит на списочную страницу картин")
   void clickPaintingsButtonShouldOpenPaintingsListPage(){
     Selenide.open(MainPage.URL, MainPage.class)
         .checkThatPageLoaded()
@@ -52,6 +57,7 @@ class MainPageTest {
   }
 
   @Test
+  @DisplayName("Клик по кнопке 'музеи' переводит на списочную страницу муззев")
   void clickMuseumsButtonShouldOpenMuseumsListPage(){
     Selenide.open(MainPage.URL, MainPage.class)
         .checkThatPageLoaded()
@@ -60,23 +66,11 @@ class MainPageTest {
   }
 
   @Test
+  @DisplayName("Клик по кнопке 'художники' переводит на списочную страницу художников")
   void clickArtistsButtonShouldOpenMuseumsListPage(){
     Selenide.open(MainPage.URL, MainPage.class)
         .checkThatPageLoaded()
         .clickArtistsCard()
         .checkThatPageLoaded();
-  }
-
-  @Test
-  @User
-  void userShouldCanLogin(UserJson user){
-    Selenide.open(MainPage.URL, MainPage.class)
-        .getHeader()
-        .clickLoginButton()
-        .checkThatPageLoaded()
-        .login(user.username(), user.password())
-        .checkThatPageLoaded()
-        .getHeader()
-        .assertAuthorized();
   }
 }

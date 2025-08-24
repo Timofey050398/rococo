@@ -1,11 +1,11 @@
 package timofeyqa.rococo.page.component.cards;
 
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import lombok.Getter;
 import timofeyqa.rococo.page.component.BaseComponent;
 import timofeyqa.rococo.page.detail.DetailPage;
-import timofeyqa.rococo.page.detail.PaintingDetailPage;
 
 import java.awt.image.BufferedImage;
 import java.time.Duration;
@@ -33,10 +33,6 @@ public abstract class Card<T extends Card<?>> extends BaseComponent<T> {
     );
   }
 
-  public Card(SelenideElement self) {
-    super(self);
-  }
-
   abstract String titleTag();
 
   @SuppressWarnings("unchecked")
@@ -52,6 +48,10 @@ public abstract class Card<T extends Card<?>> extends BaseComponent<T> {
   @SuppressWarnings("unchecked")
   public T visible(){
     self.shouldBe(visible, Duration.ofSeconds(10));
+    Selenide.executeJavaScript(
+        "arguments[0].scrollIntoView({ block: 'center', inline: 'nearest' });",
+        self.toWebElement()
+    );
     return (T) this;
   }
 

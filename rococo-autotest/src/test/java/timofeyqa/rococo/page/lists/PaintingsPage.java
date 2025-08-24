@@ -20,7 +20,7 @@ import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 
-public class PaintingsPage extends BasePage<PaintingsPage> implements ListPage<PaintingsPage> {
+public class PaintingsPage extends BasePage<PaintingsPage> implements CardListPage<PaintingsPage, PaintingCard> {
 
   public static final String URL = CFG.frontUrl()+"painting";
   protected final Header header = new Header();
@@ -50,6 +50,7 @@ public class PaintingsPage extends BasePage<PaintingsPage> implements ListPage<P
     return new PaintingForm();
   }
 
+  @Override
   public PaintingCard getCard(String title){
     searchBar.search(title);
     var card = new PaintingCard(title);

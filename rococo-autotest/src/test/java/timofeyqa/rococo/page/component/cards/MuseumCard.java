@@ -3,13 +3,15 @@ package timofeyqa.rococo.page.component.cards;
 
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
+import timofeyqa.rococo.data.entity.Country;
 import timofeyqa.rococo.page.detail.MuseumDetailPage;
 
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 
 public class MuseumCard extends Card<MuseumCard> {
   private final static String TITLE_TAG = "div";
-  private final SelenideElement geo = self.$x("./div[1]");
+  private final SelenideElement geo = self.$x("./div[2]");
 
   public MuseumCard(String title) {
     super(title,TITLE_TAG);
@@ -20,11 +22,6 @@ public class MuseumCard extends Card<MuseumCard> {
     return TITLE_TAG;
   }
 
-  public String getGeo(){
-    return geo.getText();
-  }
-
-
   @Step("Open painting {title} card")
   @Override
   public MuseumDetailPage openDetail() {
@@ -32,5 +29,11 @@ public class MuseumCard extends Card<MuseumCard> {
         .shouldBe(visible)
         .click();
     return new MuseumDetailPage();
+  }
+
+  public MuseumCard compareGeo(Country country, String city){
+    geo.shouldBe(visible)
+        .shouldHave(text(city+", "+country.getName()));
+    return this;
   }
 }

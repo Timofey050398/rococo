@@ -1,7 +1,6 @@
 package timofeyqa.rococo.page.lists;
 
 import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 import lombok.Getter;
@@ -9,7 +8,6 @@ import timofeyqa.rococo.page.BasePage;
 import timofeyqa.rococo.page.component.NotFoundComponent;
 import timofeyqa.rococo.page.component.cards.MuseumCard;
 import timofeyqa.rococo.page.component.forms.MuseumForm;
-import timofeyqa.rococo.page.detail.MuseumDetailPage;
 import timofeyqa.rococo.page.component.Header;
 import timofeyqa.rococo.page.component.SearchBar;
 import timofeyqa.rococo.page.component.Title;
@@ -20,7 +18,7 @@ import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 
-public class MuseumPage extends BasePage<MuseumPage> implements ListPage<MuseumPage> {
+public class MuseumPage extends BasePage<MuseumPage> implements CardListPage<MuseumPage, MuseumCard> {
 
   public static final String URL = CFG.frontUrl()+"museum";
   protected final Header header = new Header();
@@ -44,6 +42,7 @@ public class MuseumPage extends BasePage<MuseumPage> implements ListPage<MuseumP
     return this;
   }
 
+  @Override
   public MuseumCard getCard(String title){
     searchBar.search(title);
     var card = new MuseumCard(title);

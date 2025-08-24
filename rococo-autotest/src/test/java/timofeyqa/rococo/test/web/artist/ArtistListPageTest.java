@@ -1,6 +1,7 @@
 package timofeyqa.rococo.test.web.artist;
 
 import com.codeborne.selenide.Selenide;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import timofeyqa.rococo.jupiter.annotation.*;
 import timofeyqa.rococo.jupiter.annotation.meta.WebTest;
@@ -12,6 +13,7 @@ import timofeyqa.rococo.utils.RandomDataUtils;
 import java.awt.image.BufferedImage;
 
 @WebTest
+@DisplayName("Тесты списочной страницы художников")
 public class ArtistListPageTest {
 
   @ScreenShotTest("img/pages/artists-list/dali.png")
@@ -24,6 +26,7 @@ public class ArtistListPageTest {
           )
       }
   )
+  @DisplayName("Карточки художников отображаются на списочной")
   void artistShouldBeShown(ContentJson content, BufferedImage expected) {
     final ArtistJson artist = content.artists().iterator().next();
     Selenide.open(ArtistPage.URL,ArtistPage.class)
@@ -34,6 +37,7 @@ public class ArtistListPageTest {
 
   @Test
   @Content(artistCount = 9)
+  @DisplayName("Поиск по списочной работает")
   void searchShouldWork(ContentJson content) {
     final ArtistJson artist = content.artists().iterator().next();
     Selenide.open(ArtistPage.URL,ArtistPage.class)
@@ -44,6 +48,7 @@ public class ArtistListPageTest {
 
   @Test
   @Content(artistCount = 19)
+  @DisplayName("Пагинация на списочной работает")
   void paginateShouldWork() {
     Selenide.open(ArtistPage.URL,ArtistPage.class)
         .checkThatPageLoaded()
@@ -60,6 +65,7 @@ public class ArtistListPageTest {
           )
       }
   )
+  @DisplayName("Нажатие по карточке открывает детальную страницу")
   void clickDetailShouldOpenDetailPage(ContentJson content) {
     final ArtistJson artist = content.artists().iterator().next();
     Selenide.open(ArtistPage.URL,ArtistPage.class)
@@ -70,6 +76,7 @@ public class ArtistListPageTest {
   }
 
   @Test
+  @DisplayName("Если карточка не найдена, отображается соответвующий текст")
   void artistsNotFoundTest(){
     Selenide.open(ArtistPage.URL,ArtistPage.class)
         .checkThatPageLoaded()
@@ -80,6 +87,7 @@ public class ArtistListPageTest {
   @Test
   @User
   @ApiLogin
+  @DisplayName("Авторизованный пользователь имеет возможность открыть форму создания художника")
   void authorizedUserShouldCanOpenAddArtistForm(){
     Selenide.open(ArtistPage.URL,ArtistPage.class)
         .checkThatPageLoaded()

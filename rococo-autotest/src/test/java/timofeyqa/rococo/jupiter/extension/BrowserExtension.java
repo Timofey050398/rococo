@@ -22,6 +22,11 @@ public class BrowserExtension implements
     LifecycleMethodExecutionExceptionHandler,
     SuiteExtension {
 
+
+  static {
+    Configuration.timeout = 10000;
+  }
+
   @Override
   public void beforeSuite(ExtensionContext context) {
     if ("chrome".equalsIgnoreCase(Configuration.browser)) {

@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Objects;
 
 @ParametersAreNonnullByDefault
 public class ScreenShotTestExtension implements ParameterResolver, TestExecutionExceptionHandler {
@@ -39,11 +40,9 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
     @Override
     public BufferedImage resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
         final ScreenShotTest screenShotTest = extensionContext.getRequiredTestMethod().getAnnotation(ScreenShotTest.class);
-        return ImageIO.read(
-                new ClassPathResource(
-                        screenShotTest.value()
-                ).getInputStream()
-        );
+        var inputStream = new ClassPathResource(screenShotTest.value()).getInputStream();
+        var image = ImageIO.read(inputStream);
+        return Objects.requireNonNull(image);
     }
 
     @Override

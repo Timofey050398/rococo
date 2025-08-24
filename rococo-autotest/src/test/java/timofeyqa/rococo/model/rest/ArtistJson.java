@@ -22,18 +22,30 @@ public record ArtistJson(
     @ToString.Exclude
     Set<PaintingJson> paintings)  implements ContentImpl {
 
-  public static ArtistJson fromEntity(ArtistEntity artistEntity){
+  public static ArtistJson fromEntity(ArtistEntity artistEntity) {
+    Set<PaintingJson> paintings = Optional.ofNullable(artistEntity.getPaintings())
+        .map(ps -> ps.stream()
+            .map(PaintingJson::fromEntity)
+            .collect(Collectors.toSet()))
+        .orElse(Collections.emptySet());
+
+    return fromEntity(artistEntity,paintings);
+  }
+
+  public static ArtistJson fromEntitySafe(ArtistEntity artistEntity) {
+    return fromEntity(artistEntity,Collections.emptySet());
+  }
+
+  public static ArtistJson fromEntity(ArtistEntity artistEntity, Set<PaintingJson> paintings) {
     return new ArtistJson(
         artistEntity.getId(),
         artistEntity.getName(),
         artistEntity.getBiography(),
         convert(artistEntity.getPhoto()),
-        artistEntity.getPaintings()
-            .stream()
-            .map(PaintingJson::fromEntity)
-            .collect(Collectors.toSet())
+        paintings
     );
   }
+
 
   public ArtistEntity toEntity(){
     ArtistEntity artistEntity = new ArtistEntity();

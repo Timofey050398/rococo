@@ -68,7 +68,7 @@ public class UsersDbClient implements UserClient, DeletableClient<UserJson> {
 
     @Override
     @Step("Delete user {user}")
-    public void remove(UserJson user){
+    public synchronized void remove(UserJson user){
         xaTransactionTemplate.execute(() -> {
             AuthUserEntity authUserEntity = authUserRepository.findByUsername(user.username())
                 .orElseThrow();
