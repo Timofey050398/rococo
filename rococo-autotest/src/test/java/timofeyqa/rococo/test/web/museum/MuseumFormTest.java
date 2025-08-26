@@ -52,7 +52,7 @@ public class MuseumFormTest {
   @ApiLogin
   @DisplayName("Авторизованный пользователь может изменить музей")
   void authorizedUserShouldCanEditMuseum(ContentJson content, BufferedImage expected) {
-    final MuseumJson museum = content.museums().iterator().next();
+    final var museum = content.museums().iterator().next();
     final String title = randomName();
     final String description = randomDescription();
     final String city = randomCity();

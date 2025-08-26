@@ -22,6 +22,15 @@ public class PhotoConverter {
     }
   }
 
+  public static byte[] loadImageAsBytes(String resourcePath) {
+    try (InputStream is = PhotoConverter.class.getClassLoader().getResourceAsStream(resourcePath)) {
+      if (is == null) throw new RuntimeException("Resource not found: " + resourcePath);
+      return is.readAllBytes();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   @Nullable
   public static byte[] convert(@Nullable String str){
     if (StringUtils.isEmpty(str)) return null;

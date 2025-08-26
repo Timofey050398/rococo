@@ -8,6 +8,7 @@ import timofeyqa.rococo.data.jpa.EntityManagers;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
+import java.util.List;
 
 @ParametersAreNonnullByDefault
 public class CountryRepository implements  HibernateRepository<CountryEntity> {
@@ -28,5 +29,11 @@ public class CountryRepository implements  HibernateRepository<CountryEntity> {
 
   public Optional<CountryEntity> findByName(Country country) {
     return findByParam(country.toString(),"name");
+  }
+
+  public List<CountryEntity> getAllCountries() {
+    return em().createQuery(
+        "SELECT c FROM CountryEntity c", CountryEntity.class
+    ).getResultList();
   }
 }

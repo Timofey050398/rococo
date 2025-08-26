@@ -6,31 +6,30 @@ import timofeyqa.rococo.data.entity.PaintingEntity;
 import timofeyqa.rococo.data.repository.ArtistRepository;
 import timofeyqa.rococo.data.repository.PaintingRepository;
 import timofeyqa.rococo.data.tpl.XaTransactionTemplate;
-import timofeyqa.rococo.model.rest.ArtistJson;
+import timofeyqa.rococo.mapper.ArtistMapper;
+import timofeyqa.rococo.model.dto.ArtistDto;
 import timofeyqa.rococo.service.ArtistClient;
 import timofeyqa.rococo.service.DeletableClient;
 
 import java.util.*;
 
-import static timofeyqa.rococo.model.rest.ArtistJson.fromEntity;
-
-public class ArtistDbClient implements ArtistClient, DeletableClient<ArtistJson> {
+public class ArtistDbClient implements ArtistClient, DeletableClient<ArtistDto> {
   private final ArtistRepository artistRepository = new ArtistRepository();
   private final PaintingRepository paintingRepository = new PaintingRepository();
   private static final Config CFG = Config.getInstance();
   private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(CFG.jdbcUrl());
 
   @Override
-  public ArtistJson create(ArtistJson artistJson) {
-    return xaTransactionTemplate.execute(() -> fromEntity(
-        artistRepository.create(artistJson.toEntity())
+  public ArtistDto create(ArtistDto artistDto) {
+    return xaTransactionTemplate.execute(() -> ArtistMapper.INSTANCE.fromEntity(
+        artistRepository.create(ArtistMapper.INSTANCE.toEntity(artistDto))
     ));
   }
 
   @Override
-  public Optional<ArtistJson> findByName(String name) {
+  public Optional<ArtistDto> findByName(String name) {
     return xaTransactionTemplate.execute(() -> artistRepository.findByName(name)
-        .map(ArtistJson::fromEntity)
+        .map(ArtistMapper.INSTANCE::fromEntity)
     );
   }
 
@@ -47,11 +46,19 @@ public class ArtistDbClient implements ArtistClient, DeletableClient<ArtistJson>
   }
 
   @Override
-  public void remove(ArtistJson artist) {
+  public void remove(ArtistDto artist) {
     xaTransactionTemplate.execute(()-> {
-      artistRepository.remove(artist.toEntity());
+      artistRepository.remove(ArtistMapper.INSTANCE.toEntity(artist));
       return null;
     });
+  }
+
+  @Override
+  public List<ArtistDto> findAllById(List<UUID> uuids){
+    return Objects.requireNonNull(xaTransactionTemplate.execute(() -> artistRepository.findAllById(uuids)))
+        .stream()
+        .map(ArtistMapper.INSTANCE::fromEntity)
+        .toList();
   }
 
   private List<UUID> getPaintingUuids(List<UUID> list) {

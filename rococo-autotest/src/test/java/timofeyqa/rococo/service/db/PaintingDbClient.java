@@ -3,17 +3,17 @@ package timofeyqa.rococo.service.db;
 import timofeyqa.rococo.config.Config;
 import timofeyqa.rococo.data.repository.PaintingRepository;
 import timofeyqa.rococo.data.tpl.XaTransactionTemplate;
-import timofeyqa.rococo.model.rest.PaintingJson;
+import timofeyqa.rococo.mapper.PaintingMapper;
+import timofeyqa.rococo.model.dto.PaintingDto;
 import timofeyqa.rococo.service.DeletableClient;
 import timofeyqa.rococo.service.PaintingClient;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.List;
 
-import static timofeyqa.rococo.model.rest.PaintingJson.fromEntity;
-
-public class PaintingDbClient implements PaintingClient, DeletableClient<PaintingJson> {
+public class PaintingDbClient implements PaintingClient, DeletableClient<PaintingDto> {
 
   private final PaintingRepository paintingRepository = new PaintingRepository();
 
@@ -21,16 +21,36 @@ public class PaintingDbClient implements PaintingClient, DeletableClient<Paintin
   private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(CFG.jdbcUrl());
 
   @Override
-  public PaintingJson create(PaintingJson painting) {
-    return xaTransactionTemplate.execute(() -> fromEntity(paintingRepository.create(painting.toEntity())
+  public PaintingDto create(PaintingDto painting) {
+    return xaTransactionTemplate.execute(() ->
+        PaintingMapper.INSTANCE.fromEntity(paintingRepository.create(PaintingMapper.INSTANCE.toEntity(painting))
     ));
   }
 
   @Override
-  public Optional<PaintingJson> findByTitle(String title) {
+  public Optional<PaintingDto> findByTitle(String title) {
     return xaTransactionTemplate.execute(() -> paintingRepository.findByTitle(title)
-        .map(PaintingJson::fromEntity)
+        .map(PaintingMapper.INSTANCE::fromEntity)
     );
+  }
+
+
+  @Override
+  public List<PaintingDto> findAllById(List<UUID> uuids){
+    return Objects.requireNonNull(xaTransactionTemplate.execute(() -> paintingRepository.findAllById(uuids)))
+        .stream()
+        .map(PaintingMapper.INSTANCE::fromEntity)
+        .toList();
+  }
+
+  @Override
+  public List<PaintingDto> findAllByArtistId(UUID artistId) {
+    return Objects.requireNonNull(xaTransactionTemplate.execute(() ->
+            paintingRepository.findByArtistId(artistId)
+        ))
+        .stream()
+        .map(PaintingMapper.INSTANCE::fromEntity)
+        .toList();
   }
 
   @Override
@@ -42,9 +62,9 @@ public class PaintingDbClient implements PaintingClient, DeletableClient<Paintin
   }
 
   @Override
-  public void remove(PaintingJson painting) {
+  public void remove(PaintingDto painting) {
     xaTransactionTemplate.execute(()-> {
-      paintingRepository.remove(painting.toEntity());
+      paintingRepository.remove(PaintingMapper.INSTANCE.toEntity(painting));
       return null;
     });
   }

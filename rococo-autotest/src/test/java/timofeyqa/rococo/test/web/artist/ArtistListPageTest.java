@@ -28,7 +28,7 @@ public class ArtistListPageTest {
   )
   @DisplayName("Карточки художников отображаются на списочной")
   void artistShouldBeShown(ContentJson content, BufferedImage expected) {
-    final ArtistJson artist = content.artists().iterator().next();
+    final var artist = content.artists().iterator().next();
     Selenide.open(ArtistPage.URL,ArtistPage.class)
         .checkThatPageLoaded()
         .getCard(artist.name())
@@ -39,7 +39,7 @@ public class ArtistListPageTest {
   @Content(artistCount = 9)
   @DisplayName("Поиск по списочной работает")
   void searchShouldWork(ContentJson content) {
-    final ArtistJson artist = content.artists().iterator().next();
+    final var artist = content.artists().iterator().next();
     Selenide.open(ArtistPage.URL,ArtistPage.class)
         .checkThatPageLoaded()
         .search(artist.name())
@@ -67,7 +67,7 @@ public class ArtistListPageTest {
   )
   @DisplayName("Нажатие по карточке открывает детальную страницу")
   void clickDetailShouldOpenDetailPage(ContentJson content) {
-    final ArtistJson artist = content.artists().iterator().next();
+    final var artist = content.artists().iterator().next();
     Selenide.open(ArtistPage.URL,ArtistPage.class)
         .checkThatPageLoaded()
         .getCard(artist.name())

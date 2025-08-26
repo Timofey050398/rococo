@@ -3,6 +3,7 @@ package timofeyqa.rococo.page.component.forms;
 import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
+import timofeyqa.rococo.model.dto.PaintingDto;
 import timofeyqa.rococo.model.rest.PaintingJson;
 import timofeyqa.rococo.page.BasePage;
 import timofeyqa.rococo.page.component.FormList;
@@ -161,7 +162,7 @@ public class PaintingForm extends Form<PaintingForm> {
   }
 
   private void updateContextContent(String title) {
-    Optional<PaintingJson> paintingJson =  waitForOptional(
+    Optional<PaintingDto> paintingJson =  waitForOptional(
         () -> paintingClient.findByTitle(title)
     );
     paintingJson.ifPresent(painting -> content().paintings().add(painting));

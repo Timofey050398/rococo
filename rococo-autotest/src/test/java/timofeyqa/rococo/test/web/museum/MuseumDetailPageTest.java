@@ -28,7 +28,7 @@ public class MuseumDetailPageTest {
   )
   @DisplayName("Детальная страница должна отображаться")
   void museumDetailShouldBeShown(ContentJson content, BufferedImage expected) {
-    final MuseumJson museum = content.museums().iterator().next();
+    final var museum = content.museums().iterator().next();
     Selenide.open(MuseumDetailPage.url(museum.id()),MuseumDetailPage.class)
         .checkThatPageLoaded()
         .compareImage(expected);
@@ -41,7 +41,7 @@ public class MuseumDetailPageTest {
   @Content(museumCount = 1)
   @DisplayName("Авторизованный пользователь может открыть форму изменения музея")
   void authorizedUserShouldCanOpenEditMuseumPage(ContentJson content) {
-    final MuseumJson museum = content.museums().iterator().next();
+    final var museum = content.museums().iterator().next();
     Selenide.open(MuseumDetailPage.url(museum.id()),MuseumDetailPage.class)
         .checkThatPageLoaded()
         .openEditForm()

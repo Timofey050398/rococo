@@ -6,17 +6,17 @@ import timofeyqa.rococo.data.entity.PaintingEntity;
 import timofeyqa.rococo.data.repository.MuseumRepository;
 import timofeyqa.rococo.data.repository.PaintingRepository;
 import timofeyqa.rococo.data.tpl.XaTransactionTemplate;
-import timofeyqa.rococo.model.rest.MuseumJson;
+import timofeyqa.rococo.mapper.MuseumMapper;
+import timofeyqa.rococo.model.dto.MuseumDto;
 import timofeyqa.rococo.service.DeletableClient;
 import timofeyqa.rococo.service.MuseumClient;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 
-import static timofeyqa.rococo.model.rest.MuseumJson.fromEntity;
 
 @ParametersAreNonnullByDefault
-public class MuseumDbClient implements MuseumClient, DeletableClient<MuseumJson> {
+public class MuseumDbClient implements MuseumClient, DeletableClient<MuseumDto> {
 
   private final MuseumRepository museumRepository = new MuseumRepository();
   private final PaintingRepository paintingRepository = new PaintingRepository();
@@ -25,16 +25,16 @@ public class MuseumDbClient implements MuseumClient, DeletableClient<MuseumJson>
   private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(CFG.jdbcUrl());
 
   @Override
-  public MuseumJson create(MuseumJson museum) {
-    return xaTransactionTemplate.execute(() -> fromEntity(
-        museumRepository.create(museum.toEntity())
+  public MuseumDto create(MuseumDto museum) {
+    return xaTransactionTemplate.execute(() -> MuseumMapper.INSTANCE.fromEntity(
+        museumRepository.create(MuseumMapper.INSTANCE.toEntity(museum))
     ));
   }
 
   @Override
-  public Optional<MuseumJson> findByTitle(String title) {
+  public Optional<MuseumDto> findByTitle(String title) {
     return xaTransactionTemplate.execute(() -> museumRepository.findByTitle(title)
-        .map(MuseumJson::fromEntity)
+        .map(MuseumMapper.INSTANCE::fromEntity)
     );
   }
 
@@ -50,6 +50,15 @@ public class MuseumDbClient implements MuseumClient, DeletableClient<MuseumJson>
     });
   }
 
+  @Override
+  public List<MuseumDto> findAllById(List<UUID> uuids){
+    return Objects.requireNonNull(xaTransactionTemplate.execute(() -> museumRepository.findAllById(uuids)))
+        .stream()
+        .map(MuseumMapper.INSTANCE::fromEntity)
+        .toList();
+  }
+
+
   private List<UUID> getPaintingUuids(List<UUID> list) {
     var museumList = xaTransactionTemplate.execute(() -> museumRepository.findAllById(list));
     return Optional.ofNullable(museumList)
@@ -62,9 +71,9 @@ public class MuseumDbClient implements MuseumClient, DeletableClient<MuseumJson>
   }
 
   @Override
-  public void remove(MuseumJson museum) {
+  public void remove(MuseumDto museum) {
     xaTransactionTemplate.execute(()-> {
-      museumRepository.remove(museum.toEntity());
+      museumRepository.remove(MuseumMapper.INSTANCE.toEntity(museum));
       return null;
     });
   }

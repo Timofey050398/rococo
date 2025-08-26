@@ -7,7 +7,6 @@ import lombok.ToString;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 

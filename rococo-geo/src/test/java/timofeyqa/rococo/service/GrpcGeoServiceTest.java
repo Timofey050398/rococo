@@ -5,6 +5,7 @@ import io.grpc.stub.StreamObserver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.data.domain.Sort;
 import timofeyqa.grpc.rococo.*;
 import timofeyqa.rococo.data.CountryEntity;
 import timofeyqa.rococo.data.repository.CountryRepository;
@@ -86,7 +87,7 @@ class GrpcGeoServiceTest {
     c2.setId(UUID.randomUUID());
     c2.setName("Country2");
 
-    when(countryRepository.findAll()).thenReturn(List.of(c1, c2));
+    when(countryRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))).thenReturn(List.of(c1, c2));
 
     grpcGeoService.getAll(Empty.getDefaultInstance(), geoListResponseObserver);
 

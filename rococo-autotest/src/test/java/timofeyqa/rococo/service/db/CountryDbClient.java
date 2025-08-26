@@ -7,6 +7,7 @@ import timofeyqa.rococo.data.tpl.XaTransactionTemplate;
 import timofeyqa.rococo.model.rest.CountryJson;
 import timofeyqa.rococo.service.CountryClient;
 
+import java.util.List;
 import java.util.Optional;
 
 public class CountryDbClient implements CountryClient {
@@ -20,6 +21,15 @@ public class CountryDbClient implements CountryClient {
   public Optional<CountryJson> getByName(Country country) {
     return xaTransactionTemplate.execute(() -> countryRepository.findByName(country)
         .map(CountryJson::fromEntity)
+    );
+  }
+
+  @Override
+  public List<CountryJson> getAllCountries() {
+    return xaTransactionTemplate.execute(() -> countryRepository.getAllCountries()
+        .stream()
+        .map(CountryJson::fromEntity)
+        .toList()
     );
   }
 }

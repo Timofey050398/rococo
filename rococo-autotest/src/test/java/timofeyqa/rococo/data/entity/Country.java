@@ -190,7 +190,7 @@ public enum Country {
   CHILE("Чили"),
   SWITZERLAND("Швейцария"),
   SWEDEN("Швеция"),
-  SRI_LANKA("Флаг Шри-Ланки"),
+  SRI_LANKA("Шри-Ланка"),
   ECUADOR("Эквадор"),
   EQUATORIAL_GUINEA("Экваториальная Гвинея"),
   ERITREA("Эритрея"),

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import timofeyqa.rococo.jupiter.annotation.*;
 import timofeyqa.rococo.jupiter.annotation.meta.WebTest;
 import timofeyqa.rococo.model.ContentJson;
+import timofeyqa.rococo.model.dto.MuseumDto;
 import timofeyqa.rococo.model.rest.MuseumJson;
 import timofeyqa.rococo.model.rest.PaintingJson;
 import timofeyqa.rococo.page.detail.PaintingDetailPage;
@@ -37,7 +38,7 @@ public class PaintingFormTest {
   void authorizedUserShouldCanAddPainting(BufferedImage expected, ContentJson content) {
     final String title = randomName();
     final var lastMuseum = content.museums().stream()
-        .max(Comparator.comparing(MuseumJson::title, String.CASE_INSENSITIVE_ORDER))
+        .max(Comparator.comparing(MuseumDto::title, String.CASE_INSENSITIVE_ORDER))
         .orElseThrow(() -> new NoSuchElementException("Set is empty"));
 
     Selenide.open(PaintingsPage.URL,PaintingsPage.class)
@@ -89,7 +90,7 @@ public class PaintingFormTest {
   @ApiLogin
   @DisplayName("Авторизованный пользователь может изменить картину")
   void authorizedUserShouldCanEditPainting(ContentJson content, BufferedImage expected) {
-    final PaintingJson painting = content.paintings().iterator().next();
+    final var painting = content.paintings().iterator().next();
     final String title = randomName();
     final String description = randomDescription();
 
@@ -119,7 +120,7 @@ public class PaintingFormTest {
   @Disabled("Artist not edited")
   @DisplayName("Авторизованный пользователь может изменить автора картины")
   void authorShouldEditCorrectly(ContentJson content) {
-    final PaintingJson painting = content.paintings().iterator().next();
+    final var painting = content.paintings().iterator().next();
 
     Selenide.open(PaintingDetailPage.url(painting.id()),PaintingDetailPage.class)
         .checkThatPageLoaded()

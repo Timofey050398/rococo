@@ -4,6 +4,7 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 import timofeyqa.rococo.data.entity.Country;
+import timofeyqa.rococo.model.dto.MuseumDto;
 import timofeyqa.rococo.model.rest.MuseumJson;
 import timofeyqa.rococo.page.component.FormList;
 import timofeyqa.rococo.page.lists.MuseumPage;
@@ -120,7 +121,7 @@ public class MuseumForm extends Form<MuseumForm> {
   }
 
   private void updateContextContent(String title) {
-    Optional<MuseumJson> museumOpt = waitForOptional(()-> museumClient.findByTitle(title));
+    Optional<MuseumDto> museumOpt = waitForOptional(()-> museumClient.findByTitle(title));
     museumOpt.ifPresent(museum -> content().museums().add(museum));
   }
 }

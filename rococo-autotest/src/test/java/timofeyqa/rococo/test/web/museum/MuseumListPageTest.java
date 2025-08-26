@@ -28,7 +28,7 @@ public class MuseumListPageTest {
   )
   @DisplayName("Карточки музеев отображаются на списочной")
   void museumShouldBeShown(ContentJson content, BufferedImage expected) {
-    final MuseumJson Museum = content.museums().iterator().next();
+    final var Museum = content.museums().iterator().next();
     Selenide.open(MuseumPage.URL,MuseumPage.class)
         .checkThatPageLoaded()
         .getCard(Museum.title())
@@ -39,7 +39,7 @@ public class MuseumListPageTest {
   @Content(museumCount = 9)
   @DisplayName("Поиск по списочной работает")
   void searchShouldWork(ContentJson content) {
-    final MuseumJson Museum = content.museums().iterator().next();
+    final var Museum = content.museums().iterator().next();
     Selenide.open(MuseumPage.URL,MuseumPage.class)
         .checkThatPageLoaded()
         .search(Museum.title())
@@ -67,7 +67,7 @@ public class MuseumListPageTest {
   )
   @DisplayName("Нажатие по карточке открывает детальную страницу")
   void clickDetailShouldOpenDetailPage(ContentJson content) {
-    final MuseumJson Museum = content.museums().iterator().next();
+    final var Museum = content.museums().iterator().next();
     Selenide.open(MuseumPage.URL,MuseumPage.class)
         .checkThatPageLoaded()
         .getCard(Museum.title())

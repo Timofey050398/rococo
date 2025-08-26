@@ -1,5 +1,6 @@
 package timofeyqa.rococo.data.repository;
 
+import jakarta.annotation.Nonnull;
 import jakarta.persistence.EntityManager;
 import org.springframework.util.CollectionUtils;
 
@@ -53,7 +54,7 @@ public interface HibernateRepository<T> {
     em().remove(managed);
   }
 
-  default List<T> findAllById(List<UUID> uuids) {
+  default @Nonnull List<T> findAllById(@Nonnull List<UUID> uuids) {
     if (CollectionUtils.isEmpty(uuids)) {
       return Collections.emptyList();
     }

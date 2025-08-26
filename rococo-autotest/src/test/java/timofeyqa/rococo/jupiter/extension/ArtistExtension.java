@@ -2,7 +2,7 @@ package timofeyqa.rococo.jupiter.extension;
 
 import timofeyqa.rococo.jupiter.annotation.Artist;
 import timofeyqa.rococo.jupiter.annotation.Content;
-import timofeyqa.rococo.model.rest.ArtistJson;
+import timofeyqa.rococo.model.dto.ArtistDto;
 import timofeyqa.rococo.service.ArtistClient;
 import timofeyqa.rococo.service.db.ArtistDbClient;
 import timofeyqa.rococo.utils.RandomDataUtils;
@@ -13,8 +13,8 @@ import org.junit.platform.commons.support.AnnotationSupport;
 import java.util.*;
 
 import static timofeyqa.rococo.jupiter.extension.ContentExtension.content;
-import static timofeyqa.rococo.utils.PhotoConverter.loadImageAsString;
-import static timofeyqa.rococo.utils.RandomDataUtils.randomFilePath;
+import static timofeyqa.rococo.utils.PhotoConverter.loadImageAsBytes;
+import static timofeyqa.rococo.utils.RandomDataUtils.*;
 
 public class ArtistExtension implements BeforeEachCallback {
 
@@ -24,8 +24,8 @@ public class ArtistExtension implements BeforeEachCallback {
     public void beforeEach(ExtensionContext context) {
         AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), Content.class)
                 .ifPresent(content -> {
-                  final Set<ArtistJson> preparedArtists = new HashSet<>();
-                  final Set<ArtistJson> createdArtists = new HashSet<>();
+                  final Set<ArtistDto> preparedArtists = new HashSet<>();
+                  final Set<ArtistDto> createdArtists = new HashSet<>();
                     if (ArrayUtils.isNotEmpty(content.artists())) {
 
                         for (Artist artistAnno : content.artists()) {
@@ -33,20 +33,20 @@ public class ArtistExtension implements BeforeEachCallback {
                               ? RandomDataUtils.randomName()
                               : artistAnno.name();
 
-                          Optional<ArtistJson> artist = artistClient.findByName(name);
+                          Optional<ArtistDto> artist = artistClient.findByName(name);
 
                           if (artist.isPresent()) {
                             createdArtists.add(artist.get());
                           } else {
                             final String biography = "".equals(artistAnno.biography())
-                                ? RandomDataUtils.randomDescription()
+                                ? randomDescription()
                                 : artistAnno.biography();
 
-                            final String photo = "".equals(artistAnno.photo())
+                            final byte[] photo = "".equals(artistAnno.photo())
                                 ? null
-                                : loadImageAsString(artistAnno.photo());
+                                : loadImageAsBytes(artistAnno.photo());
 
-                            ArtistJson artistJson = new ArtistJson(
+                            ArtistDto artistDto = new ArtistDto(
                                 null,
                                 name,
                                 biography,
@@ -54,17 +54,17 @@ public class ArtistExtension implements BeforeEachCallback {
                                 new HashSet<>()
                             );
 
-                            preparedArtists.add(artistJson);
+                            preparedArtists.add(artistDto);
                           }
                         }
                     }
                   for (int i = 0; i < content.artistCount(); i++) {
                     preparedArtists
-                        .add(new ArtistJson(
+                        .add(new ArtistDto(
                             null,
-                            RandomDataUtils.randomName(),
-                            RandomDataUtils.randomDescription(),
-                            loadImageAsString(randomFilePath("artists")),
+                            randomName(),
+                            randomDescription(),
+                            randomImage("artists"),
                             new HashSet<>()
                         ));
                   }
@@ -76,10 +76,10 @@ public class ArtistExtension implements BeforeEachCallback {
     }
 
 
-  private synchronized Set<ArtistJson> addBatch(Set<ArtistJson> preparedArtists) {
-    final Set<ArtistJson> createdArtists = new HashSet<>();
-    for (ArtistJson museumJson : preparedArtists) {
-      createdArtists.add(artistClient.create(museumJson));
+  private synchronized Set<ArtistDto> addBatch(Set<ArtistDto> preparedArtists) {
+    final Set<ArtistDto> createdArtists = new HashSet<>();
+    for (ArtistDto museumDto : preparedArtists) {
+      createdArtists.add(artistClient.create(museumDto));
     }
     return createdArtists;
   }

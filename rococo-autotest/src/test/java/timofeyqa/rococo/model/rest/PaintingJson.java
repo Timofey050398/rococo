@@ -1,16 +1,13 @@
 package timofeyqa.rococo.model.rest;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import timofeyqa.rococo.data.entity.PaintingEntity;
 
-import java.util.Collections;
 import java.util.UUID;
 
 import static timofeyqa.rococo.utils.PhotoConverter.convert;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder(toBuilder = true)
 public record PaintingJson(
     @JsonProperty("id")

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import timofeyqa.rococo.jupiter.annotation.*;
 import timofeyqa.rococo.jupiter.annotation.meta.WebTest;
 import timofeyqa.rococo.model.ContentJson;
+import timofeyqa.rococo.model.dto.ArtistDto;
 import timofeyqa.rococo.model.rest.ArtistJson;
 import timofeyqa.rococo.page.detail.ArtistDetailPage;
 
@@ -30,7 +31,7 @@ public class ArtistDetailPageTest {
   )
   @DisplayName("Детальная страница должна отображаться")
   void artistDetailShouldBeShown(ContentJson content, BufferedImage expected) {
-    final ArtistJson artist = content.artists().iterator().next();
+    final ArtistDto artist = content.artists().iterator().next();
     Selenide.open(ArtistDetailPage.url(artist.id()),ArtistDetailPage.class)
         .checkThatPageLoaded()
         .compareImage(expected);
@@ -43,7 +44,7 @@ public class ArtistDetailPageTest {
   @Content(artistCount = 1)
   @DisplayName("Авторизованный пользователь может открыть форму изменения художника")
   void authorizedUserShouldCanOpenEditArtistPage(ContentJson content) {
-    final ArtistJson artist = content.artists().iterator().next();
+    final var artist = content.artists().iterator().next();
     Selenide.open(ArtistDetailPage.url(artist.id()),ArtistDetailPage.class)
         .checkThatPageLoaded()
         .openEditForm()
@@ -54,7 +55,7 @@ public class ArtistDetailPageTest {
   @Content(artistCount = 1)
   @DisplayName("Когда у ходжника нет картин, на детальной странице отображается информация об отсутствии картин")
   void whenArtistHasNotPaintingsThatShownEmptyPaintingsPage(ContentJson content) {
-    final ArtistJson artist = content.artists().iterator().next();
+    final var artist = content.artists().iterator().next();
     Selenide.open(ArtistDetailPage.url(artist.id()),ArtistDetailPage.class)
         .checkThatPageLoaded()
         .comparePageIsEmpty();
@@ -64,7 +65,7 @@ public class ArtistDetailPageTest {
   @Content(artistCount = 1,paintingCount = 10)
   @DisplayName("Пагинация списка картин на детальной странице художника работает")
   void artistDetailsPaginationShouldWork(ContentJson content) {
-    final ArtistJson artist = content.artists().iterator().next();
+    final var artist = content.artists().iterator().next();
     Selenide.open(ArtistDetailPage.url(artist.id()),ArtistDetailPage.class)
         .checkThatPageLoaded()
         .nextPageAndCompare();
@@ -76,7 +77,7 @@ public class ArtistDetailPageTest {
   @Content(artistCount = 1)
   @DisplayName("Если пользователь создает карточку картины в форме, открытой через детальную художника, то у художника отображается данная карточка в детальной")
   void whenUserAddPaintingFromArtistDetailThanPaintingShouldShownAtArtistDetail(ContentJson content, BufferedImage expected) {
-    final ArtistJson artist = content.artists().iterator().next();
+    final var artist = content.artists().iterator().next();
     final String paintingTitle = randomPaintingTitle();
     Selenide.open(ArtistDetailPage.url(artist.id()),ArtistDetailPage.class)
         .checkThatPageLoaded()

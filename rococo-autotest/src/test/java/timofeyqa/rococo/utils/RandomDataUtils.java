@@ -9,6 +9,8 @@ import java.net.URL;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static timofeyqa.rococo.utils.PhotoConverter.loadImageAsBytes;
+
 public class RandomDataUtils {
     private static final Faker faker = new Faker();
     private static final Random random = new Random();
@@ -59,6 +61,10 @@ public class RandomDataUtils {
         }
 
         return sb.toString();
+    }
+
+    public static byte[] randomImage(String folderName){
+        return loadImageAsBytes(randomFilePath(folderName));
     }
 
     public static String randomFilePath(String folderName) {

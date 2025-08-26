@@ -9,6 +9,9 @@ import timofeyqa.rococo.data.entity.Country;
 import timofeyqa.rococo.jupiter.annotation.Content;
 import timofeyqa.rococo.jupiter.annotation.Painting;
 import timofeyqa.rococo.model.ContentJson;
+import timofeyqa.rococo.model.dto.ArtistDto;
+import timofeyqa.rococo.model.dto.MuseumDto;
+import timofeyqa.rococo.model.dto.PaintingDto;
 import timofeyqa.rococo.model.rest.*;
 import timofeyqa.rococo.service.ArtistClient;
 import timofeyqa.rococo.service.CountryClient;
@@ -23,10 +26,9 @@ import timofeyqa.rococo.utils.RandomDataUtils;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 
 import static timofeyqa.rococo.jupiter.extension.ContentExtension.content;
-import static timofeyqa.rococo.utils.PhotoConverter.loadImageAsString;
+import static timofeyqa.rococo.utils.PhotoConverter.loadImageAsBytes;
 import static timofeyqa.rococo.utils.RandomDataUtils.*;
 
 public class PaintingExtension implements BeforeEachCallback {
@@ -40,8 +42,8 @@ public class PaintingExtension implements BeforeEachCallback {
   public synchronized void beforeEach(ExtensionContext context) {
     AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), Content.class)
         .ifPresent(content -> {
-          final List<PaintingJson> createdPaintings = new ArrayList<>();
-          final ContentJson contentJson = content();
+          final List<PaintingDto> createdPaintings = new ArrayList<>();
+          final ContentJson contentDto = content();
           if (ArrayUtils.isNotEmpty(content.paintings())) {
 
             for (Painting paintingAnno : content.paintings()) {
@@ -49,25 +51,25 @@ public class PaintingExtension implements BeforeEachCallback {
                   ? randomPaintingTitle()
                   : paintingAnno.title();
 
-              PaintingJson paintingJson = paintingClient.findByTitle(title)
+              PaintingDto paintingDto = paintingClient.findByTitle(title)
                   .orElseGet(() -> {
                     final String description = "".equals(paintingAnno.description())
                         ? randomDescription()
                         : paintingAnno.description();
 
-                    final String photo = "".equals(paintingAnno.content())
+                    final byte[] photo = "".equals(paintingAnno.content())
                         ? null
-                        : loadImageAsString(paintingAnno.content());
+                        : loadImageAsBytes(paintingAnno.content());
 
                     String artistName = StringUtils.isEmpty(paintingAnno.artist())
                         ? randomName()
                         : paintingAnno.artist();
 
                     //Артист обязателен
-                    ArtistJson artist = contentJson.artists()
+                    ArtistDto artist = contentDto.artists()
                         .stream()
                         // Сначала ищем артиста в приложении
-                        .filter(artistJson -> artistJson.name().equals(artistName))
+                        .filter(artistDto -> artistDto.name().equals(artistName))
                         .findFirst()
                         // Если нет - ищем в базе
                         .orElseGet(() -> artistClient.findByName(artistName)
@@ -76,10 +78,10 @@ public class PaintingExtension implements BeforeEachCallback {
                         );
 
                     //Музей не обязателен
-                    MuseumJson museumJson;
+                    MuseumDto museumDto;
                     if (!StringUtils.isEmpty(paintingAnno.museum())) {
                       String museumName = paintingAnno.museum();
-                      museumJson = contentJson.museums().stream()
+                      museumDto = contentDto.museums().stream()
                           // Сначала ищем музей в приложении
                           .filter(museum -> museum.title().equals(museumName))
                           .findFirst()
@@ -89,71 +91,71 @@ public class PaintingExtension implements BeforeEachCallback {
                               .orElseGet(()-> randomMuseum(museumName))
                           );
                     } else {
-                      museumJson = null;
+                      museumDto = null;
                     }
 
                     return paintingClient.create(
-                        new PaintingJson(
+                        new PaintingDto(
                             null,
                             title,
                             description,
                             artist,
-                            museumJson,
+                            museumDto,
                             photo
                         )
                     );
                   });
 
-              contentJson.artists().stream()
-                  .filter(artistJson -> artistJson.name().equals(paintingJson.artist().name()))
+              contentDto.artists().stream()
+                  .filter(artistDto -> artistDto.name().equals(paintingDto.artist().name()))
                   .findFirst()
-                  .ifPresent(artistJson -> artistJson.paintings().add(paintingJson));
+                  .ifPresent(artistDto -> artistDto.paintings().add(paintingDto));
 
               if(!StringUtils.isEmpty(paintingAnno.museum())){
-                contentJson.museums().stream()
-                    .filter(museumJson1 -> museumJson1.title().equals(paintingJson.museum().title()))
+                contentDto.museums().stream()
+                    .filter(museumDto1 -> museumDto1.title().equals(paintingDto.museum().title()))
                     .findFirst()
-                    .ifPresent(museumJson1 -> museumJson1.paintings().add(paintingJson));
+                    .ifPresent(museumDto1 -> museumDto1.paintings().add(paintingDto));
               }
 
-              createdPaintings.add(paintingJson);
+              createdPaintings.add(paintingDto);
             }
           }
 
-          ArtistJson artist = null;
+          ArtistDto artist = null;
           if (content.paintingCount() > 0) {
-            artist = contentJson.artists().stream()
+            artist = contentDto.artists().stream()
                 .findFirst()
                 .orElseGet(() -> {
-                  ArtistJson newArtist = randomArtist(randomName());
-                  contentJson.artists().add(newArtist);
+                  ArtistDto newArtist = randomArtist(randomName());
+                  contentDto.artists().add(newArtist);
                   return newArtist;
                 });
           }
 
           for (int i = 0; i < content.paintingCount(); i++) {
-            PaintingJson paintingJson = randomPainting(artist);
-            artist.paintings().add(paintingJson);
-            createdPaintings.add(paintingJson);
+            PaintingDto paintingDto = randomPainting(artist);
+            artist.paintings().add(paintingDto);
+            createdPaintings.add(paintingDto);
           }
 
-          contentJson.paintings().addAll(createdPaintings);
+          contentDto.paintings().addAll(createdPaintings);
         });
   }
 
-  private PaintingJson randomPainting(ArtistJson artist) {
-    return paintingClient.create(new PaintingJson(
+  private PaintingDto randomPainting(ArtistDto artist) {
+    return paintingClient.create(new PaintingDto(
         null,
         randomName(),
         randomDescription(),
         artist,
         null,
-        loadImageAsString(randomFilePath("paintings"))
+        randomImage("paintings")
     ));
   }
 
-  private MuseumJson randomMuseum(String museumName) {
-    return museumClient.create(new MuseumJson(
+  private MuseumDto randomMuseum(String museumName) {
+    return museumClient.create(new MuseumDto(
         null,
         museumName,
         RandomDataUtils.randomDescription(),
@@ -167,8 +169,8 @@ public class PaintingExtension implements BeforeEachCallback {
     ));
   }
 
-  private ArtistJson randomArtist(final String name) {
-      return artistClient.create(new ArtistJson(
+  private ArtistDto randomArtist(final String name) {
+      return artistClient.create(new ArtistDto(
           null,
           name,
           randomDescription(),

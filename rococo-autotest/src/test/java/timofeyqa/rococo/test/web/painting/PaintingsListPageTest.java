@@ -28,7 +28,7 @@ public class PaintingsListPageTest {
   )
   @DisplayName("Карточки картин отображаются на списочной")
   void paintingShouldBeShown(ContentJson content, BufferedImage expected) {
-    final PaintingJson painting = content.paintings().iterator().next();
+    final var painting = content.paintings().iterator().next();
     Selenide.open(PaintingsPage.URL,PaintingsPage.class)
         .checkThatPageLoaded()
         .getCard(painting.title())
@@ -39,7 +39,7 @@ public class PaintingsListPageTest {
   @Content(paintingCount = 21)
   @DisplayName("Поиск по списочной работает")
   void searchShouldWork(ContentJson content) {
-    final PaintingJson painting = content.paintings().iterator().next();
+    final var painting = content.paintings().iterator().next();
     Selenide.open(PaintingsPage.URL,PaintingsPage.class)
         .checkThatPageLoaded()
         .search(painting.title())
@@ -67,7 +67,7 @@ public class PaintingsListPageTest {
   )
   @DisplayName("Нажатие по карточке открывает детальную страницу")
   void clickDetailShouldOpenDetailPage(ContentJson content) {
-    final PaintingJson painting = content.paintings().iterator().next();
+    final var painting = content.paintings().iterator().next();
     Selenide.open(PaintingsPage.URL,PaintingsPage.class)
         .checkThatPageLoaded()
         .getCard(painting.title())

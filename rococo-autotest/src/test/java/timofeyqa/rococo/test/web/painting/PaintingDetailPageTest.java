@@ -27,7 +27,7 @@ public class PaintingDetailPageTest {
   )
   @DisplayName("Детальная страница должна отображаться")
   void paintingDetailShouldBeShown(ContentJson content, BufferedImage expected) {
-    final PaintingJson painting = content.paintings().iterator().next();
+    final var painting = content.paintings().iterator().next();
     Selenide.open(PaintingDetailPage.url(painting.id()),PaintingDetailPage.class)
         .checkThatPageLoaded()
         .compareImage(expected);
@@ -40,7 +40,7 @@ public class PaintingDetailPageTest {
   @Content(paintings = {@Painting})
   @DisplayName("Авторизованный пользователь может открыть форму изменения картины")
   void authorizedUserShouldCanOpenEditDetailPage(ContentJson content) {
-    final PaintingJson painting = content.paintings().iterator().next();
+    final var painting = content.paintings().iterator().next();
     Selenide.open(PaintingDetailPage.url(painting.id()),PaintingDetailPage.class)
         .checkThatPageLoaded()
         .openEditForm()

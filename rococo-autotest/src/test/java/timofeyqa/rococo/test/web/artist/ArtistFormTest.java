@@ -55,7 +55,7 @@ public class ArtistFormTest {
   @ApiLogin
   @DisplayName("Авторизованный пользователь может изменить художника")
   void authorizedUserShouldCanEditArtist(ContentJson content, BufferedImage expected) {
-    final ArtistJson artist = content.artists().iterator().next();
+    final var artist = content.artists().iterator().next();
     final String name = randomName();
     final String biography = randomDescription();
     Selenide.open(ArtistDetailPage.url(artist.id()),ArtistDetailPage.class)

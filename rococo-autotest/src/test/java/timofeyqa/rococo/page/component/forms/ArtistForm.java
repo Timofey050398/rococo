@@ -2,6 +2,7 @@ package timofeyqa.rococo.page.component.forms;
 
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
+import timofeyqa.rococo.model.dto.ArtistDto;
 import timofeyqa.rococo.model.rest.ArtistJson;
 import timofeyqa.rococo.page.lists.ArtistPage;
 import timofeyqa.rococo.service.ArtistClient;
@@ -74,8 +75,8 @@ public class ArtistForm extends Form<ArtistForm> {
   }
 
   private void updateContextContent(String name) {
-    Optional<ArtistJson> artistJson = waitForOptional(() -> artistClient.findByName(name));
-    artistJson
+    Optional<ArtistDto> artistDto = waitForOptional(() -> artistClient.findByName(name));
+    artistDto
         .ifPresent(artist -> content().artists().add(artist));
   }
 }
