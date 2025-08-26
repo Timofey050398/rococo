@@ -1,4 +1,5 @@
 package timofeyqa.rococo.service.handler;
+
 import io.grpc.Status;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -6,6 +7,7 @@ import net.devh.boot.grpc.server.advice.GrpcAdvice;
 import net.devh.boot.grpc.server.advice.GrpcExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.TransactionSystemException;
 
 @GrpcAdvice
 public class GrpcGlobalExceptionHandler {
@@ -46,5 +48,13 @@ public class GrpcGlobalExceptionHandler {
     return Status.INVALID_ARGUMENT
         .withDescription(description.toString())
         .withCause(e);
+  }
+
+  @GrpcExceptionHandler(TransactionSystemException.class)
+  public Status handleTransactionSystemException(TransactionSystemException e) {
+    if (e.getRootCause() instanceof ConstraintViolationException violation) {
+      return handleValidationException(violation);
+    }
+    return Status.INTERNAL.withDescription(e.getMessage()).withCause(e);
   }
 }
