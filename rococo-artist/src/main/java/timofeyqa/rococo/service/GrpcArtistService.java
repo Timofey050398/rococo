@@ -13,7 +13,7 @@ import timofeyqa.grpc.rococo.*;
 import timofeyqa.rococo.data.ArtistEntity;
 import timofeyqa.rococo.data.repository.ArtistRepository;
 import timofeyqa.rococo.mappers.ArtistMapper;
-import timofeyqa.rococo.mappers.GrpcMapper;
+import timofeyqa.rococo.mappers.ArtistPatcher;
 
 import java.util.UUID;
 
@@ -23,16 +23,16 @@ public class GrpcArtistService extends RococoArtistServiceGrpc.RococoArtistServi
 
     private final ArtistRepository artistRepository;
     private final ArtistMapper artistMapper;
-    private final GrpcMapper grpcMapper;
+    private final ArtistPatcher artistPatcher;
 
     @Autowired
     public GrpcArtistService(
         ArtistRepository artistRepository,
         ArtistMapper artistMapper,
-        GrpcMapper grpcMapper) {
+        ArtistPatcher artistPatcher) {
         this.artistRepository = artistRepository;
         this.artistMapper = artistMapper;
-        this.grpcMapper = grpcMapper;
+        this.artistPatcher = artistPatcher;
     }
 
     @Override
@@ -104,7 +104,7 @@ public class GrpcArtistService extends RococoArtistServiceGrpc.RococoArtistServi
                 });
         }
 
-        artistMapper.updateEntityFromArtist(request,existing);
+        artistPatcher.patch(request,existing,artistMapper);
 
         ArtistEntity updated = artistRepository.save(existing);
         responseObserver.onNext(fromEntity(updated));
@@ -113,7 +113,6 @@ public class GrpcArtistService extends RococoArtistServiceGrpc.RococoArtistServi
 
     @Override
     public void addArtist(AddArtistRequest request, StreamObserver<Artist> responseObserver) {
-        ArtistEntity create = new ArtistEntity();
         if (request.getName().isBlank()) {
             throw new IllegalStateException("Name required");
         } else {
@@ -125,10 +124,7 @@ public class GrpcArtistService extends RococoArtistServiceGrpc.RococoArtistServi
         if (request.getBiography().isBlank()) {
             throw new IllegalStateException("Biography required");
         }
-        artistMapper.updateEntityFromArtist(
-            grpcMapper.toArtist(request),
-            create
-        );
+        ArtistEntity create = artistMapper.addEntityFromArtist(artistMapper.toArtist(request));
 
         responseObserver.onNext(fromEntity(artistRepository.save(create)));
         responseObserver.onCompleted();
