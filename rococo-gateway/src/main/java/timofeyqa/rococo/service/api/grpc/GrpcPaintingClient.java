@@ -19,9 +19,7 @@ import timofeyqa.rococo.validation.IdRequired;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 import static timofeyqa.rococo.mappers.PageableMapper.toGrpcPageable;
 import static timofeyqa.rococo.service.utils.ToCompletableFuture.toCf;
@@ -75,19 +73,20 @@ public class GrpcPaintingClient implements GrpcClient<PaintingJson> {
     }
 
     public CompletableFuture<RestPage<PaintingJson>> getPaintingByArtist(Pageable pageable, UUID artistId) {
-        var request = GetPaintingsByArtistRequest.newBuilder()
-                .setUuid(
-                        Uuid.newBuilder()
-                                .setUuid(artistId.toString())
-                                .build()
-                )
-                .setPageable(toGrpcPageable(pageable,null))
-                .build();
+      grpcArtistClient.getById(artistId);
+      var request = GetPaintingsByArtistRequest.newBuilder()
+          .setUuid(
+              Uuid.newBuilder()
+                  .setUuid(artistId.toString())
+                  .build()
+          )
+          .setPageable(toGrpcPageable(pageable,null))
+          .build();
 
-        return pageEnrichTemplate(
-                () -> paintingStub.getPaintingsByArtist(request),
-                pageable
-        );
+      return pageEnrichTemplate(
+          () -> paintingStub.getPaintingsByArtist(request),
+          pageable
+      );
     }
 
     public CompletableFuture<PaintingJson> updatePainting(@IdRequired PaintingJson paintingJson) {
