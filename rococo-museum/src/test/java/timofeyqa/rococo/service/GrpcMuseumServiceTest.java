@@ -11,6 +11,7 @@ import timofeyqa.grpc.rococo.*;
 import timofeyqa.rococo.data.MuseumEntity;
 import timofeyqa.rococo.data.repository.MuseumRepository;
 import timofeyqa.rococo.mappers.MuseumMapper;
+import timofeyqa.rococo.mappers.MuseumPatcher;
 
 import java.util.*;
 
@@ -26,8 +27,14 @@ class GrpcMuseumServiceTest {
   @Mock
   private MuseumMapper museumMapper;
 
+  @Mock
+  private MuseumPatcher museumPatcher;
+
   @InjectMocks
   private GrpcMuseumService grpcMuseumService;
+
+  @Mock
+  private RococoGeoServiceGrpc.RococoGeoServiceBlockingStub geoBlockingStub;
 
   @BeforeEach
   void setUp() {
@@ -95,7 +102,7 @@ class GrpcMuseumServiceTest {
     entity2.setCountryId(UUID.randomUUID());
 
     List<MuseumEntity> entities = List.of(entity1, entity2);
-    Pageable pageable = PageRequest.of(0, 2);
+    Pageable pageable = PageRequest.of(0, 2, Sort.by("title").ascending());
     Page<MuseumEntity> page = new PageImpl<>(entities, pageable, 2);
 
     when(museumRepository.findAll(pageable)).thenReturn(page);
@@ -173,28 +180,44 @@ class GrpcMuseumServiceTest {
     when(museumRepository.findByTitle(any())).thenReturn(Optional.empty());
     when(museumRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
-    // Мок mapper
+    // Мок mapper: преобразует GRPC в сущность
+    MuseumEntity mappedEntity = new MuseumEntity();
+    mappedEntity.setId(id);
+    mappedEntity.setTitle("NewTitle");
+    mappedEntity.setDescription("NewDesc");
+    mappedEntity.setCity("NewCity");
+    mappedEntity.setPhoto(new byte[]{3, 4, 5});
+    mappedEntity.setCountryId(UUID.randomUUID());
+    when(museumMapper.addEntityFromMuseum(any(Museum.class))).thenReturn(mappedEntity);
+
+    // Мок patcher: применяет изменения к существующей сущности
     doAnswer(invocation -> {
-      Museum requestArg = invocation.getArgument(0);
-      MuseumEntity entityArg = invocation.getArgument(1);
-
-      entityArg.setTitle(requestArg.getTitle());
-      entityArg.setDescription(requestArg.getDescription());
-      entityArg.setCity(requestArg.getCity());
-      entityArg.setPhoto(requestArg.getPhoto().toByteArray());
-      entityArg.setCountryId(UUID.fromString(requestArg.getCountryId()));
+      Museum source = invocation.getArgument(0);
+      MuseumEntity target = invocation.getArgument(1);
+      target.setTitle(source.getTitle());
+      target.setDescription(source.getDescription());
+      target.setCity(source.getCity());
+      target.setPhoto(source.getPhoto().toByteArray());
+      target.setCountryId(UUID.fromString(source.getCountryId()));
       return null;
-    }).when(museumMapper).updateEntityFromMuseum(any(Museum.class), any(MuseumEntity.class));
+    }).when(museumPatcher).patch(any(Museum.class), any(MuseumEntity.class), any(MuseumMapper.class));
 
-    // Запрос на обновление
+    // GRPC-запрос
     Museum request = Museum.newBuilder()
         .setId(id.toString())
         .setTitle("NewTitle")
         .setDescription("NewDesc")
         .setCity("NewCity")
         .setPhoto(ByteString.copyFrom(new byte[]{3, 4, 5}))
-        .setCountryId(UUID.randomUUID().toString())
+        .setCountryId(mappedEntity.getCountryId().toString())
         .build();
+
+    when(geoBlockingStub.getGeo(any(Uuid.class))).thenReturn(
+        GeoResponse.newBuilder()
+                .setId(mappedEntity.getCountryId().toString())
+                .setName("TestCountry")
+                .build()
+    );
 
     StreamObserver<Museum> observer = mock(StreamObserver.class);
 
@@ -207,12 +230,11 @@ class GrpcMuseumServiceTest {
     verify(observer).onCompleted();
 
     Museum updated = captor.getValue();
-
     assertEquals("NewTitle", updated.getTitle());
     assertEquals("NewDesc", updated.getDescription());
     assertEquals("NewCity", updated.getCity());
-    assertEquals(request.getPhoto(), updated.getPhoto());
-    assertEquals(request.getCountryId(), updated.getCountryId());
+    assertArrayEquals(new byte[]{3, 4, 5}, updated.getPhoto().toByteArray());
+    assertEquals(mappedEntity.getCountryId().toString(), updated.getCountryId());
   }
 
 

@@ -8,19 +8,15 @@ import io.grpc.stub.StreamObserver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import timofeyqa.grpc.rococo.Artist;
-import timofeyqa.grpc.rococo.PageArtistResponse;
-import timofeyqa.grpc.rococo.Pageable;
-import timofeyqa.grpc.rococo.Uuid;
-import timofeyqa.grpc.rococo.UuidList;
-import timofeyqa.grpc.rococo.ArtistList;
+import org.springframework.data.domain.Sort;
+import timofeyqa.grpc.rococo.*;
 import timofeyqa.rococo.data.ArtistEntity;
 import timofeyqa.rococo.data.repository.ArtistRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import timofeyqa.rococo.mappers.ArtistMapper;
-import timofeyqa.rococo.mappers.GrpcMapper;
+import timofeyqa.rococo.mappers.ArtistPatcher;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,15 +29,15 @@ class GrpcArtistServiceTest {
   private StreamObserver<Artist> artistObserver;
   private StreamObserver<PageArtistResponse> pageObserver;
   private StreamObserver<ArtistList> artistListObserver;
-  private GrpcMapper grpcMapper;
   private ArtistMapper artistMapper;
+  private ArtistPatcher artistPatcher;
 
   @BeforeEach
   void setup() {
     artistRepository = mock(ArtistRepository.class);
     artistMapper = mock(ArtistMapper.class);
-    grpcMapper = mock(GrpcMapper.class);
-    grpcArtistService = new GrpcArtistService(artistRepository, artistMapper, grpcMapper);
+    artistPatcher = mock(ArtistPatcher.class);
+    grpcArtistService = new GrpcArtistService(artistRepository, artistMapper, artistPatcher);
     artistObserver = mock(StreamObserver.class);
     pageObserver = mock(StreamObserver.class);
     artistListObserver = mock(StreamObserver.class);
@@ -79,7 +75,8 @@ class GrpcArtistServiceTest {
     when(artistRepository.findById(id)).thenReturn(Optional.empty());
     Uuid request = Uuid.newBuilder().setUuid(id.toString()).build();
 
-    IllegalStateException exception = assertThrows(IllegalStateException.class, () -> grpcArtistService.getArtist(request, artistObserver));
+    IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
+        grpcArtistService.getArtist(request, artistObserver));
 
     assertTrue(exception.getMessage().contains("Artist not found"));
     verifyNoInteractions(artistObserver);
@@ -102,7 +99,7 @@ class GrpcArtistServiceTest {
     List<ArtistEntity> entities = List.of(entity1, entity2);
     Page<ArtistEntity> page = new PageImpl<>(entities, PageRequest.of(0, 2), 10);
 
-    when(artistRepository.findAll(PageRequest.of(0, 2))).thenReturn(page);
+    when(artistRepository.findAll(PageRequest.of(0, 2, Sort.by("name").ascending()))).thenReturn(page);
 
     Pageable request = Pageable.newBuilder().setPage(0).setSize(2).build();
 
@@ -164,16 +161,28 @@ class GrpcArtistServiceTest {
     when(artistRepository.findById(id)).thenReturn(Optional.of(existing));
     when(artistRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
+    // Мок ArtistMapper: преобразует grpc -> ArtistEntity
+    when(artistMapper.addEntityFromArtist(any(Artist.class))).thenAnswer(invocation -> {
+      Artist source = invocation.getArgument(0);
+      ArtistEntity e = new ArtistEntity();
+      e.setId(UUID.fromString(source.getId()));
+      e.setName(source.getName());
+      e.setBiography(source.getBiography());
+      e.setPhoto(source.getPhoto().toByteArray());
+      return e;
+    });
+
+    // Мок ArtistPatcher: копирует поля в существующую сущность
     doAnswer(invocation -> {
-      Artist request = invocation.getArgument(0);
-      ArtistEntity entity = invocation.getArgument(1);
-
-      entity.setName(request.getName());
-      entity.setBiography(request.getBiography());
-      entity.setPhoto(request.getPhoto().toByteArray());
+      Artist source = invocation.getArgument(0);
+      ArtistEntity target = invocation.getArgument(1);
+      target.setName(source.getName());
+      target.setBiography(source.getBiography());
+      target.setPhoto(source.getPhoto().toByteArray());
       return null;
-    }).when(artistMapper).updateEntityFromArtist(any(), any());
+    }).when(artistPatcher).patch(any(Artist.class), any(ArtistEntity.class), any(ArtistMapper.class));
 
+    // grpc-запрос
     Artist request = Artist.newBuilder()
         .setId(id.toString())
         .setName("New Name")
@@ -193,7 +202,6 @@ class GrpcArtistServiceTest {
     assertArrayEquals(new byte[]{2, 2, 2}, updated.getPhoto().toByteArray());
   }
 
-
   @Test
   void updateArtist_artistNotFound_throwsException() {
     UUID id = UUID.randomUUID();
@@ -201,10 +209,10 @@ class GrpcArtistServiceTest {
 
     Artist request = Artist.newBuilder().setId(id.toString()).build();
 
-    IllegalStateException exception = assertThrows(IllegalStateException.class, () -> grpcArtistService.updateArtist(request, artistObserver));
+    IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
+        grpcArtistService.updateArtist(request, artistObserver));
 
     assertTrue(exception.getMessage().contains("Artist not found"));
     verifyNoInteractions(artistObserver);
   }
 }
-

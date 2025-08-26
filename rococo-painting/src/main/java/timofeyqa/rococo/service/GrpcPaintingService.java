@@ -8,12 +8,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.transaction.annotation.Transactional;
 import timofeyqa.grpc.rococo.*;
 import timofeyqa.rococo.data.PaintingEntity;
 import timofeyqa.rococo.data.repository.PaintingRepository;
-import timofeyqa.rococo.mappers.GrpcMapper;
 import timofeyqa.rococo.mappers.PaintingMapper;
+import timofeyqa.rococo.mappers.PaintingPatcher;
 
 import java.util.UUID;
 
@@ -23,13 +22,13 @@ public class GrpcPaintingService extends RococoPaintingServiceGrpc.RococoPaintin
 
     private final PaintingRepository paintingRepository;
     private final PaintingMapper paintingMapper;
-    private final GrpcMapper grpcMapper;
+    private final PaintingPatcher patcher;
 
     @Autowired
-    public GrpcPaintingService(PaintingRepository paintingRepository, PaintingMapper paintingMapper, GrpcMapper grpcMapper) {
+    public GrpcPaintingService(PaintingRepository paintingRepository, PaintingMapper paintingMapper, PaintingPatcher patcher) {
         this.paintingRepository = paintingRepository;
         this.paintingMapper = paintingMapper;
-        this.grpcMapper = grpcMapper;
+        this.patcher = patcher;
     }
 
     @Override
@@ -80,19 +79,20 @@ public class GrpcPaintingService extends RococoPaintingServiceGrpc.RococoPaintin
         responseObserver.onCompleted();
     }
 
-    @Override @Transactional
+    @Override
     public void updatePainting(Painting request, StreamObserver<Painting> responseObserver) {
         LOG.info("Updating Painting: {}", request.getId());
         PaintingEntity existing = paintingRepository.findById(UUID.fromString(request.getId()))
             .orElseThrow(() -> new IllegalStateException("painting not found: " + request.getId()));
-        paintingMapper.updateEntityFromPainting(request,existing);
+
+        patcher.patch(request,existing,paintingMapper);
 
         PaintingEntity updated = paintingRepository.save(existing);
         responseObserver.onNext(fromEntity(updated));
         responseObserver.onCompleted();
     }
 
-    @Override @Transactional
+    @Override
     public void addPainting(AddPaintingRequest request, StreamObserver<Painting> responseObserver) {
         if(request.getTitle().isBlank()){
             throw new IllegalStateException("Title is required");
@@ -100,11 +100,9 @@ public class GrpcPaintingService extends RococoPaintingServiceGrpc.RococoPaintin
         if (request.getArtistId().isBlank()) {
             throw new IllegalStateException("Artist is required");
         }
-        PaintingEntity create = new PaintingEntity();
-        paintingMapper.updateEntityFromPainting(
-            grpcMapper.toPainting(request),
-            create
-        );
+
+        PaintingEntity create = paintingMapper.addEntityFromPainting(request);
+
         PaintingEntity saved = paintingRepository.save(create);
         responseObserver.onNext(fromEntity(saved));
         responseObserver.onCompleted();

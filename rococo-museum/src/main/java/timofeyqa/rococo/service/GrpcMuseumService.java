@@ -2,8 +2,6 @@ package timofeyqa.rococo.service;
 
 import com.google.protobuf.ByteString;
 import io.grpc.stub.StreamObserver;
-import jakarta.annotation.Nonnull;
-import jakarta.transaction.Transactional;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +12,8 @@ import org.springframework.data.domain.Sort;
 import timofeyqa.grpc.rococo.*;
 import timofeyqa.rococo.data.MuseumEntity;
 import timofeyqa.rococo.data.repository.MuseumRepository;
-import timofeyqa.rococo.mappers.GrpcMapper;
 import timofeyqa.rococo.mappers.MuseumMapper;
+import timofeyqa.rococo.mappers.MuseumPatcher;
 
 import java.util.UUID;
 
@@ -25,13 +23,13 @@ public class GrpcMuseumService extends RococoMuseumServiceGrpc.RococoMuseumServi
 
     private final MuseumRepository museumRepository;
     private final MuseumMapper museumMapper;
-    private final GrpcMapper grpcMapper;
+    private final MuseumPatcher museumPatcher;
 
     @Autowired
-    public GrpcMuseumService(MuseumRepository museumRepository, MuseumMapper museumMapper, GrpcMapper grpcMapper) {
+    public GrpcMuseumService(MuseumRepository museumRepository, MuseumMapper museumMapper, MuseumPatcher museumPatcher) {
         this.museumRepository = museumRepository;
         this.museumMapper = museumMapper;
-        this.grpcMapper = grpcMapper;
+        this.museumPatcher = museumPatcher;
     }
 
     @Override
@@ -89,7 +87,7 @@ public class GrpcMuseumService extends RococoMuseumServiceGrpc.RococoMuseumServi
         responseObserver.onCompleted();
     }
 
-    @Override @Transactional
+    @Override
     public void updateMuseum(Museum request, StreamObserver<Museum> responseObserver) {
         LOG.info("Updating Museum: {}", request.getId());
         MuseumEntity existing = museumRepository.findById(UUID.fromString(request.getId()))
@@ -102,17 +100,15 @@ public class GrpcMuseumService extends RococoMuseumServiceGrpc.RococoMuseumServi
                     }
                 });
         }
-
-        museumMapper.updateEntityFromMuseum(request,existing);
+        museumPatcher.patch(request,existing,museumMapper);
 
         MuseumEntity updated = museumRepository.save(existing);
         responseObserver.onNext(fromEntity(updated));
         responseObserver.onCompleted();
     }
 
-    @Override @Transactional
+    @Override
     public void addMuseum(AddMuseumRequest request, StreamObserver<Museum> responseObserver) {
-        MuseumEntity create = new MuseumEntity();
         if (request.getTitle().isBlank()) {
             throw new IllegalStateException("Title required");
         } else {
@@ -125,10 +121,7 @@ public class GrpcMuseumService extends RococoMuseumServiceGrpc.RococoMuseumServi
             throw new IllegalStateException("Country required");
         }
 
-        museumMapper.updateEntityFromMuseum(
-            grpcMapper.toMuseum(request),
-            create
-        );
+        MuseumEntity create = museumMapper.addEntityFromMuseum(museumMapper.toMuseum(request));
 
         responseObserver.onNext(fromEntity(museumRepository.save(create)));
         responseObserver.onCompleted();

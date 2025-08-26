@@ -54,7 +54,6 @@ grpc:
       enableKeepAlive: true
       negotiationType: plaintext
     geo-service:
-      max-inbound-message-size: 15728640
       address: "static://127.0.0.1:8095"
       enableKeepAlive: true
       negotiationType: plaintext
@@ -103,7 +102,6 @@ grpc:
       enableKeepAlive: true
       negotiationType: plaintext
     geo-service:
-      max-inbound-message-size: 15728640
       address: "static://geo.rococo.dc:8095"
       enableKeepAlive: true
       negotiationType: plaintext

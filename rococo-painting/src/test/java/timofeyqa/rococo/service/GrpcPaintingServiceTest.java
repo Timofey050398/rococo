@@ -11,6 +11,7 @@ import timofeyqa.grpc.rococo.Pageable;
 import timofeyqa.rococo.data.PaintingEntity;
 import timofeyqa.rococo.data.repository.PaintingRepository;
 import timofeyqa.rococo.mappers.PaintingMapper;
+import timofeyqa.rococo.mappers.PaintingPatcher;
 
 import java.util.*;
 
@@ -24,7 +25,7 @@ class GrpcPaintingServiceTest {
   private PaintingRepository paintingRepository;
 
   @Mock
-  private PaintingMapper paintingMapper;
+  private PaintingPatcher paintingPatcher;
 
   @InjectMocks
   private GrpcPaintingService grpcPaintingService;
@@ -140,16 +141,15 @@ class GrpcPaintingServiceTest {
     when(paintingRepository.findById(paintingId)).thenReturn(Optional.of(existing));
     when(paintingRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
+    // Мокируем patcher для GRPC -> сущность
     doAnswer(invocation -> {
-      Painting proto = invocation.getArgument(0);
-      PaintingEntity entity = invocation.getArgument(1);
-
+      Painting proto = invocation.getArgument(0, Painting.class);
+      PaintingEntity entity = invocation.getArgument(1, PaintingEntity.class);
       entity.setTitle(proto.getTitle());
       entity.setArtistId(UUID.fromString(proto.getArtistId()));
       entity.setContent(proto.getContent().toByteArray());
-
       return null;
-    }).when(paintingMapper).updateEntityFromPainting(any(Painting.class), any(PaintingEntity.class));
+    }).when(paintingPatcher).patch(isA(Painting.class), isA(PaintingEntity.class), any());
 
     StreamObserver<Painting> observer = mock(StreamObserver.class);
     ArgumentCaptor<Painting> paintingCaptor = ArgumentCaptor.forClass(Painting.class);
@@ -163,8 +163,9 @@ class GrpcPaintingServiceTest {
 
     Painting result = paintingCaptor.getValue();
     assertEquals("New Title", result.getTitle());
-    assertEquals(existing.getArtistId().toString(), result.getArtistId());
-    assertArrayEquals("newdata".getBytes(), result.getContent().toByteArray());
+    assertEquals(updatedProto.getArtistId(), result.getArtistId());
+    assertArrayEquals(updatedProto.getContent().toByteArray(), result.getContent().toByteArray());
   }
+
 
 }

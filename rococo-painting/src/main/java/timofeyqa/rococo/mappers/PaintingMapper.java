@@ -2,13 +2,13 @@ package timofeyqa.rococo.mappers;
 
 import com.google.protobuf.ByteString;
 import org.mapstruct.*;
+import timofeyqa.grpc.rococo.AddPaintingRequest;
 import timofeyqa.grpc.rococo.Painting;
 import timofeyqa.rococo.data.PaintingEntity;
 
 import java.util.UUID;
 
-@Mapper(componentModel = "spring",
-    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring")
 public interface PaintingMapper {
 
   @Mapping(target = "id", source = "id", qualifiedByName = "stringToUUID")
@@ -17,8 +17,7 @@ public interface PaintingMapper {
   @Mapping(target = "artistId", source = "artistId", qualifiedByName = "stringToUUID")
   @Mapping(target = "museumId", source = "museumId", qualifiedByName = "stringToUUID")
   @Mapping(target = "content", source = "content", qualifiedByName = "byteStringToBytes")
-  void updateEntityFromPainting(Painting painting, @MappingTarget PaintingEntity entity);
-
+  PaintingEntity addEntityFromPainting(Painting painting);
 
   @Named("stringToUUID")
   static UUID stringToUUID(String id) {
@@ -33,5 +32,19 @@ public interface PaintingMapper {
   @Named("blankToNull")
   static String blankToNull(String string) {
     return (string == null || string.trim().isBlank()) ? null : string;
+  }
+
+  default Painting toPainting(AddPaintingRequest request){
+    return Painting.newBuilder()
+        .setTitle(request.getTitle())
+        .setDescription(request.getDescription())
+        .setArtistId(request.getArtistId())
+        .setMuseumId(request.getMuseumId())
+        .setContent(request.getContent())
+        .build();
+  }
+
+  default PaintingEntity addEntityFromPainting(AddPaintingRequest request){
+    return addEntityFromPainting(toPainting(request));
   }
 }
