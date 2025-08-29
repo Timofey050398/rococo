@@ -6,7 +6,6 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import timofeyqa.rococo.ex.BadRequestException;
 import timofeyqa.rococo.model.ArtistJson;
 import timofeyqa.rococo.model.page.RestPage;
@@ -38,19 +37,11 @@ class ArtistControllerTest {
     when(artistClient.getById(id))
         .thenReturn(CompletableFuture.completedFuture(expectedArtist));
 
-    CompletableFuture<ResponseEntity<ArtistJson>> futureResponse = artistController.getArtist(id.toString());
+    CompletableFuture<ArtistJson> futureResponse = artistController.getArtist(id.toString());
 
-    ResponseEntity<ArtistJson> response = futureResponse.join();
-
-    assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-    assertThat(response.getBody()).isEqualTo(expectedArtist);
-  }
-
-  @Test
-  void getArtistWithEmptyIdThrowsBadRequestException() {
-    assertThatThrownBy(() -> artistController.getArtist(""))
-        .isInstanceOf(BadRequestException.class)
-        .hasMessage("Artist Id at request path must not be empty");
+    ArtistJson response = futureResponse.join();
+    
+    assertThat(response).isEqualTo(expectedArtist);
   }
 
 
@@ -61,7 +52,7 @@ class ArtistControllerTest {
     when(artistClient.getById(id))
         .thenReturn(CompletableFuture.failedFuture(new RuntimeException("fail")));
 
-    CompletableFuture<ResponseEntity<ArtistJson>> futureResponse = artistController.getArtist(id.toString());
+    CompletableFuture<ArtistJson> futureResponse = artistController.getArtist(id.toString());
 
     assertThatThrownBy(futureResponse::join)
         .isInstanceOf(CompletionException.class)
@@ -78,12 +69,11 @@ class ArtistControllerTest {
     when(artistClient.getArtistPage(pageable,null))
         .thenReturn(CompletableFuture.completedFuture(page));
 
-    CompletableFuture<ResponseEntity<RestPage<ArtistJson>>> futureResponse = artistController.getAll(pageable,null);
+    CompletableFuture<RestPage<ArtistJson>> futureResponse = artistController.getAll(pageable,null);
 
-    ResponseEntity<RestPage<ArtistJson>> response = futureResponse.join();
+    RestPage<ArtistJson> response = futureResponse.join();
 
-    assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-    assertThat(response.getBody()).isEqualTo(page);
+    assertThat(response).isEqualTo(page);
   }
 
   @Test
@@ -93,7 +83,7 @@ class ArtistControllerTest {
     when(artistClient.getArtistPage(pageable, null))
         .thenReturn(CompletableFuture.failedFuture(new RuntimeException("fail")));
 
-    CompletableFuture<ResponseEntity<RestPage<ArtistJson>>> futureResponse = artistController.getAll(pageable, null);
+    CompletableFuture<RestPage<ArtistJson>> futureResponse = artistController.getAll(pageable, null);
 
     assertThatThrownBy(futureResponse::join)
         .isInstanceOf(CompletionException.class)

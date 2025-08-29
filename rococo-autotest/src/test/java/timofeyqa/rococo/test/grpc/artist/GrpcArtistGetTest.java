@@ -43,6 +43,18 @@ class GrpcArtistGetTest extends BaseGrpcTest {
     assertEquals("NOT_FOUND", ex.getStatus().getCode().name());
   }
 
+
+
+  @Test
+  @DisplayName("INVALID_ARGUMENT при запросе артиста с некорректным UUID")
+  void geoByUuidIllegalUuidTest() {
+    Uuid request = Uuid.newBuilder().setUuid("abc").build();
+    StatusRuntimeException ex = assertThrows(StatusRuntimeException.class,
+        () -> artistStub.getArtist(request));
+
+    assertEquals("INVALID_ARGUMENT", ex.getStatus().getCode().name());
+  }
+
   @Test
   @DisplayName("Корректное получение артистов по списку UUID")
   @Content(artistCount = 2)
@@ -72,16 +84,6 @@ class GrpcArtistGetTest extends BaseGrpcTest {
 
     StatusRuntimeException ex = assertThrows(StatusRuntimeException.class,
         () -> artistStub.getArtistsByUuids(request));
-
-    assertEquals("INVALID_ARGUMENT", ex.getStatus().getCode().name());
-  }
-
-  @Test
-  @DisplayName("INVALID_ARGUMENT при запросе артиста с некорректным UUID")
-  void geoByUuidIllegalUuidTest() {
-    Uuid request = Uuid.newBuilder().setUuid("abc").build();
-    StatusRuntimeException ex = assertThrows(StatusRuntimeException.class,
-        () -> artistStub.getArtist(request));
 
     assertEquals("INVALID_ARGUMENT", ex.getStatus().getCode().name());
   }

@@ -28,7 +28,10 @@ public class SecurityConfigMain {
   }
 
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain securityFilterChain(
+      HttpSecurity http,
+      CustomAuthenticationEntryPoint entryPoint
+  ) throws Exception {
     corsCustomizer.corsCustomizer(http);
 
     http.authorizeHttpRequests(customizer ->
@@ -39,7 +42,13 @@ public class SecurityConfigMain {
             .requestMatchers(HttpMethod.GET, "/api/user").authenticated()
             .requestMatchers(HttpMethod.GET, "/**").permitAll()
             .anyRequest().authenticated()
-    ).oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()));
+    )
+        .oauth2ResourceServer(
+            oauth2 -> oauth2
+                .authenticationEntryPoint(entryPoint)
+                .jwt(Customizer.withDefaults())
+        )
+        .exceptionHandling(e -> e.authenticationEntryPoint(entryPoint));
     return http.build();
   }
 }

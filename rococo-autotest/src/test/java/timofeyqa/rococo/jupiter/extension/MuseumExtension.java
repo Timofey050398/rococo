@@ -17,6 +17,7 @@ import timofeyqa.rococo.service.db.MuseumDbClient;
 import timofeyqa.rococo.utils.RandomDataUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static timofeyqa.rococo.jupiter.extension.ContentExtension.content;
 import static timofeyqa.rococo.utils.PhotoConverter.loadImageAsBytes;
@@ -57,16 +58,16 @@ public class MuseumExtension implements BeforeEachCallback {
                             ? null
                             :museumAnno.city();
 
-                        final CountryJson country = countryClient.getByName(
-                            museumAnno.country()
-                        ).orElseThrow();
-
                         MuseumDto museumDto = new MuseumDto(
                             null,
                             title,
                             description,
                             photo,
-                            new GeoJson(city, country),
+                            new GeoJson(
+                                city,
+                                countryClient.getByName(museumAnno.country())
+                                    .orElseThrow()
+                                ),
                             new HashSet<>()
                         );
                         preparedMuseums.add(museumDto);
@@ -75,20 +76,20 @@ public class MuseumExtension implements BeforeEachCallback {
                   }
                   for (int i = 0; i < content.museumCount(); i++) {
                     var country = Country.random();
-                    preparedMuseums
-                        .add(new MuseumDto(
-                            null,
-                            randomMuseumName(),
-                            randomDescription(),
-                            randomImage("museums"),
-                            new GeoJson(
-                                randomFirstname(),
-                                countryClient
-                                    .getByName(country)
-                                    .orElseThrow(() -> new IllegalStateException("Country not found: "+ country))
-                            ),
-                            new HashSet<>()
-                        ));
+                    var museum = new MuseumDto(
+                        null,
+                        randomMuseumName(),
+                        randomDescription(),
+                        randomImage("museums"),
+                        new GeoJson(
+                            randomFirstname(),
+                            countryClient
+                                .getByName(country)
+                                .orElseThrow(() -> new IllegalStateException("Country not found: "+ country))
+                        ),
+                        new HashSet<>()
+                    );
+                    preparedMuseums.add(museum);
                   }
                   createdMuseums.addAll(addBatch(preparedMuseums));
 
@@ -97,10 +98,8 @@ public class MuseumExtension implements BeforeEachCallback {
     }
 
     private synchronized Set<MuseumDto> addBatch(Set<MuseumDto> preparedMuseums) {
-      final Set<MuseumDto> createdMuseums = new HashSet<>();
-      for (MuseumDto museumDto : preparedMuseums) {
-        createdMuseums.add(museumClient.create(museumDto));
-      }
-      return createdMuseums;
+      return preparedMuseums.stream()
+          .map(museumClient::create)
+          .collect(Collectors.toSet());
     }
 }

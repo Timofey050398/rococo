@@ -16,17 +16,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 
+import static timofeyqa.rococo.mappers.ByteStringMapper.fromByteString;
+import static timofeyqa.rococo.mappers.ByteStringMapper.toByteString;
+
 @Component
 public class MuseumMapper {
   public static @Nonnull MuseumJson fromGrpc(Museum grpc) {
-    final String photo = grpc.getPhoto().isEmpty()
-            ? null
-            : new String(grpc.getPhoto().toByteArray(), StandardCharsets.UTF_8);
     return new MuseumJson(
         grpc.getId().isBlank() ? null : UUID.fromString(grpc.getId()),
         grpc.getTitle().isBlank() ? null : grpc.getTitle(),
         grpc.getDescription().isBlank() ? null : grpc.getDescription(),
-        photo,
+        fromByteString(grpc.getPhoto()),
         new GeoJson(
             grpc.getCity().isBlank() ? null : grpc.getCity(),
             grpc.getCountryId().isBlank() ? null : UUID.fromString(grpc.getCountryId())
@@ -50,7 +50,7 @@ public class MuseumMapper {
     }
 
     if (museum.photo() != null && !museum.photo().isEmpty()) {
-      builder.setPhoto(ByteString.copyFrom(museum.photo().getBytes(StandardCharsets.UTF_8)));
+      builder.setPhoto(toByteString(museum.photo()));
     }
 
     if (museum.geo() != null) {

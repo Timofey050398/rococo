@@ -41,6 +41,8 @@ logging:
     org.springframework.ws: INFO
     org.springframework.boot.autoconfigure: INFO
 
+api:
+  version: v1.0
 ---
 spring:
   config:

@@ -18,19 +18,19 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 
+import static timofeyqa.rococo.mappers.ByteStringMapper.fromByteString;
+import static timofeyqa.rococo.mappers.ByteStringMapper.toByteString;
+
 @Component
 public class PaintingMapper {
   public static @Nonnull PaintingJson fromGrpc(@Nonnull Painting grpc) {
-    final String content = grpc.getContent().isEmpty()
-            ? null
-            : new String(grpc.getContent().toByteArray(), StandardCharsets.UTF_8);
     return new PaintingJson(
         grpc.getId().isBlank() ? null : UUID.fromString(grpc.getId()),
         grpc.getTitle().isBlank() ? null : grpc.getTitle(),
         grpc.getDescription().isBlank() ? null : grpc.getDescription(),
         grpc.getArtistId().isBlank() ? null : new ArtistJson(UUID.fromString(grpc.getArtistId())),
         grpc.getMuseumId().isBlank() ? null : new MuseumJson(UUID.fromString(grpc.getMuseumId())),
-        content
+        fromByteString(grpc.getContent())
     );
   }
 
@@ -50,7 +50,7 @@ public class PaintingMapper {
     }
 
     if (painting.content() != null && !painting.content().isEmpty()) {
-      builder.setContent(ByteString.copyFrom(painting.content().getBytes(StandardCharsets.UTF_8)));
+      builder.setContent(toByteString(painting.content()));
     }
 
     if (painting.museum() != null && painting.museum().id() != null) {

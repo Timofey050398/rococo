@@ -1,4 +1,4 @@
-package timofeyqa.rococo.service;
+package timofeyqa.rococo.service.db;
 
 import java.util.List;
 import java.util.UUID;

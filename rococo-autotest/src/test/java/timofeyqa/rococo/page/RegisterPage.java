@@ -83,7 +83,7 @@ public class RegisterPage extends BasePage<RegisterPage>{
     return this;
   }
 
-  @Step("Assert success register screen")
+  @Step("Assert execute register screen")
   public RegisterPage assertSuccessRegisterScreen(){
     successRegisterHeader.shouldHave(text("Добро пожаловать в Rococo"));
     submitButton.shouldBe(visible);

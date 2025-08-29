@@ -13,9 +13,8 @@
     <logger name="com.codeborne.selenide.drivercommands.CreateDriverCommand" level="error"/>
     <logger name="com.codeborne.selenide.drivercommands.CloseDriverCommand" level="error"/>
     <logger name="com.codeborne.selenide.drivercommands.DisposablesRegistry" level="error"/>
-
-    <logger name="guru.qa.niffler.kafka.KafkaConsumer" level="warn"/>
-    <logger name="guru.qa.niffler.jupiter.extension.AllureDockerExtension" level="debug"/>
+    <logger name="org.hibernate.SQL" level="DEBUG"/>
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/>
 
     <root level="info">
         <appender-ref ref="STDOUT"/>

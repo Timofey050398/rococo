@@ -11,8 +11,8 @@ import timofeyqa.rococo.jupiter.annotation.ApiLogin;
 import timofeyqa.rococo.jupiter.annotation.Token;
 import timofeyqa.rococo.model.rest.UserJson;
 import timofeyqa.rococo.page.MainPage;
-import timofeyqa.rococo.service.api.AuthApiClient;
-import timofeyqa.rococo.service.api.UsersApiClient;
+import timofeyqa.rococo.service.api.AuthRestClient;
+import timofeyqa.rococo.service.api.UserRestClient;
 
 import static timofeyqa.rococo.jupiter.extension.UserExtension.setUser;
 
@@ -22,8 +22,8 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
     private static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(ApiLoginExtension.class);
     private static final Config CFG = Config.getInstance();
 
-    private final AuthApiClient authApiClient = new AuthApiClient();
-    private final UsersApiClient usersApiClient = new UsersApiClient();
+    private final AuthRestClient authApiClient = new AuthRestClient();
+    private final UserRestClient usersApiClient = new UserRestClient();
 
     private final boolean setupBrowser;
 

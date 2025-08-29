@@ -16,10 +16,10 @@ public record PaintingJson(
     @JsonProperty("id")
     UUID id,
     @JsonProperty("title")
-    @Size(max = 256, message = "Title name can`t be longer than 256 characters")
+    @Size(max = 256, message = "Can`t be longer than 256 characters")
     String title,
     @JsonProperty("description")
-    @Size(max = 1000, message = "Description name can`t be longer than 1000 characters")
+    @Size(max = 1000, message = "Can`t be longer than 1000 characters")
     String description,
     @JsonProperty("artist")
     ArtistJson artist,

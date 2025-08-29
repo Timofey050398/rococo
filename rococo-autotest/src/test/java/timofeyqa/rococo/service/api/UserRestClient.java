@@ -7,22 +7,21 @@ import timofeyqa.rococo.api.core.ThreadSafeCookieStore;
 import timofeyqa.rococo.config.Config;
 import timofeyqa.rococo.model.rest.UserJson;
 import timofeyqa.rococo.service.UserClient;
-import timofeyqa.rococo.utils.SuccessRequestExecutor;
 import io.qameta.allure.Step;
+import timofeyqa.rococo.api.core.ErrorAsserter;
+import timofeyqa.rococo.api.core.RequestExecutor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Objects;
 
 @ParametersAreNonnullByDefault
-public class UsersApiClient implements UserClient {
+public class UserRestClient implements UserClient, ErrorAsserter, RequestExecutor {
 
     private static final Config CFG = Config.getInstance();
 
-    private final SuccessRequestExecutor sre = new SuccessRequestExecutor();
-
-    private final AuthApi authApi = new RestClient.EmtyRestClient(CFG.authUrl()).create(AuthApi.class);
-    private final UserdataApi userdataApi = new RestClient.EmtyRestClient(CFG.userdataUrl()).create(UserdataApi.class);
+    private final AuthApi authApi = new RestClient.EmptyRestClient(CFG.authUrl()).create(AuthApi.class);
+    private final UserdataApi userdataApi = new RestClient.EmptyRestClient(CFG.userdataUrl()).create(UserdataApi.class);
 
 
     @Override
@@ -30,7 +29,7 @@ public class UsersApiClient implements UserClient {
     @Nonnull
     public UserJson createUser(String username, String password) {
         return Objects.requireNonNull(
-                sre.<UserJson>executeRequest(
+                this.<UserJson>execute(
                     authApi.getRegisterPage(),
                     authApi.register(
                             username,
@@ -46,12 +45,17 @@ public class UsersApiClient implements UserClient {
     @Override
     @Step("Get user {username}")
     public UserJson getUser(String username){
-        return sre.executeRequest(userdataApi.getUser(username));
+        return execute(userdataApi.getUser(username));
+    }
+
+    @Step("Update user {user}")
+    public UserJson updateUser(String username, UserJson user){
+        return execute(userdataApi.updateUser(username,user));
     }
 
     @Override
     @Step("Update user {user}")
     public UserJson updateUser(UserJson user){
-        return sre.executeRequest(userdataApi.updateUser(user.username(),user));
+        return updateUser(user.username(), user);
     }
 }

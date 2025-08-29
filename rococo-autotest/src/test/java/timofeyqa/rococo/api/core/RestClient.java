@@ -1,13 +1,12 @@
 package timofeyqa.rococo.api.core;
 
+import retrofit2.*;
 import timofeyqa.rococo.config.Config;
 import io.qameta.allure.okhttp3.AllureOkHttp3;
 import okhttp3.Interceptor;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Converter;
-import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 import javax.annotation.Nonnull;
@@ -18,12 +17,16 @@ import java.net.CookiePolicy;
 import static okhttp3.logging.HttpLoggingInterceptor.Level.HEADERS;
 import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
 
-public abstract class RestClient {
+public abstract class RestClient implements RequestExecutor {
 
     protected static final Config CFG = Config.getInstance();
 
     private final OkHttpClient okHttpClient;
     private final Retrofit retrofit;
+
+    public RestClient() {
+        this(CFG.gatewayUrl());
+    }
 
     public RestClient(String baseUrl) {
         this(baseUrl, false, JacksonConverterFactory.create(), HttpLoggingInterceptor.Level.BODY);
@@ -73,25 +76,26 @@ public abstract class RestClient {
                 .build();
     }
 
+
     @Nonnull
     public <T> T create(final Class<T> service) {
         return this.retrofit.create(service);
     }
 
-    public static final class EmtyRestClient extends RestClient {
-        public EmtyRestClient(String baseUrl) {
+    public static final class EmptyRestClient extends RestClient {
+        public EmptyRestClient(String baseUrl) {
             super(baseUrl);
         }
 
-        public EmtyRestClient(String baseUrl, boolean followRedirect) {
+        public EmptyRestClient(String baseUrl, boolean followRedirect) {
             super(baseUrl, followRedirect);
         }
 
-        public EmtyRestClient(String baseUrl, Converter.Factory factory) {
+        public EmptyRestClient(String baseUrl, Converter.Factory factory) {
             super(baseUrl, factory);
         }
 
-        public EmtyRestClient(String baseUrl, boolean followRedirect, Converter.Factory factory, HttpLoggingInterceptor.Level level, Interceptor... interceptors) {
+        public EmptyRestClient(String baseUrl, boolean followRedirect, Converter.Factory factory, HttpLoggingInterceptor.Level level, Interceptor... interceptors) {
             super(baseUrl, followRedirect, factory, level, interceptors);
         }
     }

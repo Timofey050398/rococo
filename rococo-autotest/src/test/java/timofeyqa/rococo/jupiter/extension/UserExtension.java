@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import timofeyqa.rococo.config.Config;
 import timofeyqa.rococo.jupiter.annotation.User;
 import timofeyqa.rococo.model.rest.UserJson;
-import timofeyqa.rococo.service.DeletableClient;
+import timofeyqa.rococo.service.db.DeletableClient;
 import timofeyqa.rococo.service.UserClient;
 import timofeyqa.rococo.service.db.UsersDbClient;
 import timofeyqa.rococo.utils.RandomDataUtils;

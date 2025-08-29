@@ -12,21 +12,22 @@ import timofeyqa.rococo.model.ArtistJson;
 import timofeyqa.rococo.model.page.RestPage;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
+
+import static timofeyqa.rococo.mappers.ByteStringMapper.fromByteString;
+import static timofeyqa.rococo.mappers.ByteStringMapper.toByteString;
 
 @Component
 public class ArtistMapper {
 
   public static @Nonnull ArtistJson fromGrpc(Artist grpc) {
-    final String photo = grpc.getPhoto().isEmpty()
-            ? null
-            : new String(grpc.getPhoto().toByteArray(), StandardCharsets.UTF_8);
     return new ArtistJson(
         grpc.getId().isBlank() ? null : UUID.fromString(grpc.getId()),
         grpc.getName().isBlank() ? null : grpc.getName(),
         grpc.getBiography().isBlank() ? null : grpc.getBiography(),
-        photo
+        fromByteString(grpc.getPhoto())
     );
   }
 
@@ -46,7 +47,7 @@ public class ArtistMapper {
         }
 
         if (artistJson.photo() != null && !artistJson.photo().isEmpty()) {
-            builder.setPhoto(ByteString.copyFrom(artistJson.photo().getBytes(StandardCharsets.UTF_8)));
+            builder.setPhoto(toByteString(artistJson.photo()));
         }
 
         return builder.build();

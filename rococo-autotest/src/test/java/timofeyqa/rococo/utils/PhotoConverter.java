@@ -32,11 +32,17 @@ public class PhotoConverter {
   }
 
   @Nullable
-  public static byte[] convert(@Nullable String str){
+  public static byte[] convert(@Nullable String str) {
     if (StringUtils.isEmpty(str)) return null;
+    if (str.startsWith("data:")) {
+      str = str.replaceFirst("^data:[^;]+;base64,", "");
+      if (StringUtils.isEmpty(str.trim())) return null;
+      return Base64.getDecoder().decode(str);
+    }
     return str.getBytes(StandardCharsets.UTF_8);
   }
 
+  @Nullable
   public static String convert(@Nullable byte[] bytes){
     if (bytes == null || bytes.length == 0) return null;
     String base64 = Base64.getEncoder().encodeToString(bytes);

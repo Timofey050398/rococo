@@ -8,7 +8,6 @@ import timofeyqa.rococo.data.repository.PaintingRepository;
 import timofeyqa.rococo.data.tpl.XaTransactionTemplate;
 import timofeyqa.rococo.mapper.MuseumMapper;
 import timofeyqa.rococo.model.dto.MuseumDto;
-import timofeyqa.rococo.service.DeletableClient;
 import timofeyqa.rococo.service.MuseumClient;
 
 import javax.annotation.ParametersAreNonnullByDefault;

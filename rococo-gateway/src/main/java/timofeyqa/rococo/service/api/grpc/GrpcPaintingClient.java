@@ -1,6 +1,8 @@
 package timofeyqa.rococo.service.api.grpc;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -10,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import timofeyqa.grpc.rococo.*;
+import timofeyqa.rococo.ex.NotFoundException;
 import timofeyqa.rococo.model.*;
 import timofeyqa.rococo.mappers.PaintingMapper;
 import timofeyqa.rococo.mappers.UuidMapper;
@@ -34,11 +37,13 @@ public class GrpcPaintingClient implements GrpcClient<PaintingJson> {
     private static final Logger LOG = LoggerFactory.getLogger(GrpcPaintingClient.class);
 
     private final RococoPaintingServiceGrpc.RococoPaintingServiceFutureStub paintingStub;
+  private final RococoArtistServiceGrpc.RococoArtistServiceBlockingStub artistBlockingStub;
     private final GrpcMuseumClient grpcMuseumClient;
     private final GrpcArtistClient grpcArtistClient;
 
     @Override
     public CompletableFuture<PaintingJson> getById(UUID paintingId) {
+      LOG.debug("Fetching painting by id={}", paintingId);
       return getByPainting(paintingStub.getPainting(UuidMapper.fromUuid(paintingId)));
     }
 
@@ -65,15 +70,28 @@ public class GrpcPaintingClient implements GrpcClient<PaintingJson> {
       });
     }
 
-    public CompletableFuture<RestPage<PaintingJson>> getPaintingPage(Pageable pageable,@Nullable String title) {
-        return pageEnrichTemplate(
-                () -> paintingStub.getPaintingsPage(toGrpcPageable(pageable,title)),
-                pageable
-        );
+    public CompletableFuture<RestPage<PaintingJson>> getPaintingPage(Pageable pageable, @Nullable String title) {
+      LOG.debug("Fetching paintings page: page={}, size={}, titleFilter={}",
+          pageable.getPageNumber(), pageable.getPageSize(), title);
+      return pageEnrichTemplate(
+          () -> paintingStub.getPaintingsPage(toGrpcPageable(pageable,title)),
+          pageable
+      );
     }
 
+
     public CompletableFuture<RestPage<PaintingJson>> getPaintingByArtist(Pageable pageable, UUID artistId) {
-      grpcArtistClient.getById(artistId);
+      LOG.debug("Fetching paintings by artistId={} page={}, size={}",
+          artistId, pageable.getPageNumber(), pageable.getPageSize());
+      try {
+        Artist artist = artistBlockingStub.getArtist(UuidMapper.fromUuid(artistId));
+        LOG.debug("Artist found={}", artist);
+      } catch (StatusRuntimeException ex) {
+        if (ex.getStatus().getCode() == Status.NOT_FOUND.getCode()) {
+          throw new NotFoundException("Artist not found: " + artistId);
+        }
+        throw ex;
+      }
       var request = GetPaintingsByArtistRequest.newBuilder()
           .setUuid(
               Uuid.newBuilder()
@@ -90,10 +108,11 @@ public class GrpcPaintingClient implements GrpcClient<PaintingJson> {
     }
 
     public CompletableFuture<PaintingJson> updatePainting(@IdRequired PaintingJson paintingJson) {
-        grpcMuseumClient.validateChildObject(paintingJson.museum());
-        grpcArtistClient.validateChildObject(paintingJson.artist());
+      LOG.debug("Updating painting id={} title={}", paintingJson.id(), paintingJson.title());
+      grpcMuseumClient.validateChildObject(paintingJson.museum());
+      grpcArtistClient.validateChildObject(paintingJson.artist());
 
-        return getByPainting(paintingStub.updatePainting(PaintingMapper.toGrpc(paintingJson)));
+      return getByPainting(paintingStub.updatePainting(PaintingMapper.toGrpc(paintingJson)));
     }
 
   public CompletableFuture<PaintingJson> create(PaintingJson paintingJson) {

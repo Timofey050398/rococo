@@ -9,7 +9,6 @@ import timofeyqa.rococo.data.tpl.XaTransactionTemplate;
 import timofeyqa.rococo.mapper.ArtistMapper;
 import timofeyqa.rococo.model.dto.ArtistDto;
 import timofeyqa.rococo.service.ArtistClient;
-import timofeyqa.rococo.service.DeletableClient;
 
 import java.util.*;
 

@@ -5,7 +5,6 @@ import timofeyqa.rococo.data.repository.PaintingRepository;
 import timofeyqa.rococo.data.tpl.XaTransactionTemplate;
 import timofeyqa.rococo.mapper.PaintingMapper;
 import timofeyqa.rococo.model.dto.PaintingDto;
-import timofeyqa.rococo.service.DeletableClient;
 import timofeyqa.rococo.service.PaintingClient;
 
 import java.util.Objects;

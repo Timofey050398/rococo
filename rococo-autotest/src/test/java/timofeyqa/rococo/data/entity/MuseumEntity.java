@@ -37,7 +37,7 @@ public class MuseumEntity {
   private byte[] photo;
 
   @JoinColumn(name = "country_id", nullable = false)
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   private CountryEntity country;
 
   @OneToMany(mappedBy = "museum", fetch = FetchType.LAZY)

@@ -4,10 +4,9 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import timofeyqa.rococo.ex.BadRequestException;
 import timofeyqa.rococo.model.ArtistJson;
 import timofeyqa.rococo.model.page.RestPage;
 import timofeyqa.rococo.service.api.grpc.GrpcArtistClient;
@@ -29,20 +28,15 @@ public class ArtistController {
     }
 
     @GetMapping("/{id}")
-    public CompletableFuture<ResponseEntity<ArtistJson>> getArtist(@PathVariable("id") String id) {
-        if (id.isEmpty()) {
-            throw new BadRequestException("Artist Id at request path must not be empty");
-        }
-        return artistClient.getById(UUID.fromString(id))
-                .thenApply(ResponseEntity::ok);
+    public CompletableFuture<ArtistJson> getArtist(@PathVariable("id") String id) {
+        return artistClient.getById(UUID.fromString(id));
     }
 
     @GetMapping
-    public CompletableFuture<ResponseEntity<RestPage<ArtistJson>>> getAll(
+    public CompletableFuture<RestPage<ArtistJson>> getAll(
         @PageableDefault  @SizeLimited(max = 18) Pageable pageable,
         @RequestParam(required = false) String name) {
-        return artistClient.getArtistPage(pageable, name)
-                .thenApply(ResponseEntity::ok);
+        return artistClient.getArtistPage(pageable, name);
     }
 
     @PatchMapping
@@ -51,6 +45,7 @@ public class ArtistController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ArtistJson createArtist(@RequestBody @Valid ArtistJson artistJson) {
         return artistClient.create(artistJson);
     }

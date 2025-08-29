@@ -69,7 +69,7 @@ public class GlobalExceptionHandler {
                 new ApiError(
                         config.getApiVersion(),
                         HttpStatus.NOT_FOUND.toString(),
-                        "Country not found",
+                        "Not found",
                         request.getRequestURI(),
                         ex.getMessage()
                 ),

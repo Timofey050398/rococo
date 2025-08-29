@@ -57,14 +57,4 @@ public class UserEntity implements Serializable {
   public final int hashCode() {
     return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
   }
-
-  public static UserEntity fromJson(UserJson json) {
-    UserEntity user = new UserEntity();
-    user.setId(json.id());
-    user.setUsername(json.username());
-    user.setFirstname(json.firstname());
-    user.setLastname(json.lastname());
-    user.setAvatar(user.getAvatar());
-    return user;
-  }
 }

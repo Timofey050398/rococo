@@ -13,13 +13,8 @@ import timofeyqa.rococo.mapper.GrpcMapper;
 import timofeyqa.rococo.model.ContentJson;
 import timofeyqa.rococo.model.dto.ArtistDto;
 import timofeyqa.rococo.model.dto.MuseumDto;
-import timofeyqa.rococo.model.dto.PaintingDto;
 import timofeyqa.rococo.service.PaintingClient;
-import timofeyqa.rococo.service.ArtistClient;
-import timofeyqa.rococo.service.MuseumClient;
 import timofeyqa.rococo.service.db.PaintingDbClient;
-import timofeyqa.rococo.service.db.ArtistDbClient;
-import timofeyqa.rococo.service.db.MuseumDbClient;
 import timofeyqa.rococo.test.grpc.BaseGrpcTest;
 
 import java.util.List;

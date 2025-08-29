@@ -12,7 +12,6 @@ import timofeyqa.rococo.data.repository.AuthUserRepository;
 import timofeyqa.rococo.data.repository.UserRepository;
 import timofeyqa.rococo.data.tpl.XaTransactionTemplate;
 import timofeyqa.rococo.model.rest.UserJson;
-import timofeyqa.rococo.service.DeletableClient;
 import timofeyqa.rococo.service.UserClient;
 
 import javax.annotation.Nonnull;

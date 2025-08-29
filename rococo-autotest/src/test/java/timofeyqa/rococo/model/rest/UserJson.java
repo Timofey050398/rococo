@@ -7,6 +7,7 @@ import lombok.Builder;
 import timofeyqa.rococo.data.entity.UserEntity;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.UUID;
 
 import static timofeyqa.rococo.utils.PhotoConverter.convert;
@@ -40,5 +41,17 @@ public record UserJson(
     return this.toBuilder()
         .password(password)
         .build();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) return false;
+    UserJson userJson = (UserJson) o;
+    return Objects.equals(id, userJson.id) && Objects.equals(avatar, userJson.avatar) && Objects.equals(username, userJson.username) && Objects.equals(lastname, userJson.lastname) && Objects.equals(firstname, userJson.firstname);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, username, firstname, lastname, avatar);
   }
 }

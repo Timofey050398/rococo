@@ -4,7 +4,7 @@ import org.junit.jupiter.api.extension.*;
 import timofeyqa.rococo.model.ContentJson;
 import timofeyqa.rococo.model.rest.ContentImpl;
 import timofeyqa.rococo.service.ArtistClient;
-import timofeyqa.rococo.service.DeletableClient;
+import timofeyqa.rococo.service.db.DeletableClient;
 import timofeyqa.rococo.service.MuseumClient;
 import timofeyqa.rococo.service.PaintingClient;
 import timofeyqa.rococo.service.db.ArtistDbClient;

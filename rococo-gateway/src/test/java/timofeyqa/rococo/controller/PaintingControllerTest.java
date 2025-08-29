@@ -4,8 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import timofeyqa.rococo.ex.BadRequestException;
 import timofeyqa.rococo.model.PaintingJson;
 import timofeyqa.rococo.model.page.RestPage;
@@ -31,22 +29,14 @@ class PaintingControllerTest {
   }
 
   @Test
-  void getPainting_withEmptyId_throwsBadRequest() {
-    assertThrows(BadRequestException.class, () -> paintingController.getPainting(""));
-    verifyNoInteractions(paintingClient);
-  }
-
-
-  @Test
   void getPainting_withValidId_returnsOk() {
     UUID id = UUID.randomUUID();
     PaintingJson painting = new PaintingJson(id, "Title", "Desc", null, null, null);
     when(paintingClient.getById(id)).thenReturn(CompletableFuture.completedFuture(painting));
 
-    ResponseEntity<PaintingJson> response = paintingController.getPainting(id.toString()).join();
+    PaintingJson response = paintingController.getPainting(id.toString()).join();
 
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals(painting, response.getBody());
+    assertEquals(painting, response);
     verify(paintingClient, times(1)).getById(id);
   }
 
@@ -56,7 +46,7 @@ class PaintingControllerTest {
     when(paintingClient.getById(id))
         .thenReturn(CompletableFuture.failedFuture(new RuntimeException("fail")));
 
-    CompletableFuture<ResponseEntity<PaintingJson>> response =
+    CompletableFuture<PaintingJson> response =
         paintingController.getPainting(id.toString());
 
     assertThrows(CompletionException.class, response::join);
@@ -64,17 +54,6 @@ class PaintingControllerTest {
   }
 
 
-  @Test
-  void getPaintingByArtist_withEmptyArtistId_throwsBadRequest() {
-    Pageable pageable = PageRequest.of(0, 10);
-
-    // Пустая строка PathVariable
-    assertThrows(BadRequestException.class, () ->
-        paintingController.getPaintingByArtist(pageable, "")
-    );
-
-    verifyNoInteractions(paintingClient);
-  }
 
   @Test
   void getPaintingByArtist_withInvalidUuid_throwsIllegalArgumentException() {
@@ -100,12 +79,11 @@ class PaintingControllerTest {
     when(paintingClient.getPaintingByArtist(pageable, artistId))
         .thenReturn(CompletableFuture.completedFuture(page));
 
-    CompletableFuture<ResponseEntity<RestPage<PaintingJson>>> response =
+    CompletableFuture<RestPage<PaintingJson>> response =
         paintingController.getPaintingByArtist(pageable, artistId.toString());
 
-    ResponseEntity<RestPage<PaintingJson>> entity = response.join();
-    assertEquals(HttpStatus.OK, entity.getStatusCode());
-    assertEquals(page, entity.getBody());
+    RestPage<PaintingJson> entity = response.join();
+    assertEquals(page, entity);
 
     verify(paintingClient, times(1)).getPaintingByArtist(pageable, artistId);
   }
@@ -118,7 +96,7 @@ class PaintingControllerTest {
     when(paintingClient.getPaintingByArtist(pageable, artistId))
         .thenReturn(CompletableFuture.failedFuture(new RuntimeException("fail")));
 
-    CompletableFuture<ResponseEntity<RestPage<PaintingJson>>> response =
+    CompletableFuture<RestPage<PaintingJson>> response =
         paintingController.getPaintingByArtist(pageable, artistId.toString());
 
     assertThrows(CompletionException.class, response::join); // Spring потом превратит это в 500
@@ -137,10 +115,10 @@ class PaintingControllerTest {
 
     when(paintingClient.getPaintingPage(pageable, null)).thenReturn(CompletableFuture.completedFuture(page));
 
-    ResponseEntity<RestPage<PaintingJson>> response = paintingController.getAll(pageable, null).join();
+    RestPage<PaintingJson> response = paintingController.getAll(pageable, null).join();
 
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals(page, response.getBody());
+
+    assertEquals(page, response);
     verify(paintingClient, times(1)).getPaintingPage(pageable, null);
   }
 
@@ -150,7 +128,7 @@ class PaintingControllerTest {
     when(paintingClient.getPaintingPage(pageable, null))
         .thenReturn(CompletableFuture.failedFuture(new RuntimeException("fail")));
 
-    CompletableFuture<ResponseEntity<RestPage<PaintingJson>>> response =
+    CompletableFuture<RestPage<PaintingJson>> response =
         paintingController.getAll(pageable, null);
 
     assertThrows(CompletionException.class, response::join);
@@ -167,12 +145,12 @@ class PaintingControllerTest {
     when(paintingClient.updatePainting(input)).thenReturn(CompletableFuture.completedFuture(updated));
 
     // вызываем контроллер
-    CompletableFuture<ResponseEntity<PaintingJson>> response = paintingController.updatePainting(input);
-    ResponseEntity<PaintingJson> entity = response.join();
+    CompletableFuture<PaintingJson> response = paintingController.updatePainting(input);
+    PaintingJson entity = response.join();
 
     // проверяем результат
-    assertEquals(HttpStatus.OK, entity.getStatusCode());
-    assertEquals(updated, entity.getBody());
+
+    assertEquals(updated, entity);
 
     verify(paintingClient, times(1)).updatePainting(input);
   }

@@ -4,10 +4,9 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import timofeyqa.rococo.ex.BadRequestException;
 import timofeyqa.rococo.model.PaintingJson;
 import timofeyqa.rococo.model.page.RestPage;
 import timofeyqa.rococo.service.api.grpc.GrpcPaintingClient;
@@ -29,40 +28,30 @@ public class PaintingController {
     }
 
     @GetMapping("/{id}")
-    public CompletableFuture<ResponseEntity<PaintingJson>> getPainting(@PathVariable("id") String id) {
-        if (id.isEmpty()) {
-            throw new BadRequestException("Painting Id in path variable must not be empty");
-        }
-        return paintingClient.getById(UUID.fromString(id))
-                .thenApply(ResponseEntity::ok);
+    public CompletableFuture<PaintingJson> getPainting(@PathVariable("id") String id) {
+        return paintingClient.getById(UUID.fromString(id));
     }
 
     @GetMapping("/author/{artistId}")
-    public CompletableFuture<ResponseEntity<RestPage<PaintingJson>>> getPaintingByArtist(@PageableDefault @SizeLimited Pageable pageable, @PathVariable("artistId") String artistId) {
-        if (artistId.isEmpty()) {
-            throw new BadRequestException("Artist Id in path variable must not be empty");
-        }
-        return paintingClient.getPaintingByArtist(pageable, UUID.fromString(artistId))
-                .thenApply(ResponseEntity::ok);
+    public CompletableFuture<RestPage<PaintingJson>> getPaintingByArtist(@PageableDefault @SizeLimited Pageable pageable, @PathVariable("artistId") String artistId) {
+        return paintingClient.getPaintingByArtist(pageable, UUID.fromString(artistId));
     }
 
     @GetMapping
-    public CompletableFuture<ResponseEntity<RestPage<PaintingJson>>> getAll(
+    public CompletableFuture<RestPage<PaintingJson>> getAll(
         @PageableDefault  @SizeLimited Pageable pageable,
         @RequestParam(required = false) String title) {
-        return paintingClient.getPaintingPage(pageable, title)
-                .thenApply(ResponseEntity::ok);
+        return paintingClient.getPaintingPage(pageable, title);
     }
 
     @PatchMapping
-    public CompletableFuture<ResponseEntity<PaintingJson>> updatePainting(@RequestBody @Valid PaintingJson paintingJson) {
-        return paintingClient.updatePainting(paintingJson)
-            .thenApply(ResponseEntity::ok);
+    public CompletableFuture<PaintingJson> updatePainting(@RequestBody @Valid PaintingJson paintingJson) {
+        return paintingClient.updatePainting(paintingJson);
     }
 
     @PostMapping
-    public CompletableFuture<ResponseEntity<PaintingJson>> createPainting(@RequestBody @Valid PaintingJson paintingJson) {
-        return paintingClient.create(paintingJson)
-            .thenApply(ResponseEntity::ok);
+    @ResponseStatus(HttpStatus.CREATED)
+    public CompletableFuture<PaintingJson> createPainting(@RequestBody @Valid PaintingJson paintingJson) {
+        return paintingClient.create(paintingJson);
     }
 }

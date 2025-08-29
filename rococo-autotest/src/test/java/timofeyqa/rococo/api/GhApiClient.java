@@ -11,7 +11,7 @@ import java.util.Objects;
 
 public class GhApiClient {
 
-  private static final String GH_TOKEN_ENV = "GITHUB_TOKEN";
+  private static final String GH_TOKEN_ENV = System.getProperty("gh.token","");
 
   private final Retrofit retrofit = new Retrofit.Builder()
       .baseUrl(Config.getInstance().ghUrl())

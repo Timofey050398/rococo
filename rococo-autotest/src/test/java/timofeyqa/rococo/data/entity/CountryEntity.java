@@ -13,7 +13,7 @@ import java.util.UUID;
 public class CountryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id", columnDefinition = "BINARY(16)", nullable = false)
     private UUID id;
 
     @Column(nullable = false, unique = true)

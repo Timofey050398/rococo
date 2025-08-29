@@ -52,7 +52,7 @@ public interface MuseumMapper extends CommonMapperUtils, PaintingSetMapper {
 
   @Named("geoToCountry")
   static CountryEntity geoToCountry(GeoJson geo) {
-    return geo == null || geo.city() == null
+    return geo == null || geo.country() == null
         ? null
         : geo.country().toEntity();
   }

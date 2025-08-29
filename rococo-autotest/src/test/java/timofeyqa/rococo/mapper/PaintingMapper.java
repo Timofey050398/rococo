@@ -25,14 +25,14 @@ public interface PaintingMapper extends CommonMapperUtils {
   @Mapping(source = "artist", target = "artist", qualifiedByName = "artistToEntity")
   PaintingEntity toEntity(PaintingDto painting);
 
+  @Mapping(source = "museum", target = "museum", qualifiedByName = "museumFromEntity")
+  @Mapping(source = "artist", target = "artist", qualifiedByName = "artistFromEntity")
+  PaintingDto fromEntity(PaintingEntity painting);
+
   @Mapping(source = "museum", target = "museum", qualifiedByName = "museumToJson")
   @Mapping(source = "artist", target = "artist", qualifiedByName = "artistToJson")
   @Mapping(source = "content", target = "content", qualifiedByName = "byteToString")
   PaintingJson toJson(PaintingDto painting);
-
-  @Mapping(source = "museum", target = "museum", qualifiedByName = "museumFromEntity")
-  @Mapping(source = "artist", target = "artist", qualifiedByName = "artistFromEntity")
-  PaintingDto fromEntity(PaintingEntity painting);
 
   @Mapping(source = "museum", target = "museum", qualifiedByName = "museumFromJson")
   @Mapping(source = "artist", target = "artist", qualifiedByName = "artistFromJson")
@@ -46,7 +46,6 @@ public interface PaintingMapper extends CommonMapperUtils {
   @Mapping(source = "artistId",target = "artist",qualifiedByName = "artistFromString")
   @Mapping(source = "museumId",target = "museum",qualifiedByName = "museumFromString")
   PaintingDto fromGrpc(Painting painting);
-
 
   @Named("museumFromString")
   static MuseumDto museumFromString(String museum) {

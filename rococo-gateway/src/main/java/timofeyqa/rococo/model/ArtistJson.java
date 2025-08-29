@@ -17,11 +17,11 @@ public record ArtistJson(
     UUID id,
 
     @JsonProperty("name")
-    @Size(max = 255, message = "Name can`t be longer than 255 characters")
+    @Size(max = 255, message = "Can`t be longer than 255 characters")
     String name,
 
     @JsonProperty("biography")
-    @Size(max = 2000, message = "Biography name can`t be longer than 2000 characters")
+    @Size(max = 2000, message = "Can`t be longer than 2000 characters")
     String biography,
 
     @JsonProperty("photo")
