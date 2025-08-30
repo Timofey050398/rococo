@@ -9,12 +9,15 @@ import timofeyqa.rococo.page.BasePage;
 import timofeyqa.rococo.page.component.*;
 import timofeyqa.rococo.page.component.cards.ArtistCard;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import static com.codeborne.selenide.CollectionCondition.size;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 
+@ParametersAreNonnullByDefault
 public class ArtistPage extends BasePage<ArtistPage> implements CardListPage<ArtistPage, ArtistCard> {
   public static final String URL = CFG.frontUrl()+"artist";
   @Getter
@@ -40,6 +43,7 @@ public class ArtistPage extends BasePage<ArtistPage> implements CardListPage<Art
   }
 
   @Override
+  @Step("Check that page is loaded")
   public ArtistPage checkThatPageLoaded() {
     header.getSelf().should(visible)
         .shouldHave(text("Ro"))

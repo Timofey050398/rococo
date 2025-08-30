@@ -1,5 +1,6 @@
 package timofeyqa.rococo.api.core;
 
+import org.jetbrains.annotations.NotNull;
 import timofeyqa.rococo.jupiter.extension.ApiLoginExtension;
 import okhttp3.Interceptor;
 import okhttp3.Response;
@@ -9,6 +10,8 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class CodeInterceptor implements Interceptor {
+
+    @NotNull
     @Override
     public Response intercept(Chain chain) throws IOException {
         final Response response = chain.proceed(chain.request());

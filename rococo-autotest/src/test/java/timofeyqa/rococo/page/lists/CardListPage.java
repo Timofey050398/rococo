@@ -3,6 +3,10 @@ package timofeyqa.rococo.page.lists;
 import com.codeborne.selenide.ElementsCollection;
 import timofeyqa.rococo.page.component.cards.Card;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@SuppressWarnings("UnusedReturnValue")
+@ParametersAreNonnullByDefault
 public interface CardListPage<T extends CardListPage<T,?>, B extends Card<B>> extends ListPage<T> {
   B getCard(String title);
 

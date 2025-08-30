@@ -5,10 +5,13 @@ import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 import timofeyqa.rococo.page.lists.ListPage;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 
+@ParametersAreNonnullByDefault
 public class FormList extends BaseComponent<FormList> implements ListPage<FormList> {
 
   private final int pageSize;

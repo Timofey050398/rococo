@@ -3,8 +3,11 @@ package timofeyqa.rococo.page.component.cards;
 import io.qameta.allure.Step;
 import timofeyqa.rococo.page.detail.PaintingDetailPage;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import static com.codeborne.selenide.Condition.visible;
 
+@ParametersAreNonnullByDefault
 public class PaintingCard extends Card<PaintingCard> {
   private final static String TITLE_TAG = "div";
 
@@ -17,7 +20,7 @@ public class PaintingCard extends Card<PaintingCard> {
     return TITLE_TAG;
   }
 
-  @Step("Open painting {title} card")
+  @Step("Open painting detail card")
   @Override
   public PaintingDetailPage openDetail() {
     self

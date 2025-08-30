@@ -4,6 +4,7 @@ import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 import timofeyqa.rococo.page.MainPage;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URL;
@@ -12,6 +13,8 @@ import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 import static timofeyqa.rococo.condition.ScreenshotCondition.image;
 
+@ParametersAreNonnullByDefault
+@SuppressWarnings("UnusedReturnValue")
 public class ProfileModal extends BaseComponent<ProfileModal> {
 
   private final SelenideElement avatarImage = self.$("figure.avatar img.avatar-image, svg.avatar-initials");
@@ -68,6 +71,8 @@ public class ProfileModal extends BaseComponent<ProfileModal> {
     return this;
   }
 
+
+  @Step("Compare that modal is closed")
   public MainPage compareModalClosed(){
     self.shouldBe(not(visible));
     return new MainPage();

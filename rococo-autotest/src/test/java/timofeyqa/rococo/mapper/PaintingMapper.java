@@ -3,7 +3,6 @@ package timofeyqa.rococo.mapper;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
-import timofeyqa.grpc.rococo.Museum;
 import timofeyqa.grpc.rococo.Painting;
 import timofeyqa.rococo.data.entity.ArtistEntity;
 import timofeyqa.rococo.data.entity.MuseumEntity;

@@ -5,10 +5,11 @@ import lombok.Getter;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
+@SuppressWarnings("unused")
 @ParametersAreNonnullByDefault
-@Getter
 public abstract class BaseComponent<T extends BaseComponent<?>> {
 
+    @Getter
     protected final SelenideElement self;
 
     protected BaseComponent(SelenideElement self) {

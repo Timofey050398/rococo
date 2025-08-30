@@ -3,15 +3,12 @@ package timofeyqa.rococo.test.rest.gateway.session;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import retrofit2.HttpException;
 import timofeyqa.rococo.jupiter.annotation.ApiLogin;
 import timofeyqa.rococo.jupiter.annotation.Token;
 import timofeyqa.rococo.jupiter.annotation.User;
 import timofeyqa.rococo.jupiter.annotation.meta.RestTest;
-import timofeyqa.rococo.jupiter.annotation.meta.WebTest;
 import timofeyqa.rococo.jupiter.extension.ApiLoginExtension;
 import timofeyqa.rococo.model.rest.SessionJson;
-import timofeyqa.rococo.model.rest.UserJson;
 import timofeyqa.rococo.service.api.SessionRestClient;
 import timofeyqa.rococo.utils.JwtDecoder;
 

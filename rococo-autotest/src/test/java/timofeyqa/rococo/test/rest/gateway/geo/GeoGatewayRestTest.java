@@ -2,14 +2,12 @@ package timofeyqa.rococo.test.rest.gateway.geo;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import retrofit2.HttpException;
 import timofeyqa.rococo.jupiter.annotation.meta.RestTest;
 import timofeyqa.rococo.model.rest.CountryJson;
 import timofeyqa.rococo.model.rest.pageable.RestResponsePage;
 import timofeyqa.rococo.service.api.GeoRestClient;
 
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 

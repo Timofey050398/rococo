@@ -1,6 +1,7 @@
 package timofeyqa.rococo.service.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.qameta.allure.Step;
 import timofeyqa.rococo.api.AuthApi;
 import timofeyqa.rococo.api.core.CodeInterceptor;
 import timofeyqa.rococo.api.core.RestClient;
@@ -29,7 +30,7 @@ public class AuthRestClient extends RestClient implements ErrorAsserter {
         this.authApi = create(AuthApi.class);
     }
 
-    public void preRequest(String codeVerifier){
+    private void preRequest(String codeVerifier){
         execute(authApi.authorize(
                 "code",
                 CLIENT_ID,
@@ -40,7 +41,7 @@ public class AuthRestClient extends RestClient implements ErrorAsserter {
         ));
     }
 
-    public void login(UserJson user){
+    private void login(UserJson user){
         execute(
                 authApi.login(
                         user.username(),
@@ -51,7 +52,7 @@ public class AuthRestClient extends RestClient implements ErrorAsserter {
     }
 
     @Nonnull
-    public String token(String code, String codeVerifier){
+    private String token(String code, String codeVerifier){
         JsonNode node = execute(authApi.token(
                 CLIENT_ID,
                 authorizedUri,
@@ -66,6 +67,7 @@ public class AuthRestClient extends RestClient implements ErrorAsserter {
     }
 
     @Nonnull
+    @Step("Get token")
     public String token(UserJson userJson){
         String codeVerifier = generateCodeVerifier();
         preRequest(codeVerifier);

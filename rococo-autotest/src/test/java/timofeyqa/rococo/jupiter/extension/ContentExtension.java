@@ -11,11 +11,13 @@ import timofeyqa.rococo.service.db.ArtistDbClient;
 import timofeyqa.rococo.service.db.MuseumDbClient;
 import timofeyqa.rococo.service.db.PaintingDbClient;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+@ParametersAreNonnullByDefault
 public class ContentExtension implements ParameterResolver, AfterEachCallback {
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(ContentExtension.class);
 

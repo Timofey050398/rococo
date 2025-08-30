@@ -10,12 +10,14 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 
 import static timofeyqa.rococo.jupiter.extension.ContentExtension.content;
 import static timofeyqa.rococo.utils.PhotoConverter.loadImageAsBytes;
 import static timofeyqa.rococo.utils.RandomDataUtils.*;
 
+@ParametersAreNonnullByDefault
 public class ArtistExtension implements BeforeEachCallback {
 
     private final ArtistClient artistClient = new ArtistDbClient();

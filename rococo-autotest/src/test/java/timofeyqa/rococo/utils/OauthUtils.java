@@ -1,11 +1,16 @@
 package timofeyqa.rococo.utils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+import javax.annotation.Nonnull;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OauthUtils {
 
     private static final SecureRandom secureRandom = new SecureRandom();
@@ -18,7 +23,7 @@ public class OauthUtils {
         return base64UrlEncoder.encodeToString(codeVerifierBytes);
     }
 
-    public static String generateCodeChallenge(String codeVerifier) {
+    public static String generateCodeChallenge(@Nonnull String codeVerifier) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(codeVerifier.getBytes(StandardCharsets.US_ASCII));

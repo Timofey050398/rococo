@@ -7,6 +7,7 @@ import io.qameta.allure.Step;
 import timofeyqa.rococo.page.component.BaseComponent;
 
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
 import java.net.URL;
 
@@ -15,15 +16,17 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 import static timofeyqa.rococo.condition.ValidationConditions.requiredFile;
 
+@SuppressWarnings("UnusedReturnValue")
+@ParametersAreNonnullByDefault
 public abstract class Form<T extends Form<?>> extends BaseComponent<T> {
 
 
   private final String imageParamName;
 
-  protected SelenideElement imageInput = self.$("input[type='file']");
-  protected SelenideElement closeModalButton = self.$("button[type='button']");
-  protected SelenideElement submitButton = self.$("button[type='submit']");
-  protected SelenideElement image = self.$("img");
+  protected final SelenideElement imageInput = self.$("input[type='file']");
+  protected final SelenideElement closeModalButton = self.$("button[type='button']");
+  protected final SelenideElement submitButton = self.$("button[type='submit']");
+  protected final SelenideElement image = self.$("img");
   private final ElementsCollection formErrors = $$("p.form__error, span.form__error, .input__helper-text, .text-error-400");
   private final SelenideElement toast = $("div.toast");
 
@@ -88,6 +91,7 @@ public abstract class Form<T extends Form<?>> extends BaseComponent<T> {
     return (T) this;
   }
 
+  @SuppressWarnings("unused")
   @Step("Close modal")
   public <B> B closeModal(Class<B> clazz){
     closeModalButton.shouldBe(visible).click();

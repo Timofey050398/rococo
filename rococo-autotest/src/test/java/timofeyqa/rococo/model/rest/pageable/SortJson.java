@@ -2,10 +2,12 @@ package timofeyqa.rococo.model.rest.pageable;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
+@Getter
 public final class SortJson extends Sort {
 
   private final boolean empty;
@@ -22,17 +24,5 @@ public final class SortJson extends Sort {
     this.empty = empty;
     this.sorted = sorted;
     this.unsorted = unsorted;
-  }
-
-  public boolean isEmpty() {
-    return empty;
-  }
-
-  public boolean isSorted() {
-    return sorted;
-  }
-
-  public boolean isUnsorted() {
-    return unsorted;
   }
 }

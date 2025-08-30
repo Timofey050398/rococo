@@ -14,6 +14,8 @@ import timofeyqa.rococo.page.MainPage;
 import timofeyqa.rococo.service.api.AuthRestClient;
 import timofeyqa.rococo.service.api.UserRestClient;
 
+import javax.annotation.Nonnull;
+
 import static timofeyqa.rococo.jupiter.extension.UserExtension.setUser;
 
 
@@ -73,7 +75,7 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
         Selenide.open(CFG.frontUrl(), MainPage.class).checkThatPageLoaded();
     }
 
-    private UserJson enrichmentUser(ApiLogin apiLogin){
+    private UserJson enrichmentUser(@Nonnull ApiLogin apiLogin){
         final String username = apiLogin.username();
         UserJson user = usersApiClient.getUser(username);
 
@@ -91,7 +93,7 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
         return extensionContext.getStore(NAMESPACE).get("token", String.class);
     }
 
-    public static void setToken(String token){
+    public static void setToken(@Nonnull String token){
         TestMethodContextExtension.context().getStore(NAMESPACE).put("token",token);
     }
 
@@ -99,7 +101,7 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
         return (String) TestMethodContextExtension.context().getStore(NAMESPACE).get("token");
     }
 
-    public static void setCode(String code){
+    public static void setCode(@Nonnull String code){
         TestMethodContextExtension.context().getStore(NAMESPACE).put("code",code);
     }
 

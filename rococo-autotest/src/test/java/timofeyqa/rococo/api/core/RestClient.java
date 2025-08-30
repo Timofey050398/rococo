@@ -15,7 +15,7 @@ import java.net.CookieManager;
 import java.net.CookiePolicy;
 
 import static okhttp3.logging.HttpLoggingInterceptor.Level.HEADERS;
-import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
+import static org.apache.commons.lang.ArrayUtils.isNotEmpty;
 
 public abstract class RestClient implements RequestExecutor {
 
@@ -32,16 +32,8 @@ public abstract class RestClient implements RequestExecutor {
         this(baseUrl, false, JacksonConverterFactory.create(), HttpLoggingInterceptor.Level.BODY);
     }
 
-    public RestClient(String baseUrl, boolean followRedirect) {
-        this(baseUrl, followRedirect, JacksonConverterFactory.create(), HttpLoggingInterceptor.Level.BODY);
-    }
-
     public RestClient(String baseUrl, boolean followRedirect, @Nullable Interceptor... interceptors) {
         this(baseUrl, followRedirect, JacksonConverterFactory.create(), HEADERS, interceptors);
-    }
-
-    public RestClient(String baseUrl, Converter.Factory factory) {
-        this(baseUrl, false, factory, HttpLoggingInterceptor.Level.BODY);
     }
 
     public RestClient(String baseUrl, boolean followRedirect, Converter.Factory factory, HttpLoggingInterceptor.Level level, @Nullable Interceptor... interceptors) {
@@ -85,18 +77,6 @@ public abstract class RestClient implements RequestExecutor {
     public static final class EmptyRestClient extends RestClient {
         public EmptyRestClient(String baseUrl) {
             super(baseUrl);
-        }
-
-        public EmptyRestClient(String baseUrl, boolean followRedirect) {
-            super(baseUrl, followRedirect);
-        }
-
-        public EmptyRestClient(String baseUrl, Converter.Factory factory) {
-            super(baseUrl, factory);
-        }
-
-        public EmptyRestClient(String baseUrl, boolean followRedirect, Converter.Factory factory, HttpLoggingInterceptor.Level level, Interceptor... interceptors) {
-            super(baseUrl, followRedirect, factory, level, interceptors);
         }
     }
 }

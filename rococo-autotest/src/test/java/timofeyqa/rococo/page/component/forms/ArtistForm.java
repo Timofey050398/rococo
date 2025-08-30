@@ -3,7 +3,6 @@ package timofeyqa.rococo.page.component.forms;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 import timofeyqa.rococo.model.dto.ArtistDto;
-import timofeyqa.rococo.model.rest.ArtistJson;
 import timofeyqa.rococo.page.lists.ArtistPage;
 import timofeyqa.rococo.service.ArtistClient;
 import timofeyqa.rococo.service.db.ArtistDbClient;
@@ -15,11 +14,14 @@ import static timofeyqa.rococo.condition.ValidationConditions.requiredInput;
 import static timofeyqa.rococo.jupiter.extension.ContentExtension.content;
 import static timofeyqa.rococo.utils.Waiter.waitForOptional;
 
+@SuppressWarnings("UnusedReturnValue")
 public class ArtistForm extends Form<ArtistForm> {
   private final SelenideElement titleInput = self.$("input[name='name']");
   private final SelenideElement biographyInput = self.$("textarea[name='biography']");
   private final ArtistClient artistClient = new ArtistDbClient();
 
+
+  @Step("Check that page is loaded")
   public ArtistForm checkThatPageLoaded(){
     self.shouldBe(visible);
     titleInput.shouldBe(visible);

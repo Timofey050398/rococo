@@ -11,8 +11,9 @@ public interface SuiteExtension extends BeforeAllCallback {
   3) При этом, для 2, 3 и т.д. (до N) тестовых классов, больше не будем вызывать beforeSuite()
   4) Когда все-все тесты завершаться, вызовем afterSuite()
    */
+  @SuppressWarnings({"Anonymous2MethodRef", "Convert2Lambda"})
   @Override
-  default void beforeAll(ExtensionContext context) throws Exception {
+  default void beforeAll(ExtensionContext context) {
     final ExtensionContext rootContext = context.getRoot();
     rootContext.getStore(ExtensionContext.Namespace.GLOBAL)
         .getOrComputeIfAbsent(
@@ -21,7 +22,7 @@ public interface SuiteExtension extends BeforeAllCallback {
               beforeSuite(rootContext);
               return new ExtensionContext.Store.CloseableResource() {
                 @Override
-                public void close() throws Throwable {
+                public void close() {
                   afterSuite();
                 }
               };

@@ -12,6 +12,7 @@ import timofeyqa.rococo.model.rest.pageable.RestResponsePage;
 import timofeyqa.rococo.service.ArtistClient;
 import timofeyqa.rococo.api.core.ErrorAsserter;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -19,6 +20,7 @@ import java.util.UUID;
 
 import static timofeyqa.rococo.jupiter.extension.ApiLoginExtension.getToken;
 
+@ParametersAreNonnullByDefault
 public class ArtistRestClient extends RestClient implements ErrorAsserter, ArtistClient {
 
   private final ArtistGatewayApi api = create(ArtistGatewayApi.class);

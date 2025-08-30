@@ -3,17 +3,19 @@ package timofeyqa.rococo.page;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.image.BufferedImage;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static timofeyqa.rococo.condition.ScreenshotCondition.image;
 
+@SuppressWarnings("UnusedReturnValue")
+@ParametersAreNonnullByDefault
 public class LoginPage extends BasePage<LoginPage> {
 
   private final SelenideElement usernameInput = $("input[name='username']");
   private final SelenideElement passwordInput = $("input[name='password']");
-  private final SelenideElement passwordToggleButton = $(".form__password-button");
   private final SelenideElement submitButton = $(".form__submit");
   private final SelenideElement registerLink = $(".form__link");
   private final SelenideElement hermitageImage = $("img[alt='Эрмитаж']");
@@ -21,6 +23,7 @@ public class LoginPage extends BasePage<LoginPage> {
   public static final String URL = CFG.authUrl()+"login";
 
   @Override
+  @Step("Check that page is loaded")
   public LoginPage checkThatPageLoaded() {
     usernameInput.shouldBe(visible);
     passwordInput.shouldBe(visible);
@@ -36,12 +39,6 @@ public class LoginPage extends BasePage<LoginPage> {
   @Step("Set password")
   public LoginPage setPassword(String password) {
     passwordInput.setValue(password);
-    return this;
-  }
-
-  @Step("Toggle password visibility")
-  public LoginPage togglePasswordVisibility() {
-    passwordToggleButton.click();
     return this;
   }
 

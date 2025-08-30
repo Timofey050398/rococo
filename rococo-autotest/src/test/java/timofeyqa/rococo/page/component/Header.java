@@ -8,13 +8,17 @@ import timofeyqa.rococo.page.lists.ArtistPage;
 import timofeyqa.rococo.page.lists.MuseumPage;
 import timofeyqa.rococo.page.lists.PaintingsPage;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.image.BufferedImage;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 import static timofeyqa.rococo.condition.ScreenshotCondition.image;
 
+@ParametersAreNonnullByDefault
+@SuppressWarnings("UnusedReturnValue")
 public class Header extends BaseComponent<Header> {
+
   public Header(){
     super($("header[id='shell-header']"));
   }
@@ -71,6 +75,8 @@ public class Header extends BaseComponent<Header> {
     return this;
   }
 
+
+  @Step("Open profile")
   public ProfileModal openProfile(){
     profileButton.shouldBe(visible)
         .click();

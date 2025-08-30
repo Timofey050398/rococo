@@ -8,8 +8,6 @@ import timofeyqa.rococo.jupiter.annotation.*;
 import timofeyqa.rococo.jupiter.annotation.meta.WebTest;
 import timofeyqa.rococo.model.ContentJson;
 import timofeyqa.rococo.model.dto.MuseumDto;
-import timofeyqa.rococo.model.rest.MuseumJson;
-import timofeyqa.rococo.model.rest.PaintingJson;
 import timofeyqa.rococo.page.detail.PaintingDetailPage;
 import timofeyqa.rococo.page.lists.PaintingsPage;
 

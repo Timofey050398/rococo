@@ -1,17 +1,16 @@
 package timofeyqa.rococo.page.component.forms;
 
-import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 import timofeyqa.rococo.data.entity.Country;
 import timofeyqa.rococo.model.dto.MuseumDto;
-import timofeyqa.rococo.model.rest.MuseumJson;
 import timofeyqa.rococo.page.component.FormList;
 import timofeyqa.rococo.page.lists.MuseumPage;
 import timofeyqa.rococo.service.MuseumClient;
 import timofeyqa.rococo.service.db.MuseumDbClient;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import java.util.Optional;
 
@@ -22,6 +21,8 @@ import static timofeyqa.rococo.condition.ValidationConditions.requiredList;
 import static timofeyqa.rococo.jupiter.extension.ContentExtension.content;
 import static timofeyqa.rococo.utils.Waiter.waitForOptional;
 
+@SuppressWarnings("UnusedReturnValue")
+@ParametersAreNonnullByDefault
 public class MuseumForm extends Form<MuseumForm> {
   private final SelenideElement titleInput = self.$("input[name='title']");
   private final FormList countries = new FormList(self,"countryId",20);
@@ -29,6 +30,8 @@ public class MuseumForm extends Form<MuseumForm> {
   private final SelenideElement descriptionInput = self.$("textarea[name='description']");
   private final MuseumClient museumClient = new MuseumDbClient();
 
+
+  @Step("Check that page is loaded")
   public MuseumForm checkThatPageLoaded(){
     self.shouldBe(visible);
     titleInput.shouldBe(visible);

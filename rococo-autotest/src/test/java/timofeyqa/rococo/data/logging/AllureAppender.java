@@ -14,6 +14,7 @@ import static org.apache.commons.lang3.StringUtils.isNoneEmpty;
 
 public class AllureAppender extends StdoutLogger {
 
+    @SuppressWarnings("FieldCanBeLocal")
     private final String templateName = "sql-attachment.ftl";
     private final AttachmentProcessor<AttachmentData>  attachmentProcessor = new DefaultAttachmentProcessor();
 

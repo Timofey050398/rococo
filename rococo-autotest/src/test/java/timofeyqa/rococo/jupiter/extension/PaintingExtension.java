@@ -23,6 +23,7 @@ import timofeyqa.rococo.service.db.MuseumDbClient;
 import timofeyqa.rococo.service.db.PaintingDbClient;
 import timofeyqa.rococo.utils.RandomDataUtils;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -31,6 +32,7 @@ import static timofeyqa.rococo.jupiter.extension.ContentExtension.content;
 import static timofeyqa.rococo.utils.PhotoConverter.loadImageAsBytes;
 import static timofeyqa.rococo.utils.RandomDataUtils.*;
 
+@ParametersAreNonnullByDefault
 public class PaintingExtension implements BeforeEachCallback {
 
   private final MuseumClient museumClient = new MuseumDbClient();

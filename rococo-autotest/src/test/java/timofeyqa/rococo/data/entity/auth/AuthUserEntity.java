@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
-import timofeyqa.rococo.data.entity.UserEntity;
-import timofeyqa.rococo.model.rest.UserJson;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -45,18 +43,6 @@ public class AuthUserEntity implements Serializable {
 
   @OneToMany(fetch = EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
   private List<AuthorityEntity> authorities = new ArrayList<>();
-
-  public void addAuthorities(AuthorityEntity... authorities) {
-    for (AuthorityEntity authority : authorities) {
-      this.authorities.add(authority);
-      authority.setUser(this);
-    }
-  }
-
-  public void removeAuthority(AuthorityEntity authority) {
-    this.authorities.remove(authority);
-    authority.setUser(null);
-  }
 
   @Override
   public final boolean equals(Object o) {

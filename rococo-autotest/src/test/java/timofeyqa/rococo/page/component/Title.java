@@ -2,9 +2,12 @@ package timofeyqa.rococo.page.component;
 
 import io.qameta.allure.Step;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 
+@ParametersAreNonnullByDefault
 public class Title extends BaseComponent<Title> {
   public Title(){
     super($("h2.text-3xl.m-4"));

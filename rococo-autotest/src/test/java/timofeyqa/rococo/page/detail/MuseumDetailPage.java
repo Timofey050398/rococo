@@ -8,6 +8,7 @@ import timofeyqa.rococo.page.BasePage;
 import timofeyqa.rococo.page.component.Header;
 import timofeyqa.rococo.page.component.forms.MuseumForm;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.image.BufferedImage;
 import java.util.UUID;
 
@@ -16,6 +17,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static timofeyqa.rococo.condition.ScreenshotCondition.image;
 
+@ParametersAreNonnullByDefault
 public class MuseumDetailPage extends BasePage<MuseumDetailPage> implements DetailPage {
 
   @Getter
@@ -46,6 +48,7 @@ public class MuseumDetailPage extends BasePage<MuseumDetailPage> implements Deta
   }
 
   @Override
+  @Step("Check that page is loaded")
    public MuseumDetailPage checkThatPageLoaded() {
     header.getSelf().should(visible)
         .shouldHave(text("Ro"))
@@ -68,6 +71,7 @@ public class MuseumDetailPage extends BasePage<MuseumDetailPage> implements Deta
     return this;
   }
 
+  @Step("geu url for museum detail {id}")
   public static String url(UUID id){
     return CFG.frontUrl()+"museum/"+id;
   }

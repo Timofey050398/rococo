@@ -1,13 +1,11 @@
 package timofeyqa.rococo.data.repository;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
 import timofeyqa.rococo.config.Config;
 import timofeyqa.rococo.data.entity.PaintingEntity;
 import timofeyqa.rococo.data.jpa.EntityManagers;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.List;

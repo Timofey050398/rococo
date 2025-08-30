@@ -4,12 +4,14 @@ import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 @UtilityClass
+@ParametersAreNonnullByDefault
 public class PhotoConverter {
 
   public static String loadImageAsString(String resourcePath) {

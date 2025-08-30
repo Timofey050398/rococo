@@ -124,6 +124,7 @@ class RestMuseumPostTest {
   @DisplayName("Ошибка при добавлении музея без country")
   void addMuseumCountryRequiredTest(@Token String token) {
     CountryJson country = null;
+    //noinspection ConstantValue
     MuseumDto request = MuseumDto.builder()
         .title("Louvre")
         .description("Famous museum")

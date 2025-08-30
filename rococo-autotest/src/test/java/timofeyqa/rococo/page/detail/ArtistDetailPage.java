@@ -11,6 +11,7 @@ import timofeyqa.rococo.page.component.forms.ArtistForm;
 import timofeyqa.rococo.page.component.forms.PaintingForm;
 import timofeyqa.rococo.page.lists.CardListPage;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.image.BufferedImage;
 import java.util.UUID;
 
@@ -21,6 +22,7 @@ import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 import static timofeyqa.rococo.condition.ScreenshotCondition.image;
 
+@ParametersAreNonnullByDefault
 public class ArtistDetailPage extends BasePage<ArtistDetailPage> implements DetailPage, CardListPage<ArtistDetailPage, PaintingCard> {
 
   @Getter
@@ -35,6 +37,7 @@ public class ArtistDetailPage extends BasePage<ArtistDetailPage> implements Deta
 
 
   @Override
+  @Step("Check that page is loaded")
   public ArtistDetailPage checkThatPageLoaded() {
     header.getSelf().should(visible)
         .shouldHave(text("Ro"))
@@ -45,6 +48,7 @@ public class ArtistDetailPage extends BasePage<ArtistDetailPage> implements Deta
   }
 
   @Override
+  @Step("Check that card is existed")
   public PaintingCard getCard(String title){
     var card = new PaintingCard(title);
     card.visible();
@@ -62,6 +66,7 @@ public class ArtistDetailPage extends BasePage<ArtistDetailPage> implements Deta
   }
 
   @Override
+  @Step("Compare that page is empty")
   public ArtistDetailPage comparePageIsEmpty() {
     cards().shouldHave(size(0));
     emptyPageText.shouldBe(visible);
@@ -103,6 +108,8 @@ public class ArtistDetailPage extends BasePage<ArtistDetailPage> implements Deta
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
+
+  @Step("Get url for artist detail {id}")
   public static String url(UUID id){
     return CFG.frontUrl()+"artist/"+id;
   }

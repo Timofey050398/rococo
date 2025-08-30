@@ -9,8 +9,6 @@ import timofeyqa.rococo.jupiter.annotation.User;
 import timofeyqa.rococo.jupiter.annotation.meta.WebTest;
 import timofeyqa.rococo.model.rest.UserJson;
 import timofeyqa.rococo.page.MainPage;
-import timofeyqa.rococo.page.component.Header;
-import timofeyqa.rococo.utils.RandomDataUtils;
 
 import java.awt.image.BufferedImage;
 

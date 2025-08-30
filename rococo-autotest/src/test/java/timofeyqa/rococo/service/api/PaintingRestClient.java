@@ -12,10 +12,12 @@ import timofeyqa.rococo.model.rest.pageable.RestResponsePage;
 import timofeyqa.rococo.service.PaintingClient;
 import timofeyqa.rococo.api.core.ErrorAsserter;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 
 import static timofeyqa.rococo.jupiter.extension.ApiLoginExtension.getToken;
 
+@ParametersAreNonnullByDefault
 public class PaintingRestClient extends RestClient implements ErrorAsserter, PaintingClient {
 
   private final PaintingGatewayApi api = create(PaintingGatewayApi.class);

@@ -4,7 +4,6 @@ import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 import timofeyqa.rococo.model.dto.PaintingDto;
-import timofeyqa.rococo.model.rest.PaintingJson;
 import timofeyqa.rococo.page.BasePage;
 import timofeyqa.rococo.page.component.FormList;
 import timofeyqa.rococo.page.detail.ArtistDetailPage;
@@ -23,6 +22,7 @@ import static timofeyqa.rococo.condition.ValidationConditions.requiredList;
 import static timofeyqa.rococo.jupiter.extension.ContentExtension.content;
 import static timofeyqa.rococo.utils.Waiter.waitForOptional;
 
+@SuppressWarnings("UnusedReturnValue")
 @ParametersAreNonnullByDefault
 public class PaintingForm extends Form<PaintingForm> {
 
@@ -37,6 +37,8 @@ public class PaintingForm extends Form<PaintingForm> {
     super("content");
   }
 
+
+  @Step("Check that page is loaded")
   public PaintingForm checkThatPageLoaded(){
     self.shouldBe(visible);
     titleInput.shouldBe(visible);

@@ -4,17 +4,15 @@ import jakarta.annotation.Nonnull;
 import jakarta.persistence.EntityManager;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 
+@ParametersAreNonnullByDefault
 public interface HibernateRepository<T> {
 
   EntityManager em();
 
   Class<T> getEntityClass();
-
-  default Optional<T> findById(UUID id) {
-    return Optional.ofNullable(em().find(getEntityClass(), id));
-  }
 
   default T create(T entity) {
     em().joinTransaction();
@@ -22,23 +20,12 @@ public interface HibernateRepository<T> {
     return entity;
   }
 
-  default List<T> createBatch(List<T> entities) {
-    em().joinTransaction();
-    List<T> result = new ArrayList<>(entities.size());
-
-    for (T entity : entities) {
-      result.add(em().merge(entity));
-    }
-
-    return result;
-  }
-
-
   default T update(T entity) {
     em().joinTransaction();
     return em().merge(entity);
   }
 
+  @SuppressWarnings("SqlSourceToSinkFlow")
   default Optional<T> findByParam(Object param, String paramName) {
     String className = getEntityClass().getSimpleName();
     String query = String.format("SELECT e FROM %s e WHERE e.%s = :%s", className, paramName, paramName);

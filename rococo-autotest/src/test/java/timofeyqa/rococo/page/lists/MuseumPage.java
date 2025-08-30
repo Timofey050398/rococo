@@ -12,12 +12,15 @@ import timofeyqa.rococo.page.component.Header;
 import timofeyqa.rococo.page.component.SearchBar;
 import timofeyqa.rococo.page.component.Title;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import static com.codeborne.selenide.CollectionCondition.size;
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 
+@ParametersAreNonnullByDefault
 public class MuseumPage extends BasePage<MuseumPage> implements CardListPage<MuseumPage, MuseumCard> {
 
   public static final String URL = CFG.frontUrl()+"museum";
@@ -31,6 +34,7 @@ public class MuseumPage extends BasePage<MuseumPage> implements CardListPage<Mus
   private final SearchBar searchBar = new SearchBar();
 
   @Override
+  @Step("Check that page is loaded")
   public MuseumPage checkThatPageLoaded() {
     header.getSelf().should(visible)
         .shouldHave(text("Ro"))

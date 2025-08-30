@@ -1,5 +1,6 @@
 package timofeyqa.rococo.service.db;
 
+import io.qameta.allure.Step;
 import org.springframework.util.CollectionUtils;
 import timofeyqa.rococo.config.Config;
 import timofeyqa.rococo.data.entity.PaintingEntity;
@@ -10,8 +11,10 @@ import timofeyqa.rococo.mapper.ArtistMapper;
 import timofeyqa.rococo.model.dto.ArtistDto;
 import timofeyqa.rococo.service.ArtistClient;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 
+@ParametersAreNonnullByDefault
 public class ArtistDbClient implements ArtistClient, DeletableClient<ArtistDto> {
   private final ArtistRepository artistRepository = new ArtistRepository();
   private final PaintingRepository paintingRepository = new PaintingRepository();
@@ -19,6 +22,7 @@ public class ArtistDbClient implements ArtistClient, DeletableClient<ArtistDto> 
   private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(CFG.jdbcUrl());
 
   @Override
+  @Step("Create artist")
   public ArtistDto create(ArtistDto artistDto) {
     return xaTransactionTemplate.execute(() -> ArtistMapper.INSTANCE.fromEntity(
         artistRepository.create(ArtistMapper.INSTANCE.toEntity(artistDto))
@@ -26,6 +30,7 @@ public class ArtistDbClient implements ArtistClient, DeletableClient<ArtistDto> 
   }
 
   @Override
+  @Step("Find artist by name")
   public Optional<ArtistDto> findByName(String name) {
     return xaTransactionTemplate.execute(() -> artistRepository.findByName(name)
         .map(ArtistMapper.INSTANCE::fromEntity)
@@ -33,6 +38,7 @@ public class ArtistDbClient implements ArtistClient, DeletableClient<ArtistDto> 
   }
 
   @Override
+  @Step("Delete artist's by uuid list")
   public void deleteList(List<UUID> uuidList) {
     var paintingUuids = getPaintingUuids(uuidList);
     xaTransactionTemplate.execute(() -> {
@@ -45,6 +51,7 @@ public class ArtistDbClient implements ArtistClient, DeletableClient<ArtistDto> 
   }
 
   @Override
+  @Step("Delete artist {artist.id}")
   public void remove(ArtistDto artist) {
     xaTransactionTemplate.execute(()-> {
       artistRepository.remove(ArtistMapper.INSTANCE.toEntity(artist));
@@ -53,6 +60,7 @@ public class ArtistDbClient implements ArtistClient, DeletableClient<ArtistDto> 
   }
 
   @Override
+  @Step("Find artist's by uuid list")
   public List<ArtistDto> findAllById(List<UUID> uuids){
     return Objects.requireNonNull(xaTransactionTemplate.execute(() -> artistRepository.findAllById(uuids)))
         .stream()
@@ -60,6 +68,7 @@ public class ArtistDbClient implements ArtistClient, DeletableClient<ArtistDto> 
         .toList();
   }
 
+  @Step("Get uuid's of artist's paintings")
   private List<UUID> getPaintingUuids(List<UUID> list) {
     var artistList = xaTransactionTemplate.execute(() -> artistRepository.findAllById(list));
     return Optional.ofNullable(artistList)

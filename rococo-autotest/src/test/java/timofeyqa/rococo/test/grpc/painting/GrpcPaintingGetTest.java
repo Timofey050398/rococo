@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 import timofeyqa.grpc.rococo.*;
 import timofeyqa.rococo.jupiter.annotation.Content;
 import timofeyqa.rococo.model.ContentJson;
-import timofeyqa.rococo.service.PaintingClient;
-import timofeyqa.rococo.service.db.PaintingDbClient;
 import timofeyqa.rococo.test.grpc.BaseGrpcTest;
 
 import java.util.UUID;
@@ -16,8 +14,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("gRPC: Получение картин")
 class GrpcPaintingGetTest extends BaseGrpcTest {
-
-  private final PaintingClient paintingClient = new PaintingDbClient();
 
   @Test
   @DisplayName("Корректное получение картины по UUID")

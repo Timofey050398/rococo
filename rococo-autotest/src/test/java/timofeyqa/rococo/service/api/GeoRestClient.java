@@ -9,10 +9,12 @@ import timofeyqa.rococo.model.rest.pageable.RestResponsePage;
 import timofeyqa.rococo.service.CountryClient;
 import timofeyqa.rococo.api.core.ErrorAsserter;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@ParametersAreNonnullByDefault
 public class GeoRestClient extends RestClient implements ErrorAsserter, CountryClient {
 
   private final GeoGatewayApi api = create(GeoGatewayApi.class);

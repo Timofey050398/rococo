@@ -15,6 +15,7 @@ import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
+@SuppressWarnings("UnusedReturnValue")
 @ParametersAreNonnullByDefault
 public abstract class BasePage<T extends BasePage<?>> {
 

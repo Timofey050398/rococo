@@ -5,8 +5,12 @@ import com.codeborne.selenide.Selenide;
 import io.qameta.allure.Step;
 import timofeyqa.rococo.ex.BadPreConditionException;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import static com.codeborne.selenide.CollectionCondition.*;
 
+@SuppressWarnings("UnusedReturnValue")
+@ParametersAreNonnullByDefault
 public interface ListPage<T extends ListPage<T>> {
 
   int pageSize();

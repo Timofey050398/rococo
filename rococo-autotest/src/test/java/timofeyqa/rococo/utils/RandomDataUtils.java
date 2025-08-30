@@ -1,8 +1,11 @@
 package timofeyqa.rococo.utils;
 
 import com.github.javafaker.Faker;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import net.javacrumbs.jsonunit.core.util.ResourceUtils;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -13,9 +16,11 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static timofeyqa.rococo.utils.PhotoConverter.loadImageAsBytes;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@ParametersAreNonnullByDefault
 public class RandomDataUtils {
+
     private static final Faker faker = new Faker();
-    private static final Random random = new Random();
 
     public static String randomUsername(){
         return faker.name().username();

@@ -4,17 +4,22 @@ import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 import timofeyqa.rococo.page.component.Header;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 
+@ParametersAreNonnullByDefault
 public class NotFoundPage extends BasePage<NotFoundPage> {
   protected final Header header = new Header();
   private final SelenideElement mainPageButton = $(byText("На главную страницу"));
   private final SelenideElement title = $(byText("Страница не найдена"));
 
   public static final String URL = CFG.frontUrl()+"randomsentence";
+
   @Override
+  @Step("Check that page is loaded")
   public NotFoundPage checkThatPageLoaded() {
     header.getSelf().should(visible)
         .shouldHave(text("Ro"))

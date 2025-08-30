@@ -9,12 +9,15 @@ import timofeyqa.rococo.page.lists.ArtistPage;
 import timofeyqa.rococo.page.lists.MuseumPage;
 import timofeyqa.rococo.page.lists.PaintingsPage;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.image.BufferedImage;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 import static timofeyqa.rococo.condition.ScreenshotCondition.image;
 
+@SuppressWarnings("UnusedReturnValue")
+@ParametersAreNonnullByDefault
 public class MainPage extends BasePage<MainPage> {
   public static final String URL = CFG.frontUrl();
   @Getter
@@ -26,6 +29,7 @@ public class MainPage extends BasePage<MainPage> {
   public final SelenideElement title = $("main nav p.text-3xl");
 
   @Override
+  @Step("Check that page is loaded")
   public MainPage checkThatPageLoaded() {
     header.getSelf().should(visible)
         .shouldHave(text("Ro"))

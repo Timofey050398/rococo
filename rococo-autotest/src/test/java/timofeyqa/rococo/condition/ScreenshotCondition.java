@@ -5,7 +5,7 @@ import com.codeborne.selenide.Driver;
 import com.codeborne.selenide.WebElementCondition;
 import com.codeborne.selenide.impl.ScreenShotLaboratory;
 import jakarta.annotation.Nonnull;
-import jakarta.validation.constraints.NotNull;
+import org.jetbrains.annotations.NotNull;
 import lombok.SneakyThrows;
 import org.openqa.selenium.WebElement;
 import timofeyqa.rococo.jupiter.extension.ScreenShotTestExtension;
@@ -26,6 +26,7 @@ public class ScreenshotCondition {
     return new WebElementCondition("Screenshot comparison") {
 
       private static final ScreenShotLaboratory screenshots = inject();
+
 
       @NotNull
       @Override

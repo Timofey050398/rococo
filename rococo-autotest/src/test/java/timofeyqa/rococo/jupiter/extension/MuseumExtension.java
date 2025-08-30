@@ -7,7 +7,6 @@ import org.junit.platform.commons.support.AnnotationSupport;
 import timofeyqa.rococo.data.entity.Country;
 import timofeyqa.rococo.jupiter.annotation.Content;
 import timofeyqa.rococo.jupiter.annotation.Museum;
-import timofeyqa.rococo.model.rest.CountryJson;
 import timofeyqa.rococo.model.rest.GeoJson;
 import timofeyqa.rococo.model.dto.MuseumDto;
 import timofeyqa.rococo.service.CountryClient;
@@ -16,6 +15,7 @@ import timofeyqa.rococo.service.db.CountryDbClient;
 import timofeyqa.rococo.service.db.MuseumDbClient;
 import timofeyqa.rococo.utils.RandomDataUtils;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,6 +23,7 @@ import static timofeyqa.rococo.jupiter.extension.ContentExtension.content;
 import static timofeyqa.rococo.utils.PhotoConverter.loadImageAsBytes;
 import static timofeyqa.rococo.utils.RandomDataUtils.*;
 
+@ParametersAreNonnullByDefault
 public class MuseumExtension implements BeforeEachCallback {
 
     private final MuseumClient museumClient = new MuseumDbClient();

@@ -2,6 +2,9 @@ package timofeyqa.rococo.page.component.cards;
 
 import timofeyqa.rococo.page.detail.DetailPage;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
 public class MainPageCard extends Card<MainPageCard> {
   private final static String TITLE_TAG = "div";
 

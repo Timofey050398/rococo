@@ -1,5 +1,6 @@
 package timofeyqa.rococo.service.db;
 
+import io.qameta.allure.Step;
 import org.springframework.util.CollectionUtils;
 import timofeyqa.rococo.config.Config;
 import timofeyqa.rococo.data.entity.PaintingEntity;
@@ -24,6 +25,7 @@ public class MuseumDbClient implements MuseumClient, DeletableClient<MuseumDto> 
   private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(CFG.jdbcUrl());
 
   @Override
+  @Step("Create museum")
   public MuseumDto create(MuseumDto museum) {
     return xaTransactionTemplate.execute(() -> MuseumMapper.INSTANCE.fromEntity(
         museumRepository.create(MuseumMapper.INSTANCE.toEntity(museum))
@@ -31,6 +33,7 @@ public class MuseumDbClient implements MuseumClient, DeletableClient<MuseumDto> 
   }
 
   @Override
+  @Step("Find museum by title")
   public Optional<MuseumDto> findByTitle(String title) {
     return xaTransactionTemplate.execute(() -> museumRepository.findByTitle(title)
         .map(MuseumMapper.INSTANCE::fromEntity)
@@ -38,6 +41,7 @@ public class MuseumDbClient implements MuseumClient, DeletableClient<MuseumDto> 
   }
 
   @Override
+  @Step("Delete museum's by uuid list")
   public void deleteList(List<UUID> uuidList) {
     var paintingUuids = getPaintingUuids(uuidList);
     xaTransactionTemplate.execute(() -> {
@@ -50,6 +54,7 @@ public class MuseumDbClient implements MuseumClient, DeletableClient<MuseumDto> 
   }
 
   @Override
+  @Step("Find museum's by uuid list")
   public List<MuseumDto> findAllById(List<UUID> uuids){
     return Objects.requireNonNull(xaTransactionTemplate.execute(() -> museumRepository.findAllById(uuids)))
         .stream()
@@ -58,6 +63,7 @@ public class MuseumDbClient implements MuseumClient, DeletableClient<MuseumDto> 
   }
 
 
+  @Step("Get painting uuid's by museum uuid's")
   private List<UUID> getPaintingUuids(List<UUID> list) {
     var museumList = xaTransactionTemplate.execute(() -> museumRepository.findAllById(list));
     return Optional.ofNullable(museumList)
@@ -70,6 +76,7 @@ public class MuseumDbClient implements MuseumClient, DeletableClient<MuseumDto> 
   }
 
   @Override
+  @Step("Delete museum")
   public void remove(MuseumDto museum) {
     xaTransactionTemplate.execute(()-> {
       museumRepository.remove(MuseumMapper.INSTANCE.toEntity(museum));

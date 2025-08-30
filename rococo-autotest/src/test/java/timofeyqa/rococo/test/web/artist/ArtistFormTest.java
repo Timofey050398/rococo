@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import timofeyqa.rococo.jupiter.annotation.*;
 import timofeyqa.rococo.jupiter.annotation.meta.WebTest;
 import timofeyqa.rococo.model.ContentJson;
-import timofeyqa.rococo.model.rest.ArtistJson;
 import timofeyqa.rococo.page.detail.ArtistDetailPage;
 import timofeyqa.rococo.page.lists.ArtistPage;
 

@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import timofeyqa.rococo.jupiter.annotation.*;
 import timofeyqa.rococo.jupiter.annotation.meta.WebTest;
 import timofeyqa.rococo.model.ContentJson;
-import timofeyqa.rococo.model.rest.MuseumJson;
 import timofeyqa.rococo.page.detail.MuseumDetailPage;
 
 import java.awt.image.BufferedImage;

@@ -7,7 +7,6 @@ import timofeyqa.rococo.jupiter.annotation.*;
 import timofeyqa.rococo.jupiter.annotation.meta.WebTest;
 import timofeyqa.rococo.model.ContentJson;
 import timofeyqa.rococo.model.dto.ArtistDto;
-import timofeyqa.rococo.model.rest.ArtistJson;
 import timofeyqa.rococo.page.detail.ArtistDetailPage;
 
 import java.awt.image.BufferedImage;

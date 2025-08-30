@@ -1,5 +1,6 @@
 package timofeyqa.rococo.jupiter.extension;
 
+import io.qameta.allure.Step;
 import org.apache.commons.lang3.StringUtils;
 import timofeyqa.rococo.config.Config;
 import timofeyqa.rococo.jupiter.annotation.User;
@@ -11,8 +12,11 @@ import timofeyqa.rococo.utils.RandomDataUtils;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import static timofeyqa.rococo.utils.PhotoConverter.loadImageAsString;
 
+@ParametersAreNonnullByDefault
 public class UserExtension implements
         BeforeEachCallback,
         AfterEachCallback,
@@ -86,11 +90,13 @@ public class UserExtension implements
         return extensionContext.getStore(NAMESPACE).get(extensionContext.getUniqueId(), UserJson.class);
     }
 
+    @Step("Get created user from context")
     public static UserJson createdUser() {
         final ExtensionContext context = TestMethodContextExtension.context();
         return context.getStore(NAMESPACE).get(context.getUniqueId(), UserJson.class);
     }
 
+    @Step("Set user to context")
     public static void setUser(UserJson user) {
         final ExtensionContext context = TestMethodContextExtension.context();
         context.getStore(NAMESPACE).put(context.getUniqueId(), user);

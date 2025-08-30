@@ -6,7 +6,6 @@ import jakarta.annotation.Nonnull;
 import lombok.Builder;
 import timofeyqa.rococo.data.entity.UserEntity;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.UUID;
 

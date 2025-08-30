@@ -106,6 +106,6 @@ public class UsersDbClient implements UserClient, DeletableClient<UserJson> {
 
     @Override
     public void deleteList(List<UUID> uuidList) {
-        throw new RuntimeException("Not implemented");
+        throw new UnsupportedOperationException("Not implemented");
     }
 }

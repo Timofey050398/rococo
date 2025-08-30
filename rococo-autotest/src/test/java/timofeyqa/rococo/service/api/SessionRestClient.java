@@ -6,6 +6,9 @@ import timofeyqa.rococo.api.gateway.SessionApi;
 import timofeyqa.rococo.model.rest.SessionJson;
 import timofeyqa.rococo.api.core.ErrorAsserter;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
 public class SessionRestClient extends RestClient implements ErrorAsserter {
 
   private final SessionApi api = create(SessionApi.class);

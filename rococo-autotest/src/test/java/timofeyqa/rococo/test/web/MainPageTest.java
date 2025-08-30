@@ -4,9 +4,7 @@ import com.codeborne.selenide.Selenide;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import timofeyqa.rococo.jupiter.annotation.ScreenShotTest;
-import timofeyqa.rococo.jupiter.annotation.User;
 import timofeyqa.rococo.jupiter.annotation.meta.WebTest;
-import timofeyqa.rococo.model.rest.UserJson;
 import timofeyqa.rococo.page.MainPage;
 
 import java.awt.image.BufferedImage;

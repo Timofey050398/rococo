@@ -3,9 +3,13 @@ package timofeyqa.rococo.page.component;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Selenide.$;
 
+@ParametersAreNonnullByDefault
+@SuppressWarnings("UnusedReturnValue")
 public class SearchBar extends BaseComponent<SearchBar> {
 
   private final SelenideElement input = self.$("input[type='search']");

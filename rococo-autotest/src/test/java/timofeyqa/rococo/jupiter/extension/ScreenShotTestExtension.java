@@ -102,7 +102,10 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
         return TestMethodContextExtension.context().getStore(NAMESPACE).get("diff", BufferedImage.class);
     }
 
-    private static byte[] imageToBytes(BufferedImage image) {
+    private static byte[] imageToBytes(@Nullable BufferedImage image) {
+        if (image == null) {
+            return new byte[0];
+        }
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             ImageIO.write(image, "png", outputStream);
             return outputStream.toByteArray();

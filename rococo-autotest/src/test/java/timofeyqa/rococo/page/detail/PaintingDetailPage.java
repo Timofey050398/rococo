@@ -16,6 +16,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static timofeyqa.rococo.condition.ScreenshotCondition.image;
 
+@SuppressWarnings("UnusedReturnValue")
 @ParametersAreNonnullByDefault
 public class PaintingDetailPage extends BasePage<PaintingDetailPage> implements DetailPage {
 
@@ -26,7 +27,9 @@ public class PaintingDetailPage extends BasePage<PaintingDetailPage> implements 
   private final SelenideElement artist = $("article div.text-center");
   private final SelenideElement description = $("article.card .grid > div:last-child .m-4");
   private final SelenideElement editPaintingButton = $("button[data-testid='edit-painting']");
+
   @Override
+  @Step("Check that page is loaded")
   public PaintingDetailPage checkThatPageLoaded() {
     header.getSelf().should(visible)
         .shouldHave(text("Ro"))
@@ -68,6 +71,7 @@ public class PaintingDetailPage extends BasePage<PaintingDetailPage> implements 
     return this;
   }
 
+  @Step("Get url for painting detail {id}")
   public static String url(UUID id){
     return CFG.frontUrl()+"painting/"+id;
   }

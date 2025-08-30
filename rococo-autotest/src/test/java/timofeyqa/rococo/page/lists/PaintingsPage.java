@@ -1,25 +1,25 @@
 package timofeyqa.rococo.page.lists;
 
 import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 import lombok.Getter;
 import timofeyqa.rococo.page.BasePage;
 import timofeyqa.rococo.page.component.NotFoundComponent;
-import timofeyqa.rococo.page.component.cards.MuseumCard;
 import timofeyqa.rococo.page.component.forms.PaintingForm;
 import timofeyqa.rococo.page.component.Header;
 import timofeyqa.rococo.page.component.cards.PaintingCard;
 import timofeyqa.rococo.page.component.SearchBar;
 import timofeyqa.rococo.page.component.Title;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import static com.codeborne.selenide.CollectionCondition.size;
-import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 
+@ParametersAreNonnullByDefault
 public class PaintingsPage extends BasePage<PaintingsPage> implements CardListPage<PaintingsPage, PaintingCard> {
 
   public static final String URL = CFG.frontUrl()+"painting";
@@ -33,6 +33,7 @@ public class PaintingsPage extends BasePage<PaintingsPage> implements CardListPa
   private final SearchBar searchBar = new SearchBar();
 
   @Override
+  @Step("Check that page is loaded")
   public PaintingsPage checkThatPageLoaded() {
     header.getSelf().should(visible)
         .shouldHave(text("Ro"))

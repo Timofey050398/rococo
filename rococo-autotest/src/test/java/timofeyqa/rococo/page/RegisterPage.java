@@ -3,6 +3,7 @@ package timofeyqa.rococo.page;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.image.BufferedImage;
 
 import static com.codeborne.selenide.Condition.text;
@@ -11,6 +12,8 @@ import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 import static timofeyqa.rococo.condition.ScreenshotCondition.image;
 
+@ParametersAreNonnullByDefault
+@SuppressWarnings("UnusedReturnValue")
 public class RegisterPage extends BasePage<RegisterPage>{
 
   private final SelenideElement successRegisterHeader = $("p.form__subheader");
@@ -26,6 +29,7 @@ public class RegisterPage extends BasePage<RegisterPage>{
   public static final String URL = CFG.authUrl()+"register";
 
   @Override
+  @Step("Check that page is loaded")
   public RegisterPage checkThatPageLoaded() {
     image.shouldBe(visible);
     usernameInput.shouldBe(visible);

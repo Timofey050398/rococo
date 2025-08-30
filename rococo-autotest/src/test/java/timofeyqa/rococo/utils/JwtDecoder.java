@@ -2,19 +2,21 @@ package timofeyqa.rococo.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import timofeyqa.rococo.model.rest.SessionJson;
 
+import javax.annotation.Nonnull;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Date;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JwtDecoder {
 
   private static final ObjectMapper mapper = new ObjectMapper();
 
-  private JwtDecoder() {}
-
-  public static SessionJson decode(String jwt) {
+  public static SessionJson decode(@Nonnull String jwt) {
     try {
       String[] parts = jwt.split("\\.");
       if (parts.length < 2) {

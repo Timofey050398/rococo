@@ -1,14 +1,18 @@
 package timofeyqa.rococo.utils;
 
 import com.codeborne.selenide.Configuration;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import java.time.Duration;
+import javax.annotation.Nonnull;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Waiter {
 
-  public static <T> Optional<T> waitForOptional(Supplier<Optional<T>> supplier) {
+  @SuppressWarnings("BusyWait")
+  public static <T> Optional<T> waitForOptional(@Nonnull Supplier<Optional<T>> supplier) {
     long deadline = System.currentTimeMillis() + Configuration.timeout;
 
     Optional<T> result = Optional.empty();
