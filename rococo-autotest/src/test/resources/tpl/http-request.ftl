@@ -29,8 +29,7 @@
     <h4>Body</h4>
     <div>
         <#assign bodyStr = data.body?string>
-        <#assign LogUtils = "timofeyqa.rococo.utils.LogUtils"?static>
-
+        <#assign LogUtils = "timofeyqa.rococo.utils.LogUtils"?new()>
         <pre><code>${LogUtils.maskLongParams(bodyStr)}</code></pre>
     </div>
 </#if>
