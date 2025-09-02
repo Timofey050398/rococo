@@ -4,17 +4,17 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import lombok.experimental.UtilityClass;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
-@UtilityClass
-public final class LogUtils {
+public class LogUtils {
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final int MAX_LENGTH = 2010;
+    private static final Set<String> SENSITIVE_KEYS = Set.of("content", "avatar", "photo");
 
-    public static String maskLongParams(String body) {
+    public String maskLongParams(String body) {
         if (body == null || body.isEmpty()) {
             return body;
         }
@@ -29,16 +29,17 @@ public final class LogUtils {
         }
     }
 
-    private static boolean maskNode(JsonNode node) {
+    private boolean maskNode(JsonNode node) {
         boolean modified = false;
         if (node.isObject()) {
             ObjectNode obj = (ObjectNode) node;
             Iterator<Map.Entry<String, JsonNode>> fields = obj.fields();
             while (fields.hasNext()) {
                 Map.Entry<String, JsonNode> entry = fields.next();
+                String key = entry.getKey();
                 JsonNode value = entry.getValue();
-                if (value.isTextual() && value.asText().length() > MAX_LENGTH) {
-                    obj.put(entry.getKey(), "<long_param>");
+                if (SENSITIVE_KEYS.contains(key) && value.isTextual() && value.asText().length() > MAX_LENGTH) {
+                    obj.put(key, "<long_param>");
                     modified = true;
                 } else if (maskNode(value)) {
                     modified = true;
@@ -47,11 +48,7 @@ public final class LogUtils {
         } else if (node.isArray()) {
             ArrayNode arr = (ArrayNode) node;
             for (int i = 0; i < arr.size(); i++) {
-                JsonNode value = arr.get(i);
-                if (value.isTextual() && value.asText().length() > MAX_LENGTH) {
-                    arr.set(i, TextNode.valueOf("<long_param>"));
-                    modified = true;
-                } else if (maskNode(value)) {
+                if (maskNode(arr.get(i))) {
                     modified = true;
                 }
             }
