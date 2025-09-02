@@ -1,5 +1,6 @@
 #!/bin/bash
 source ./docker.properties
+export COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-$(basename "$(pwd)")}" 
 export COMPOSE_PROFILES=test
 export PROFILE=docker
 export PREFIX="${IMAGE_PREFIX}"
