@@ -3,17 +3,31 @@ package timofeyqa.rococo.utils;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
+import freemarker.template.TemplateMethodModelEx;
+import freemarker.template.TemplateModelException;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class LogUtils {
+/**
+ * Utility to mask long parameters in logged requests/responses.
+ *
+ * <p>Implements {@link TemplateMethodModelEx} so it can be directly
+ * instantiated and used inside FreeMarker templates.</p>
+ */
+public class LogUtils implements TemplateMethodModelEx {
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final int MAX_LENGTH = 2010;
     private static final Set<String> SENSITIVE_KEYS = Set.of("content", "avatar", "photo");
 
+    /**
+     * Masks sensitive long parameters in the provided string.
+     *
+     * @param body original body
+     * @return body with long parameters replaced with &lt;long_param&gt;
+     */
     public String maskLongParams(String body) {
         if (body == null || body.isEmpty()) {
             return body;
@@ -54,5 +68,15 @@ public class LogUtils {
             }
         }
         return modified;
+    }
+
+    @Override
+    public Object exec(List arguments) throws TemplateModelException {
+        if (arguments == null || arguments.isEmpty()) {
+            return "";
+        }
+        Object arg = arguments.get(0);
+        String body = arg == null ? null : arg.toString();
+        return maskLongParams(body);
     }
 }

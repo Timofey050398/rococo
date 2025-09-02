@@ -47,7 +47,7 @@
         <#assign bodyStr = data.body?string>
         <#assign LogUtils = "timofeyqa.rococo.utils.LogUtils"?new()>
 
-        <pre><code>${LogUtils.maskLongParams(bodyStr)}</code></pre>
+        <pre><code>${LogUtils(bodyStr)}</code></pre>
     </div>
 </#if>
 
