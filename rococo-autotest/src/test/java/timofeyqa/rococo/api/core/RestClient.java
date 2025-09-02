@@ -9,6 +9,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import static timofeyqa.rococo.utils.LogUtils.maskLongParams;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.net.CookieManager;
@@ -46,7 +48,9 @@ public abstract class RestClient implements RequestExecutor {
             }
         }
 
-        builder.addNetworkInterceptor(new HttpLoggingInterceptor().setLevel(level));
+        builder.addNetworkInterceptor(new HttpLoggingInterceptor(
+                message -> System.out.println(maskLongParams(message))
+        ).setLevel(level));
         builder.addNetworkInterceptor(
                 new AllureOkHttp3()
                         .setRequestTemplate("http-request.ftl")
