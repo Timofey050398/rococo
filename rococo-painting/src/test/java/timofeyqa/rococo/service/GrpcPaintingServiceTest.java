@@ -10,7 +10,6 @@ import timofeyqa.grpc.rococo.*;
 import timofeyqa.grpc.rococo.Pageable;
 import timofeyqa.rococo.data.PaintingEntity;
 import timofeyqa.rococo.data.repository.PaintingRepository;
-import timofeyqa.rococo.mappers.PaintingMapper;
 import timofeyqa.rococo.mappers.PaintingPatcher;
 
 import java.util.*;
