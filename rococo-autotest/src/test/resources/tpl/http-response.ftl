@@ -45,13 +45,9 @@
     <h4>Body</h4>
     <div>
         <#assign bodyStr = data.body?string>
-        <#assign maskedBody = bodyStr?replace(
-            '"([^"]{1,50})"\\s*:\\s*"(?:[^"\\\\]|\\\\.){2010,}"',
-            '"$1":"<binary>"',
-            "r"
-        )>
+        <#assign LogUtils = statics['timofeyqa.rococo.utils.LogUtils']>
 
-        <pre><code>${maskedBody}</code></pre>
+        <pre><code>${LogUtils.maskLongParams(bodyStr)}</code></pre>
     </div>
 </#if>
 
