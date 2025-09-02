@@ -42,20 +42,22 @@ public class AllureBackendLogsExtension implements SuiteExtension {
 
 
     private static void logAttachment(String serviceName, AllureLifecycle allureLifecycle) {
-        String name = String.format("Rococo-%s log",serviceName);
-        String path = String.format("./logs/rococo_%s/app.log",serviceName);
+        String name = String.format("Rococo-%s log", serviceName);
+        Path path = Path.of(String.format("./logs/rococo_%s/app.log", serviceName));
 
-        try {
+        if (Files.notExists(path)) {
+            return;
+        }
+
+        try (var input = Files.newInputStream(path)) {
             allureLifecycle.addAttachment(
                 name,
                 "text/html",
                 ".log",
-                Files.newInputStream(
-                    Path.of(path)
-                )
+                input
             );
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.err.printf("Could not attach log for service %s: %s%n", serviceName, e.getMessage());
         }
     }
 }
