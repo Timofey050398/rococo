@@ -1,5 +1,6 @@
 package timofeyqa.rococo.jupiter.extension;
 
+import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
 import org.apache.commons.lang3.StringUtils;
 import timofeyqa.rococo.config.Config;
@@ -31,42 +32,42 @@ public class UserExtension implements
     @Override
     public void beforeEach(ExtensionContext context) {
         AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), User.class)
-                .ifPresent(userAnno -> {
-                    if ("".equals(userAnno.username())) {
-                        final String username = RandomDataUtils.randomUsername();
+            .ifPresent(userAnno  -> Allure.step("Pre condition: create user",() -> {
+                if ("".equals(userAnno.username())) {
+                    final String username = RandomDataUtils.randomUsername();
 
-                        UserJson user = usersClient.createUser(
-                                username,
-                                CFG.defaultPassword()
-                        );
-                        var userBuilder = user.toBuilder();
-                        boolean needToUpdate = false;
+                    UserJson user = usersClient.createUser(
+                        username,
+                        CFG.defaultPassword()
+                    );
+                    var userBuilder = user.toBuilder();
+                    boolean needToUpdate = false;
 
-                        if (!StringUtils.isBlank(userAnno.firstname())) {
-                            userBuilder.firstname(userAnno.firstname());
-                            needToUpdate = true;
-                        }
-                        if (!StringUtils.isBlank(userAnno.lastname())) {
-                            userBuilder.lastname(userAnno.lastname());
-                            needToUpdate = true;
-                        }
-                        if (!StringUtils.isBlank(userAnno.avatar())) {
-                            userBuilder.avatar(loadImageAsString(userAnno.avatar()));
-                            needToUpdate = true;
-                        }
-
-                        if (needToUpdate) {
-                            final String password = user.password();
-                            user = usersClient.updateUser(userBuilder.build())
-                                .withPassword(password);
-                        }
-
-                        context.getStore(NAMESPACE).put(
-                                context.getUniqueId(),
-                                user
-                        );
+                    if (!StringUtils.isBlank(userAnno.firstname())) {
+                        userBuilder.firstname(userAnno.firstname());
+                        needToUpdate = true;
                     }
-                });
+                    if (!StringUtils.isBlank(userAnno.lastname())) {
+                        userBuilder.lastname(userAnno.lastname());
+                        needToUpdate = true;
+                    }
+                    if (!StringUtils.isBlank(userAnno.avatar())) {
+                        userBuilder.avatar(loadImageAsString(userAnno.avatar()));
+                        needToUpdate = true;
+                    }
+
+                    if (needToUpdate) {
+                        final String password = user.password();
+                        user = usersClient.updateUser(userBuilder.build())
+                            .withPassword(password);
+                    }
+
+                    context.getStore(NAMESPACE).put(
+                        context.getUniqueId(),
+                        user
+                    );
+                }
+            }));
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -75,7 +76,9 @@ public class UserExtension implements
         if (usersClient instanceof DeletableClient deletable) {
             UserJson user = context.getStore(NAMESPACE).get(context.getUniqueId(), UserJson.class);
             if (user != null && user.username() != null) {
-                deletable.remove(user);
+                Allure.step(
+                    "Post condition: delete user ",
+                    () -> deletable.remove(user));
             }
         }
     }

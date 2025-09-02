@@ -1,5 +1,6 @@
 package timofeyqa.rococo.jupiter.extension;
 
+import io.qameta.allure.Allure;
 import timofeyqa.rococo.jupiter.annotation.Artist;
 import timofeyqa.rococo.jupiter.annotation.Content;
 import timofeyqa.rococo.model.dto.ArtistDto;
@@ -25,56 +26,56 @@ public class ArtistExtension implements BeforeEachCallback {
     @Override
     public void beforeEach(ExtensionContext context) {
         AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), Content.class)
-                .ifPresent(content -> {
-                  final Set<ArtistDto> preparedArtists = new HashSet<>();
-                  final Set<ArtistDto> createdArtists = new HashSet<>();
-                    if (ArrayUtils.isNotEmpty(content.artists())) {
+            .ifPresent(content  -> Allure.step("Pre condition: create artists",() -> {
+              final Set<ArtistDto> preparedArtists = new HashSet<>();
+              final Set<ArtistDto> createdArtists = new HashSet<>();
+              if (ArrayUtils.isNotEmpty(content.artists())) {
 
-                        for (Artist artistAnno : content.artists()) {
-                          final String name = "".equals(artistAnno.name())
-                              ? RandomDataUtils.randomName()
-                              : artistAnno.name();
+                for (Artist artistAnno : content.artists()) {
+                  final String name = "".equals(artistAnno.name())
+                      ? RandomDataUtils.randomName()
+                      : artistAnno.name();
 
-                          Optional<ArtistDto> artist = artistClient.findByName(name);
+                  Optional<ArtistDto> artist = artistClient.findByName(name);
 
-                          if (artist.isPresent()) {
-                            createdArtists.add(artist.get());
-                          } else {
-                            final String biography = "".equals(artistAnno.biography())
-                                ? randomDescription()
-                                : artistAnno.biography();
+                  if (artist.isPresent()) {
+                    createdArtists.add(artist.get());
+                  } else {
+                    final String biography = "".equals(artistAnno.biography())
+                        ? randomDescription()
+                        : artistAnno.biography();
 
-                            final byte[] photo = "".equals(artistAnno.photo())
-                                ? null
-                                : loadImageAsBytes(artistAnno.photo());
+                    final byte[] photo = "".equals(artistAnno.photo())
+                        ? null
+                        : loadImageAsBytes(artistAnno.photo());
 
-                            ArtistDto artistDto = new ArtistDto(
-                                null,
-                                name,
-                                biography,
-                                photo,
-                                new HashSet<>()
-                            );
+                    ArtistDto artistDto = new ArtistDto(
+                        null,
+                        name,
+                        biography,
+                        photo,
+                        new HashSet<>()
+                    );
 
-                            preparedArtists.add(artistDto);
-                          }
-                        }
-                    }
-                  for (int i = 0; i < content.artistCount(); i++) {
-                    preparedArtists
-                        .add(new ArtistDto(
-                            null,
-                            randomName(),
-                            randomDescription(),
-                            randomImage("artists"),
-                            new HashSet<>()
-                        ));
+                    preparedArtists.add(artistDto);
                   }
+                }
+              }
+              for (int i = 0; i < content.artistCount(); i++) {
+                preparedArtists
+                    .add(new ArtistDto(
+                        null,
+                        randomName(),
+                        randomDescription(),
+                        randomImage("artists"),
+                        new HashSet<>()
+                    ));
+              }
 
-                  createdArtists.addAll(addBatch(preparedArtists));
+              createdArtists.addAll(addBatch(preparedArtists));
 
-                  content().artists().addAll(createdArtists);
-                });
+              content().artists().addAll(createdArtists);
+            }));
     }
 
 

@@ -4,16 +4,15 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import lombok.experimental.UtilityClass;
 
 import java.util.Iterator;
 import java.util.Map;
 
+@UtilityClass
 public final class LogUtils {
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final int MAX_LENGTH = 2010;
-
-    private LogUtils() {
-    }
 
     public static String maskLongParams(String body) {
         if (body == null || body.isEmpty()) {

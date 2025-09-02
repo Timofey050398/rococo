@@ -1,5 +1,6 @@
 package timofeyqa.rococo.jupiter.extension;
 
+import io.qameta.allure.Allure;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -32,70 +33,68 @@ public class MuseumExtension implements BeforeEachCallback {
     @Override
     public void beforeEach(ExtensionContext context) {
         AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), Content.class)
-                .ifPresent(content -> {
-                  final Set<MuseumDto> preparedMuseums = new HashSet<>();
-                  final Set<MuseumDto> createdMuseums = new HashSet<>();
-                  if (ArrayUtils.isNotEmpty(content.museums())) {
+            .ifPresent(content -> Allure.step("Pre condition: create museum content",()-> {
+              final Set<MuseumDto> preparedMuseums = new HashSet<>();
+              final Set<MuseumDto> createdMuseums = new HashSet<>();
+              if (ArrayUtils.isNotEmpty(content.museums())) {
+                for (Museum museumAnno : content.museums()) {
+                  final String title = "".equals(museumAnno.title())
+                      ? RandomDataUtils.randomMuseumName()
+                      : museumAnno.title();
 
-                    for (Museum museumAnno : content.museums()) {
-                      final String title = "".equals(museumAnno.title())
-                          ? RandomDataUtils.randomMuseumName()
-                          : museumAnno.title();
+                  Optional<MuseumDto> museumDtoOptional = museumClient.findByTitle(title);
 
-                      Optional<MuseumDto> museumDtoOptional = museumClient.findByTitle(title);
+                  if (museumDtoOptional.isPresent()) {
+                    createdMuseums.add(museumDtoOptional.get());
+                  } else {
+                    final String description = "".equals(museumAnno.description())
+                        ? RandomDataUtils.randomDescription()
+                        : museumAnno.description();
 
-                      if (museumDtoOptional.isPresent()) {
-                        createdMuseums.add(museumDtoOptional.get());
-                      } else {
-                        final String description = "".equals(museumAnno.description())
-                            ? RandomDataUtils.randomDescription()
-                            : museumAnno.description();
+                    final byte[] photo = "".equals(museumAnno.photo())
+                        ? null
+                        : loadImageAsBytes(museumAnno.photo());
 
-                        final byte[] photo = "".equals(museumAnno.photo())
-                            ? null
-                            : loadImageAsBytes(museumAnno.photo());
+                    final String city = "".equals(museumAnno.city())
+                        ? null
+                        :museumAnno.city();
 
-                        final String city = "".equals(museumAnno.city())
-                            ? null
-                            :museumAnno.city();
-
-                        MuseumDto museumDto = new MuseumDto(
-                            null,
-                            title,
-                            description,
-                            photo,
-                            new GeoJson(
-                                city,
-                                countryClient.getByName(museumAnno.country())
-                                    .orElseThrow()
-                                ),
-                            new HashSet<>()
-                        );
-                        preparedMuseums.add(museumDto);
-                      }
-                    }
-                  }
-                  for (int i = 0; i < content.museumCount(); i++) {
-                    var country = Country.random();
-                    var museum = new MuseumDto(
+                    MuseumDto museumDto = new MuseumDto(
                         null,
-                        randomMuseumName(),
-                        randomDescription(),
-                        randomImage("museums"),
+                        title,
+                        description,
+                        photo,
                         new GeoJson(
-                            randomFirstname(),
-                            countryClient
-                                .getByName(country)
-                                .orElseThrow(() -> new IllegalStateException("Country not found: "+ country))
+                            city,
+                            countryClient.getByName(museumAnno.country())
+                                .orElseThrow()
                         ),
                         new HashSet<>()
                     );
-                    preparedMuseums.add(museum);
+                    preparedMuseums.add(museumDto);
                   }
-                  createdMuseums.addAll(addBatch(preparedMuseums));
-
-                  content().museums().addAll(createdMuseums);
-                });
+                }
+              }
+              for (int i = 0; i < content.museumCount(); i++) {
+                var country = Country.random();
+                var museum = new MuseumDto(
+                    null,
+                    randomMuseumName(),
+                    randomDescription(),
+                    randomImage("museums"),
+                    new GeoJson(
+                        randomFirstname(),
+                        countryClient
+                            .getByName(country)
+                            .orElseThrow(() -> new IllegalStateException("Country not found: "+ country))
+                    ),
+                    new HashSet<>()
+                );
+                preparedMuseums.add(museum);
+              }
+              createdMuseums.addAll(addBatch(preparedMuseums));
+              content().museums().addAll(createdMuseums);
+            }));
     }
 
     private synchronized Set<MuseumDto> addBatch(Set<MuseumDto> preparedMuseums) {

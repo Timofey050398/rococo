@@ -11,47 +11,71 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.io.ByteArrayInputStream;
 import java.util.Map;
+import java.util.Objects;
 
 public class BrowserExtension implements
     BeforeEachCallback,
     AfterEachCallback,
     TestExecutionExceptionHandler,
-    LifecycleMethodExecutionExceptionHandler,
-    SuiteExtension {
+    LifecycleMethodExecutionExceptionHandler {
 
 
   static {
     Configuration.timeout = 10000;
     Configuration.pageLoadStrategy = "eager";
-    Configuration.browser = "firefox".equals(System.getProperty("browser")) ? "firefox" : "chrome";
+    Configuration.browser = Objects.requireNonNullElse(
+        System.getProperty("browser"),
+        "chrome"
+    );
+
+    ChromeOptions chromeOptions = new ChromeOptions();
+    FirefoxOptions firefoxOptions = new FirefoxOptions();
+
+    // тёмная тема
+    if ("chrome".equalsIgnoreCase(Configuration.browser)) {
+      chromeOptions.addArguments("--force-dark-mode");
+      chromeOptions.setExperimentalOption("prefs", Map.of(
+          "webkit.webprefs.preferredColorScheme", 2
+      ));
+    } else if ("firefox".equalsIgnoreCase(Configuration.browser)) {
+      firefoxOptions.addPreference("ui.systemUsesDarkTheme", 1);
+    }
+
+    // docker-режим
     if ("docker".equals(System.getProperty("test.env"))) {
       Configuration.remote = "http://selenoid:4444/wd/hub";
-      if ("firefox".equals(System.getProperty("browser"))) {
+
+      if ("firefox".equalsIgnoreCase(Configuration.browser)) {
         Configuration.browserVersion = "125.0";
       } else {
-        Configuration.browserCapabilities = new ChromeOptions().addArguments("--no-sandbox");
+        chromeOptions.addArguments("--no-sandbox", "--disable-dev-shm-usage");
         Configuration.browserVersion = "127.0";
       }
+
+      setRussianLocale(chromeOptions, firefoxOptions);
+    }
+
+    // финальное присвоение
+    if ("firefox".equalsIgnoreCase(Configuration.browser)) {
+      Configuration.browserCapabilities = firefoxOptions;
+    } else {
+      Configuration.browserCapabilities = chromeOptions;
     }
   }
 
-  @Override
-  public void beforeSuite(ExtensionContext context) {
-    if ("chrome".equalsIgnoreCase(Configuration.browser)) {
-      ChromeOptions options = new ChromeOptions();
-
-      options.addArguments("--force-dark-mode");
-      options.setExperimentalOption("prefs", Map.of(
-          "webkit.webprefs.preferredColorScheme", 2
-      ));
-      Configuration.browserCapabilities = options;
-    } else if ("firefox".equalsIgnoreCase(Configuration.browser)) {
-      FirefoxOptions options = new FirefoxOptions();
-      options.addPreference("ui.systemUsesDarkTheme", 1);
-      Configuration.browserCapabilities = options;
+  private static void setRussianLocale(ChromeOptions chromeOptions, FirefoxOptions firefoxOptions) {
+    switch (Configuration.browser.toLowerCase()) {
+      case "chrome", "edge" -> chromeOptions.addArguments("--lang=ru-RU");
+      case "firefox" -> firefoxOptions.addPreference("intl.accept_languages", "ru-RU");
+      default -> {
+        DesiredCapabilities caps = new DesiredCapabilities();
+        caps.setCapability("args", "ru-RU");
+        Configuration.browserCapabilities = caps;
+      }
     }
   }
 

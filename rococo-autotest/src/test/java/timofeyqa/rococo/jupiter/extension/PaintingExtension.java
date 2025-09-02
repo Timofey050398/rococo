@@ -1,5 +1,6 @@
 package timofeyqa.rococo.jupiter.extension;
 
+import io.qameta.allure.Allure;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -43,7 +44,7 @@ public class PaintingExtension implements BeforeEachCallback {
   @Override
   public synchronized void beforeEach(ExtensionContext context) {
     AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), Content.class)
-        .ifPresent(content -> {
+        .ifPresent(content -> Allure.step("Pre condition: create paintings",() -> {
           final List<PaintingDto> createdPaintings = new ArrayList<>();
           final ContentJson contentDto = content();
           if (ArrayUtils.isNotEmpty(content.paintings())) {
@@ -142,7 +143,7 @@ public class PaintingExtension implements BeforeEachCallback {
           }
 
           contentDto.paintings().addAll(createdPaintings);
-        });
+        }));
   }
 
   private PaintingDto randomPainting(ArtistDto artist) {

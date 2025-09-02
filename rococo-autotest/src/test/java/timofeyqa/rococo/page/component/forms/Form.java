@@ -69,8 +69,7 @@ public abstract class Form<T extends Form<?>> extends BaseComponent<T> {
 
   @SuppressWarnings("unchecked")
   @Step("upload image to form from resources path {resourcePath}")
-  public T uploadImage(String resourcePath) {
-    resourcePath = CFG.screenshotBaseDir() + resourcePath;
+  public T uploadImage(final String resourcePath) {
     URL resourceUrl = getClass().getClassLoader().getResource(resourcePath);
     if (resourceUrl == null) {
       throw new IllegalArgumentException("Resource not found: " + resourcePath);

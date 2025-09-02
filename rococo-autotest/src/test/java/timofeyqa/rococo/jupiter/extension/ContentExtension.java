@@ -1,5 +1,6 @@
 package timofeyqa.rococo.jupiter.extension;
 
+import io.qameta.allure.Allure;
 import org.junit.jupiter.api.extension.*;
 import timofeyqa.rococo.model.ContentJson;
 import timofeyqa.rococo.model.rest.ContentImpl;
@@ -55,15 +56,23 @@ public class ContentExtension implements ParameterResolver, AfterEachCallback {
   public void afterEach(ExtensionContext context) {
     ContentJson content = context.getStore(NAMESPACE).get(context.getUniqueId(), ContentJson.class);
     if (content != null) {
-      if (paintingClient instanceof DeletableClient deletable) {
-        deletable.deleteList(contentUuids(content.paintings()));
-      }
-      if (museumClient instanceof DeletableClient deletable) {
-        deletable.deleteList(contentUuids(content.allMuseums()));
-      }
-      if (artistClient instanceof DeletableClient deletable) {
-        deletable.deleteList(contentUuids(content.allArtists()));
-      }
+      Allure.step("Post condition: delete content",()-> {
+        var paintings = content.paintings();
+        if (paintingClient instanceof DeletableClient deletable
+            && !paintings.isEmpty()) {
+          deletable.deleteList(contentUuids(paintings));
+        }
+        var museums = content.allMuseums();
+        if (museumClient instanceof DeletableClient deletable
+            && !museums.isEmpty()) {
+          deletable.deleteList(contentUuids(museums));
+        }
+        var artists = content.allArtists();
+        if (artistClient instanceof DeletableClient deletable
+            && !artists.isEmpty()) {
+          deletable.deleteList(contentUuids(artists));
+        }
+      });
     }
   }
 

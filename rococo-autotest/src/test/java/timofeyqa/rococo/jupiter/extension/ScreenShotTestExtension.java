@@ -1,6 +1,7 @@
 package timofeyqa.rococo.jupiter.extension;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.qameta.allure.Step;
 import timofeyqa.rococo.config.Config;
 import timofeyqa.rococo.jupiter.annotation.ScreenShotTest;
 import timofeyqa.rococo.model.allure.ScreenDiff;
@@ -51,14 +52,7 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
         final ScreenShotTest screenShotTest = context.getRequiredTestMethod().getAnnotation(ScreenShotTest.class);
         if (screenShotTest != null) {
             if (screenShotTest.rewriteExpected()) {
-                final BufferedImage actual = getActual();
-                if (actual != null) {
-                    ImageIO.write(
-                            actual,
-                            "png",
-                            new File(".screen-output/" + CFG.screenshotBaseDir()  + screenShotTest.value())
-                    );
-                }
+                rewriteExpectedImage(screenShotTest);
             }
 
             if (throwable.getMessage().contains(ASSERT_SCREEN_MESSAGE)) {
@@ -76,6 +70,18 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
             }
         }
         throw throwable;
+    }
+
+    @Step("Post condition: rewrite expected image")
+    private static void rewriteExpectedImage(ScreenShotTest screenShotTest) throws IOException {
+        final BufferedImage actual = getActual();
+        if (actual != null) {
+            ImageIO.write(
+                    actual,
+                    "png",
+                    new File(".screen-output/" + CFG.screenshotBaseDir()  + screenShotTest.value())
+            );
+        }
     }
 
     public static void setExpected(BufferedImage expected) {

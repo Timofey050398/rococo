@@ -2,6 +2,7 @@ package timofeyqa.rococo.jupiter.extension;
 
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.WebDriverRunner;
+import io.qameta.allure.Step;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.openqa.selenium.Cookie;
@@ -68,6 +69,7 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
                 });
     }
 
+    @Step("Pre condition: Setup authorized web session")
     private void setupBrowserSession(){
         Selenide.open(CFG.frontUrl());
         Selenide.localStorage().setItem("id_token", getToken());

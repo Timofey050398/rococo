@@ -4,6 +4,8 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.MessageOrBuilder;
 import com.google.protobuf.util.JsonFormat;
 import io.grpc.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static timofeyqa.rococo.utils.LogUtils.maskLongParams;
 
@@ -11,6 +13,7 @@ import static timofeyqa.rococo.utils.LogUtils.maskLongParams;
 public class GrpcConsoleInterceptor implements ClientInterceptor {
 
     private static final JsonFormat.Printer printer = JsonFormat.printer();
+    private static final Logger LOG = LoggerFactory.getLogger(GrpcConsoleInterceptor.class);
 
     @SuppressWarnings("rawtypes")
     @Override
@@ -21,8 +24,7 @@ public class GrpcConsoleInterceptor implements ClientInterceptor {
             @Override
             public void sendMessage(Object message) {
                 try {
-                    String json = printer.print((MessageOrBuilder) message);
-                    System.out.println("REQUEST: " + maskLongParams(json));
+                    LOG.debug("REQUEST: {}",maskLongParams(printer.print((MessageOrBuilder) message)));
                 } catch (InvalidProtocolBufferException e) {
                     throw new RuntimeException(e);
                 }
@@ -35,8 +37,7 @@ public class GrpcConsoleInterceptor implements ClientInterceptor {
                     @Override
                     public void onMessage(Object message) {
                         try {
-                            String json = printer.print((MessageOrBuilder) message);
-                            System.out.println("RESPONSE: " + maskLongParams(json));
+                            LOG.debug("RESPONSE: {}",maskLongParams(printer.print((MessageOrBuilder) message)));
                         } catch (InvalidProtocolBufferException e) {
                             throw new RuntimeException(e);
                         }
