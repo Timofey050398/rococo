@@ -12,13 +12,15 @@ import java.util.UUID;
 
 public class AllureBackendLogsExtension implements SuiteExtension {
 
-    public static final String caseName = "Niffler backend logs";
+    public static final String caseName = "Rococo backend logs";
     private static final Set<String> serviceNames = Set.of(
-            "auth",
-            "userdata",
-            "spend",
-            "gateway",
-            "currency"
+        "auth",
+        "userdata",
+        "geo",
+        "painting",
+        "artist",
+        "museum",
+        "gateway"
     );
 
     @Override
@@ -40,17 +42,17 @@ public class AllureBackendLogsExtension implements SuiteExtension {
 
 
     private static void logAttachment(String serviceName, AllureLifecycle allureLifecycle) {
-        String name = String.format("Niffler-%s log",serviceName);
-        String path = String.format("./logs/niffler_%s/app.log",serviceName);
+        String name = String.format("Rococo-%s log",serviceName);
+        String path = String.format("./logs/rococo_%s/app.log",serviceName);
 
         try {
             allureLifecycle.addAttachment(
-                    name,
-                    "text/html",
-                    ".log",
-                    Files.newInputStream(
-                            Path.of(path)
-                    )
+                name,
+                "text/html",
+                ".log",
+                Files.newInputStream(
+                    Path.of(path)
+                )
             );
         } catch (IOException e) {
             throw new RuntimeException(e);
