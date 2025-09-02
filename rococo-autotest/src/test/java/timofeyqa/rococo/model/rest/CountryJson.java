@@ -19,9 +19,8 @@ public record CountryJson(
    }
 
   public CountryEntity toEntity() {
-     CountryEntity countryEntity = new CountryEntity();
-     countryEntity.setId(id);
-     countryEntity.setName(name);
-     return countryEntity;
+     return new CountryEntity()
+         .setId(id)
+         .setName(name);
   }
 }

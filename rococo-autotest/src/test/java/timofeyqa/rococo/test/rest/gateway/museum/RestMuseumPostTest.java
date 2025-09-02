@@ -13,7 +13,6 @@ import timofeyqa.rococo.jupiter.annotation.meta.RestTest;
 import timofeyqa.rococo.jupiter.extension.ApiLoginExtension;
 import timofeyqa.rococo.model.ContentJson;
 import timofeyqa.rococo.model.dto.MuseumDto;
-import timofeyqa.rococo.model.rest.CountryJson;
 import timofeyqa.rococo.model.rest.GeoJson;
 import timofeyqa.rococo.service.CountryClient;
 import timofeyqa.rococo.service.MuseumClient;
@@ -123,12 +122,10 @@ class RestMuseumPostTest {
   @ApiLogin
   @DisplayName("Ошибка при добавлении музея без country")
   void addMuseumCountryRequiredTest(@Token String token) {
-    CountryJson country = null;
-    //noinspection ConstantValue
     MuseumDto request = MuseumDto.builder()
         .title("Louvre")
         .description("Famous museum")
-        .geo(new GeoJson(randomCity(), country))
+        .geo(new GeoJson(randomCity(), null))
         .build();
 
     HttpException ex = assertThrows(HttpException.class,

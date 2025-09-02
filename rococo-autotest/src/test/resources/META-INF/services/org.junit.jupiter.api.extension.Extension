@@ -1,4 +1,5 @@
 timofeyqa.rococo.jupiter.extension.DatabasesExtension
 timofeyqa.rococo.jupiter.extension.TestMethodContextExtension
 timofeyqa.rococo.jupiter.extension.AllureBackendLogsExtension
+timofeyqa.rococo.jupiter.extension.LayerExtension
 timofeyqa.rococo.jupiter.extension.CookiesExtension

@@ -3,6 +3,7 @@ package timofeyqa.rococo.data;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.proxy.HibernateProxy;
@@ -15,6 +16,7 @@ import java.util.*;
 @Getter
 @Setter
 @Entity
+@Accessors(chain = true)
 @Table(name = "\"user\"")
 public class UserEntity implements Serializable {
   @Id

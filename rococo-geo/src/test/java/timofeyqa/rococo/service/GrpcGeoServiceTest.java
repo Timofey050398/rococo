@@ -45,9 +45,9 @@ class GrpcGeoServiceTest {
   @Test
   void getGeo_existingId_returnsGeoResponse() {
     UUID id = UUID.randomUUID();
-    CountryEntity country = new CountryEntity();
-    country.setId(id);
-    country.setName("Russia");
+    CountryEntity country = new CountryEntity()
+        .setId(id)
+        .setName("Russia");
 
     when(countryRepository.findById(id)).thenReturn(Optional.of(country));
 
@@ -79,13 +79,13 @@ class GrpcGeoServiceTest {
 
   @Test
   void getAll_returnsAllCountries() {
-    CountryEntity c1 = new CountryEntity();
-    c1.setId(UUID.randomUUID());
-    c1.setName("Country1");
+    CountryEntity c1 = new CountryEntity()
+        .setId(UUID.randomUUID())
+        .setName("Country1");
 
-    CountryEntity c2 = new CountryEntity();
-    c2.setId(UUID.randomUUID());
-    c2.setName("Country2");
+    CountryEntity c2 = new CountryEntity()
+        .setId(UUID.randomUUID())
+        .setName("Country2");
 
     when(countryRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))).thenReturn(List.of(c1, c2));
 
@@ -105,13 +105,13 @@ class GrpcGeoServiceTest {
     UUID id1 = UUID.randomUUID();
     UUID id2 = UUID.randomUUID();
 
-    CountryEntity c1 = new CountryEntity();
-    c1.setId(id1);
-    c1.setName("Country1");
+    CountryEntity c1 = new CountryEntity()
+        .setId(id1)
+        .setName("Country1");
 
-    CountryEntity c2 = new CountryEntity();
-    c2.setId(id2);
-    c2.setName("Country2");
+    CountryEntity c2 = new CountryEntity()
+        .setId(id2)
+        .setName("Country2");
 
     when(countryRepository.findAllByIdIn(List.of(id1, id2))).thenReturn(List.of(c1, c2));
 

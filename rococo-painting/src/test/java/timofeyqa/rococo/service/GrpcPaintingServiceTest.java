@@ -44,11 +44,11 @@ class GrpcPaintingServiceTest {
   @Test
   void getPainting_returnsPainting() {
     UUID id = UUID.randomUUID();
-    PaintingEntity entity = new PaintingEntity();
-    entity.setId(id);
-    entity.setTitle("Test");
-    entity.setArtistId(UUID.randomUUID());
-    entity.setContent("image".getBytes());
+    PaintingEntity entity = new PaintingEntity()
+        .setId(id)
+        .setTitle("Test")
+        .setArtistId(UUID.randomUUID())
+        .setContent("image".getBytes());
 
     when(paintingRepository.findById(id)).thenReturn(Optional.of(entity));
 
@@ -67,11 +67,11 @@ class GrpcPaintingServiceTest {
 
   @Test
   void getPaintingsPage_returnsPage() {
-    PaintingEntity entity = new PaintingEntity();
-    entity.setId(UUID.randomUUID());
-    entity.setTitle("PageTest");
-    entity.setArtistId(UUID.randomUUID());
-    entity.setContent("img".getBytes());
+    PaintingEntity entity = new PaintingEntity()
+        .setId(UUID.randomUUID())
+        .setTitle("PageTest")
+        .setArtistId(UUID.randomUUID())
+        .setContent("img".getBytes());
 
     Page<PaintingEntity> page = new PageImpl<>(List.of(entity), PageRequest.of(0, 10), 1);
 
@@ -95,11 +95,11 @@ class GrpcPaintingServiceTest {
   void getPaintingsByArtist_returnsFilteredPage() {
     UUID artistId = UUID.randomUUID();
 
-    PaintingEntity entity = new PaintingEntity();
-    entity.setId(UUID.randomUUID());
-    entity.setTitle("ArtistPaint");
-    entity.setArtistId(artistId);
-    entity.setContent("x".getBytes());
+    PaintingEntity entity = new PaintingEntity()
+        .setId(UUID.randomUUID())
+        .setTitle("ArtistPaint")
+        .setArtistId(artistId)
+        .setContent("x".getBytes());
 
     Page<PaintingEntity> page = new PageImpl<>(List.of(entity));
 
@@ -126,10 +126,10 @@ class GrpcPaintingServiceTest {
   @Test
   void updatePainting_appliesChanges() {
     UUID paintingId = UUID.randomUUID();
-    PaintingEntity existing = new PaintingEntity();
-    existing.setId(paintingId);
-    existing.setTitle("Old");
-    existing.setArtistId(UUID.randomUUID());
+    PaintingEntity existing = new PaintingEntity()
+        .setId(paintingId)
+        .setTitle("Old")
+        .setArtistId(UUID.randomUUID());
 
     Painting updatedProto = Painting.newBuilder()
         .setId(paintingId.toString())

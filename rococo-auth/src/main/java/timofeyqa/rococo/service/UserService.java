@@ -36,13 +36,13 @@ public class UserService {
   @Transactional
   public @Nonnull
   String registerUser(@Nonnull String username, @Nonnull String password) {
-    UserEntity userEntity = new UserEntity();
-    userEntity.setEnabled(true);
-    userEntity.setAccountNonExpired(true);
-    userEntity.setCredentialsNonExpired(true);
-    userEntity.setAccountNonLocked(true);
-    userEntity.setUsername(username);
-    userEntity.setPassword(passwordEncoder.encode(password));
+    UserEntity userEntity = new UserEntity()
+        .setEnabled(true)
+        .setAccountNonExpired(true)
+        .setCredentialsNonExpired(true)
+        .setAccountNonLocked(true)
+        .setUsername(username)
+        .setPassword(passwordEncoder.encode(password));
 
     AuthorityEntity readAuthorityEntity = new AuthorityEntity();
     readAuthorityEntity.setAuthority(Authority.read);

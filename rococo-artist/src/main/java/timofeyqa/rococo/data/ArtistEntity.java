@@ -3,6 +3,7 @@ package timofeyqa.rococo.data;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.UUID;
@@ -10,6 +11,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "artist")
 @Data
+@Accessors(chain=true)
 public class ArtistEntity {
   @Id
   @UuidGenerator(style = UuidGenerator.Style.TIME)

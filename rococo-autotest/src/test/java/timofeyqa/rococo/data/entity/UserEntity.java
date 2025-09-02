@@ -3,6 +3,7 @@ package timofeyqa.rococo.data.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.proxy.HibernateProxy;
@@ -18,6 +19,7 @@ import static timofeyqa.rococo.utils.PhotoConverter.convert;
 @Getter
 @Setter
 @Entity
+@Accessors(chain=true)
 @Table(name = "\"user\"")
 public class UserEntity implements Serializable {
   @Id
@@ -62,12 +64,11 @@ public class UserEntity implements Serializable {
   }
 
   public static UserEntity fromJson(UserJson json) {
-    UserEntity user = new UserEntity();
-    user.setId(json.id());
-    user.setUsername(json.username());
-    user.setFirstname(json.firstname());
-    user.setLastname(json.lastname());
-    user.setAvatar(convert(json.avatar()));
-    return user;
+    return new UserEntity()
+        .setId(json.id())
+        .setUsername(json.username())
+        .setFirstname(json.firstname())
+        .setLastname(json.lastname())
+        .setAvatar(convert(json.avatar()));
   }
 }

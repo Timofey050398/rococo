@@ -46,11 +46,11 @@ class GrpcArtistServiceTest {
   @Test
   void getArtist_existingId_returnsArtist() {
     UUID id = UUID.randomUUID();
-    ArtistEntity entity = new ArtistEntity();
-    entity.setId(id);
-    entity.setName("Artist Name");
-    entity.setBiography("Bio");
-    entity.setPhoto(new byte[]{1,2,3});
+    ArtistEntity entity = new ArtistEntity()
+        .setId(id)
+        .setName("Artist Name")
+        .setBiography("Bio")
+        .setPhoto(new byte[]{1,2,3});
 
     when(artistRepository.findById(id)).thenReturn(Optional.of(entity));
 
@@ -84,17 +84,17 @@ class GrpcArtistServiceTest {
 
   @Test
   void getArtistPage_returnsPage() {
-    ArtistEntity entity1 = new ArtistEntity();
-    entity1.setId(UUID.randomUUID());
-    entity1.setName("A1");
-    entity1.setBiography("Bio1");
-    entity1.setPhoto(null);
+    ArtistEntity entity1 = new ArtistEntity()
+        .setId(UUID.randomUUID())
+        .setName("A1")
+        .setBiography("Bio1")
+        .setPhoto(null);
 
-    ArtistEntity entity2 = new ArtistEntity();
-    entity2.setId(UUID.randomUUID());
-    entity2.setName("A2");
-    entity2.setBiography("Bio2");
-    entity2.setPhoto(null);
+    ArtistEntity entity2 = new ArtistEntity()
+        .setId(UUID.randomUUID())
+        .setName("A2")
+        .setBiography("Bio2")
+        .setPhoto(null);
 
     List<ArtistEntity> entities = List.of(entity1, entity2);
     Page<ArtistEntity> page = new PageImpl<>(entities, PageRequest.of(0, 2), 10);
@@ -120,15 +120,15 @@ class GrpcArtistServiceTest {
     UUID id1 = UUID.randomUUID();
     UUID id2 = UUID.randomUUID();
 
-    ArtistEntity entity1 = new ArtistEntity();
-    entity1.setId(id1);
-    entity1.setName("Name1");
-    entity1.setBiography("Bio1");
+    ArtistEntity entity1 = new ArtistEntity()
+        .setId(id1)
+        .setName("Name1")
+        .setBiography("Bio1");
 
-    ArtistEntity entity2 = new ArtistEntity();
-    entity2.setId(id2);
-    entity2.setName("Name2");
-    entity2.setBiography("Bio2");
+    ArtistEntity entity2 = new ArtistEntity()
+        .setId(id2)
+        .setName("Name2")
+        .setBiography("Bio2");
 
     when(artistRepository.findAllByIdIn(List.of(id1, id2))).thenReturn(List.of(entity1, entity2));
 
@@ -152,11 +152,11 @@ class GrpcArtistServiceTest {
   @Test
   void updateArtist_updatesFields() {
     UUID id = UUID.randomUUID();
-    ArtistEntity existing = new ArtistEntity();
-    existing.setId(id);
-    existing.setName("Old Name");
-    existing.setBiography("Old Bio");
-    existing.setPhoto(new byte[]{1, 1, 1});
+    ArtistEntity existing = new ArtistEntity()
+        .setId(id)
+        .setName("Old Name")
+        .setBiography("Old Bio")
+        .setPhoto(new byte[]{1, 1, 1});
 
     when(artistRepository.findById(id)).thenReturn(Optional.of(existing));
     when(artistRepository.save(any())).thenAnswer(i -> i.getArgument(0));
@@ -164,21 +164,20 @@ class GrpcArtistServiceTest {
     // Мок ArtistMapper: преобразует grpc -> ArtistEntity
     when(artistMapper.addEntityFromArtist(any(Artist.class))).thenAnswer(invocation -> {
       Artist source = invocation.getArgument(0);
-      ArtistEntity e = new ArtistEntity();
-      e.setId(UUID.fromString(source.getId()));
-      e.setName(source.getName());
-      e.setBiography(source.getBiography());
-      e.setPhoto(source.getPhoto().toByteArray());
-      return e;
+      return new ArtistEntity()
+          .setId(UUID.fromString(source.getId()))
+          .setName(source.getName())
+          .setBiography(source.getBiography())
+          .setPhoto(source.getPhoto().toByteArray());
     });
 
     // Мок ArtistPatcher: копирует поля в существующую сущность
     doAnswer(invocation -> {
       Artist source = invocation.getArgument(0);
       ArtistEntity target = invocation.getArgument(1);
-      target.setName(source.getName());
-      target.setBiography(source.getBiography());
-      target.setPhoto(source.getPhoto().toByteArray());
+      target.setName(source.getName())
+          .setBiography(source.getBiography())
+          .setPhoto(source.getPhoto().toByteArray());
       return null;
     }).when(artistPatcher).patch(any(Artist.class), any(ArtistEntity.class), any(ArtistMapper.class));
 

@@ -44,13 +44,13 @@ class GrpcMuseumServiceTest {
   @Test
   void getMuseum_existingId_returnsMuseum() {
     UUID id = UUID.randomUUID();
-    MuseumEntity entity = new MuseumEntity();
-    entity.setId(id);
-    entity.setTitle("Title");
-    entity.setDescription("Description");
-    entity.setCity("City");
-    entity.setPhoto(new byte[]{1, 2, 3});
-    entity.setCountryId(UUID.randomUUID());
+    MuseumEntity entity = new MuseumEntity()
+        .setId(id)
+        .setTitle("Title")
+        .setDescription("Description")
+        .setCity("City")
+        .setPhoto(new byte[]{1, 2, 3})
+        .setCountryId(UUID.randomUUID());
 
     when(museumRepository.findById(id)).thenReturn(Optional.of(entity));
 
@@ -87,19 +87,19 @@ class GrpcMuseumServiceTest {
 
   @Test
   void getMuseumPage_returnsPage() {
-    MuseumEntity entity1 = new MuseumEntity();
-    entity1.setId(UUID.randomUUID());
-    entity1.setTitle("Title1");
-    entity1.setDescription("Desc1");
-    entity1.setCity("City1");
-    entity1.setCountryId(UUID.randomUUID());
+    MuseumEntity entity1 = new MuseumEntity()
+        .setId(UUID.randomUUID())
+        .setTitle("Title1")
+        .setDescription("Desc1")
+        .setCity("City1")
+        .setCountryId(UUID.randomUUID());
 
-    MuseumEntity entity2 = new MuseumEntity();
-    entity2.setId(UUID.randomUUID());
-    entity2.setTitle("Title2");
-    entity2.setDescription("Desc2");
-    entity2.setCity("City2");
-    entity2.setCountryId(UUID.randomUUID());
+    MuseumEntity entity2 = new MuseumEntity()
+        .setId(UUID.randomUUID())
+        .setTitle("Title2")
+        .setDescription("Desc2")
+        .setCity("City2")
+        .setCountryId(UUID.randomUUID());
 
     List<MuseumEntity> entities = List.of(entity1, entity2);
     Pageable pageable = PageRequest.of(0, 2, Sort.by("title").ascending());
@@ -128,15 +128,15 @@ class GrpcMuseumServiceTest {
     UUID id1 = UUID.randomUUID();
     UUID id2 = UUID.randomUUID();
 
-    MuseumEntity entity1 = new MuseumEntity();
-    entity1.setId(id1);
-    entity1.setTitle("Title1");
-    entity1.setCountryId(UUID.randomUUID());
+    MuseumEntity entity1 = new MuseumEntity()
+        .setId(id1)
+        .setTitle("Title1")
+        .setCountryId(UUID.randomUUID());
 
-    MuseumEntity entity2 = new MuseumEntity();
-    entity2.setId(id2);
-    entity2.setTitle("Title2");
-    entity2.setCountryId(UUID.randomUUID());
+    MuseumEntity entity2 = new MuseumEntity()
+        .setId(id2)
+        .setTitle("Title2")
+        .setCountryId(UUID.randomUUID());
 
     List<UUID> ids = List.of(id1, id2);
     List<MuseumEntity> entities = List.of(entity1, entity2);
@@ -167,13 +167,13 @@ class GrpcMuseumServiceTest {
     UUID id = UUID.randomUUID();
 
     // Существующая сущность
-    MuseumEntity existing = new MuseumEntity();
-    existing.setId(id);
-    existing.setTitle("OldTitle");
-    existing.setDescription("OldDesc");
-    existing.setCity("OldCity");
-    existing.setPhoto(new byte[]{1, 2});
-    existing.setCountryId(UUID.randomUUID());
+    MuseumEntity existing = new MuseumEntity()
+        .setId(id)
+        .setTitle("OldTitle")
+        .setDescription("OldDesc")
+        .setCity("OldCity")
+        .setPhoto(new byte[]{1, 2})
+        .setCountryId(UUID.randomUUID());
 
     // Моки репозитория
     when(museumRepository.findById(id)).thenReturn(Optional.of(existing));
@@ -181,13 +181,13 @@ class GrpcMuseumServiceTest {
     when(museumRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
     // Мок mapper: преобразует GRPC в сущность
-    MuseumEntity mappedEntity = new MuseumEntity();
-    mappedEntity.setId(id);
-    mappedEntity.setTitle("NewTitle");
-    mappedEntity.setDescription("NewDesc");
-    mappedEntity.setCity("NewCity");
-    mappedEntity.setPhoto(new byte[]{3, 4, 5});
-    mappedEntity.setCountryId(UUID.randomUUID());
+    MuseumEntity mappedEntity = new MuseumEntity()
+        .setId(id)
+        .setTitle("NewTitle")
+        .setDescription("NewDesc")
+        .setCity("NewCity")
+        .setPhoto(new byte[]{3, 4, 5})
+        .setCountryId(UUID.randomUUID());
     when(museumMapper.addEntityFromMuseum(any(Museum.class))).thenReturn(mappedEntity);
 
     // Мок patcher: применяет изменения к существующей сущности

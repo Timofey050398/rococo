@@ -39,15 +39,15 @@ class RococoUserDetailsServiceTest {
     write.setAuthority(Authority.write);
     authorityEntities = List.of(read, write);
 
-    testUserEntity = new UserEntity();
-    testUserEntity.setUsername("correct");
-    testUserEntity.setAuthorities(authorityEntities);
-    testUserEntity.setEnabled(true);
-    testUserEntity.setPassword("test-pass");
-    testUserEntity.setAccountNonExpired(true);
-    testUserEntity.setAccountNonLocked(true);
-    testUserEntity.setCredentialsNonExpired(true);
-    testUserEntity.setId(UUID.randomUUID());
+    testUserEntity = new UserEntity()
+        .setUsername("correct")
+        .setAuthorities(authorityEntities)
+        .setEnabled(true)
+        .setPassword("test-pass")
+        .setAccountNonExpired(true)
+        .setAccountNonLocked(true)
+        .setCredentialsNonExpired(true)
+        .setId(UUID.randomUUID());
 
     lenient().when(userRepository.findByUsername("correct"))
         .thenReturn(Optional.of(testUserEntity));

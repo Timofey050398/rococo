@@ -3,12 +3,14 @@ package timofeyqa.rococo.data.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.util.UUID;
 
 @Getter
 @Setter
 @Entity
+@Accessors(chain=true)
 @Table(name = "country")
 public class CountryEntity {
     @Id

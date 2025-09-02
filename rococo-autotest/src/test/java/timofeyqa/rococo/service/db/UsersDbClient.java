@@ -78,13 +78,13 @@ public class UsersDbClient implements UserClient, DeletableClient<UserJson> {
     }
 
     private AuthUserEntity authUserEntity(String username, String password) {
-        AuthUserEntity authUser = new AuthUserEntity();
-        authUser.setUsername(username);
-        authUser.setPassword(pe.encode(password));
-        authUser.setEnabled(true);
-        authUser.setAccountNonExpired(true);
-        authUser.setAccountNonLocked(true);
-        authUser.setCredentialsNonExpired(true);
+        AuthUserEntity authUser = new AuthUserEntity()
+            .setUsername(username)
+            .setPassword(pe.encode(password))
+            .setEnabled(true)
+            .setAccountNonExpired(true)
+            .setAccountNonLocked(true)
+            .setCredentialsNonExpired(true);
         authUser.setAuthorities(
             Arrays.stream(Authority.values()).map(
                 e -> {
@@ -99,9 +99,8 @@ public class UsersDbClient implements UserClient, DeletableClient<UserJson> {
     }
 
     private UserEntity userEntity(String username) {
-        UserEntity ue = new UserEntity();
-        ue.setUsername(username);
-        return ue;
+        return new UserEntity()
+            .setUsername(username);
     }
 
     @Override

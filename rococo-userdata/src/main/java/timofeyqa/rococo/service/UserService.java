@@ -37,8 +37,9 @@ public class UserService {
             () -> {
               LOG.info("### Kafka consumer record: {}", cr.toString());
 
-              UserEntity userDataEntity = new UserEntity();
-              userDataEntity.setUsername(user.username());
+              UserEntity userDataEntity = new UserEntity()
+                  .setUsername(user.username());
+
               UserEntity userEntity = userRepository.save(userDataEntity);
 
               LOG.info(

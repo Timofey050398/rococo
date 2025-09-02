@@ -59,9 +59,9 @@ public class RococoUserdataConsumerTest {
         when(userRepository.findByUsername("new_user"))
                 .thenReturn(Optional.empty());
 
-        UserEntity saved = new UserEntity();
-        saved.setId(UUID.randomUUID());
-        saved.setUsername("new_user");
+        UserEntity saved = new UserEntity()
+            .setId(UUID.randomUUID())
+            .setUsername("new_user");
 
         when(userRepository.save(any(UserEntity.class))).thenReturn(saved);
 
@@ -79,11 +79,11 @@ public class RococoUserdataConsumerTest {
     @Test
     void getUser_existingUser_returnsUserJson() {
         String username = "john";
-        UserEntity entity = new UserEntity();
-        entity.setId(UUID.randomUUID());
-        entity.setUsername(username);
-        entity.setFirstname("John");
-        entity.setLastname("Doe");
+        UserEntity entity = new UserEntity()
+            .setId(UUID.randomUUID())
+            .setUsername(username)
+            .setFirstname("John")
+            .setLastname("Doe");
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(entity));
 
@@ -110,12 +110,12 @@ public class RococoUserdataConsumerTest {
         String username = "john";
         UUID id = UUID.randomUUID();
 
-        UserEntity entity = new UserEntity();
-        entity.setId(id);
-        entity.setUsername(username);
-        entity.setFirstname("OldFirst");
-        entity.setLastname("OldLast");
-        entity.setAvatar("old".getBytes(StandardCharsets.UTF_8));
+        UserEntity entity = new UserEntity()
+            .setId(id)
+            .setUsername(username)
+            .setFirstname("OldFirst")
+            .setLastname("OldLast")
+            .setAvatar("old".getBytes(StandardCharsets.UTF_8));
 
         UserJson patchRequest = new UserJson(id, username, "NewFirst", "NewLast", "newAvatar");
 
@@ -132,9 +132,9 @@ public class RococoUserdataConsumerTest {
     @Test
     void patchUser_usernameMismatch_throwsException() {
         String username = "john";
-        UserEntity entity = new UserEntity();
-        entity.setId(UUID.randomUUID());
-        entity.setUsername(username);
+        UserEntity entity = new UserEntity()
+            .setId(UUID.randomUUID())
+            .setUsername(username);
 
         UserJson patchRequest = new UserJson(entity.getId(), "otherUsername", "First", "Last", null);
 
@@ -149,9 +149,9 @@ public class RococoUserdataConsumerTest {
     @Test
     void patchUser_idMismatch_throwsException() {
         String username = "john";
-        UserEntity entity = new UserEntity();
-        entity.setId(UUID.randomUUID());
-        entity.setUsername(username);
+        UserEntity entity = new UserEntity()
+            .setId(UUID.randomUUID())
+            .setUsername(username);
 
         UserJson patchRequest = new UserJson(UUID.randomUUID(), username, "First", "Last", null);
 
