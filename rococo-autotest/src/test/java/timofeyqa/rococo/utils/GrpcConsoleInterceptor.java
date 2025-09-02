@@ -5,6 +5,8 @@ import com.google.protobuf.MessageOrBuilder;
 import com.google.protobuf.util.JsonFormat;
 import io.grpc.*;
 
+import static timofeyqa.rococo.utils.LogUtils.maskLongParams;
+
 @SuppressWarnings("unchecked")
 public class GrpcConsoleInterceptor implements ClientInterceptor {
 
@@ -19,7 +21,8 @@ public class GrpcConsoleInterceptor implements ClientInterceptor {
             @Override
             public void sendMessage(Object message) {
                 try {
-                    System.out.println("REQUEST: "+printer.print((MessageOrBuilder) message));
+                    String json = printer.print((MessageOrBuilder) message);
+                    System.out.println("REQUEST: " + maskLongParams(json));
                 } catch (InvalidProtocolBufferException e) {
                     throw new RuntimeException(e);
                 }
@@ -32,7 +35,8 @@ public class GrpcConsoleInterceptor implements ClientInterceptor {
                     @Override
                     public void onMessage(Object message) {
                         try {
-                            System.out.println("RESPONSE: " + printer.print((MessageOrBuilder) message));
+                            String json = printer.print((MessageOrBuilder) message);
+                            System.out.println("RESPONSE: " + maskLongParams(json));
                         } catch (InvalidProtocolBufferException e) {
                             throw new RuntimeException(e);
                         }
