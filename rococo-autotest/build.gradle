@@ -6,7 +6,7 @@ buildscript {
         okhttp3Version = '4.11.0'
         retrofitVersion = '2.11.0'
         apollographqlVersion = '0.0.2'
-        logbackVersion = '1.4.11'
+        logbackVersion = '1.4.14'
         slf4jVersion = '2.0.9'
         springJdbcVersion = '6.1.12'
         springCryptoVersion = '6.3.1'
@@ -44,7 +44,7 @@ allure {
 dependencies {
     testImplementation project(':rococo-grpc')
     // Logs
-    testImplementation "ch.qos.logback:logback-classic:${logbackVersion}"
+    testRuntimeOnly "ch.qos.logback:logback-classic:${logbackVersion}"
     testImplementation "org.slf4j:slf4j-api:${slf4jVersion}"
     // JUnit
     testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"

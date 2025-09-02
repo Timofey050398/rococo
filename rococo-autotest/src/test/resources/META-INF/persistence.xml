@@ -2,7 +2,7 @@
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
              version="2.1">
-    <persistence-unit name="jdbc:mysql://127.0.0.1:3306/rococo-auth" transaction-type="JTA">
+    <persistence-unit name="rococo-auth" transaction-type="JTA">
         <jta-data-source>java:comp/env/jdbc/rococo-auth</jta-data-source>
         <class>timofeyqa.rococo.data.entity.auth.AuthorityEntity</class>
         <class>timofeyqa.rococo.data.entity.auth.AuthUserEntity</class>
@@ -14,7 +14,7 @@
         </properties>
     </persistence-unit>
 
-    <persistence-unit name="jdbc:mysql://127.0.0.1:3306/rococo" transaction-type="JTA">
+    <persistence-unit name="rococo" transaction-type="JTA">
         <jta-data-source>java:comp/env/jdbc/rococo</jta-data-source>
         <class>timofeyqa.rococo.data.entity.UserEntity</class>
         <class>timofeyqa.rococo.data.entity.CountryEntity</class>

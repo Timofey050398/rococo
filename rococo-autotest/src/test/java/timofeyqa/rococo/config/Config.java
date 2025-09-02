@@ -55,6 +55,10 @@ public interface Config {
     return 8091;
   }
 
+  default int dbPort(){
+    return 3306;
+  }
+
   default int gatewayPort(){
     return 8090;
   }
@@ -64,4 +68,10 @@ public interface Config {
   default int authPort(){
     return 9000;
   }
+
+  @Nonnull
+  String allureDockerServiceUrl();
+
+  @Nonnull
+  String screenshotBaseDir();
 }

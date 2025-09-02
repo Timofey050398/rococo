@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage;
 @DisplayName("Тесты главной страницы")
 class MainPageTest {
 
-  @ScreenShotTest("img/pages/main/painting-main-page.png")
+  @ScreenShotTest("main/painting-main-page.png")
   @DisplayName("На странице есть изображение для компонента 'Картины'")
   void paintingButtonShouldHasImage(BufferedImage expected){
     Selenide.open(MainPage.URL, MainPage.class)
@@ -21,7 +21,7 @@ class MainPageTest {
         .checkPaintingsImage(expected);
   }
 
-  @ScreenShotTest("img/pages/main/museum-main-page.png")
+  @ScreenShotTest("main/museum-main-page.png")
   @DisplayName("На странице есть изображение для компонента 'Музеи'")
   void museumButtonShouldHasImage(BufferedImage expected){
     Selenide.open(MainPage.URL, MainPage.class)
@@ -29,7 +29,7 @@ class MainPageTest {
         .checkMuseumsImage(expected);
   }
 
-  @ScreenShotTest("img/pages/main/artist-main-page.png")
+  @ScreenShotTest("main/artist-main-page.png")
   @DisplayName("На странице есть изображение для компонента 'Художники'")
   void artistButtonShouldHasImage(BufferedImage expected){
     Selenide.open(MainPage.URL, MainPage.class)
@@ -37,7 +37,7 @@ class MainPageTest {
         .checkArtistsImage(expected);
   }
 
-  @ScreenShotTest("img/pages/main/dark-theme.png")
+  @ScreenShotTest("main/dark-theme.png")
   @DisplayName("На главной странице можно выбрать темную тему")
   void mainPageHasDarkThemeByDefault(BufferedImage expected){
     Selenide.open(MainPage.URL, MainPage.class)

@@ -1,5 +1,7 @@
 package timofeyqa.rococo.config;
 
+import org.jetbrains.annotations.NotNull;
+
 public enum ProdConfig implements Config {
   INSTANCE;
 
@@ -50,6 +52,18 @@ public enum ProdConfig implements Config {
 
   @Override
   public String paintingGrpcUrl() {
+    return "";
+  }
+
+  @NotNull
+  @Override
+  public String allureDockerServiceUrl() {
+    return "";
+  }
+
+  @NotNull
+  @Override
+  public String screenshotBaseDir() {
     return "";
   }
 }

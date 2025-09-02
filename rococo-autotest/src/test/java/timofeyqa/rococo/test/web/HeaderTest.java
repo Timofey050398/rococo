@@ -17,7 +17,7 @@ import java.awt.image.BufferedImage;
 @DisplayName("Тесты компонента хедера")
 public class HeaderTest {
 
-  @ScreenShotTest("img/pages/main/light-theme.png")
+  @ScreenShotTest("main/light-theme.png")
   @DisplayName("Нажатие свитчера смены темы меняет тему")
   void themeShouldBeChangedAfterClickSwitcher(BufferedImage expected){
     Selenide.open(MainPage.URL, MainPage.class)
@@ -68,8 +68,8 @@ public class HeaderTest {
         .checkThatPageLoaded();
   }
 
-  @ScreenShotTest("img/pages/profile/avatar-small.png")
-  @User(avatar = "img/pages/profile/avatar.png")
+  @ScreenShotTest("profile/avatar-small.png")
+  @User(avatar = "img/content/avatar.png")
   @ApiLogin
   @DisplayName("У пользователя с аватаром аватар должен отображаться в шапке")
   void avatarShouldBeShown(BufferedImage expected){
@@ -80,7 +80,7 @@ public class HeaderTest {
 
 
 
-  @ScreenShotTest("img/pages/profile/avatar-template-small.png")
+  @ScreenShotTest("profile/avatar-template-small.png")
   @User
   @ApiLogin
   @DisplayName("У пользователя без аватара должна отображатсья заглушка в шапке")

@@ -4,6 +4,7 @@ import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
+import timofeyqa.rococo.config.Config;
 import timofeyqa.rococo.page.component.BaseComponent;
 
 import javax.annotation.Nonnull;
@@ -29,6 +30,7 @@ public abstract class Form<T extends Form<?>> extends BaseComponent<T> {
   protected final SelenideElement image = self.$("img");
   private final ElementsCollection formErrors = $$("p.form__error, span.form__error, .input__helper-text, .text-error-400");
   private final SelenideElement toast = $("div.toast");
+  protected static final Config CFG = Config.getInstance();
 
   public Form(String imageParamName) {
     super($("div.card.p-4"));
@@ -66,8 +68,9 @@ public abstract class Form<T extends Form<?>> extends BaseComponent<T> {
   public abstract T checkThatPageLoaded();
 
   @SuppressWarnings("unchecked")
-  @Step("upload image ti form from resources path {resourcePath}")
+  @Step("upload image to form from resources path {resourcePath}")
   public T uploadImage(String resourcePath) {
+    resourcePath = CFG.screenshotBaseDir() + resourcePath;
     URL resourceUrl = getClass().getClassLoader().getResource(resourcePath);
     if (resourceUrl == null) {
       throw new IllegalArgumentException("Resource not found: " + resourcePath);

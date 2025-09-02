@@ -18,7 +18,7 @@ import static timofeyqa.rococo.utils.RandomDataUtils.randomPaintingTitle;
 @DisplayName("Тесты детальной страницы художника")
 public class ArtistDetailPageTest {
 
-  @ScreenShotTest("img/pages/artists-list/picasso.png")
+  @ScreenShotTest("artists-list/picasso.png")
   @Content(
       artists = {
           @Artist(
@@ -70,7 +70,7 @@ public class ArtistDetailPageTest {
         .nextPageAndCompare();
   }
 
-  @ScreenShotTest("img/pages/paintings-list/mona-liza.png")
+  @ScreenShotTest("paintings-list/mona-liza.png")
   @User
   @ApiLogin
   @Content(artistCount = 1)

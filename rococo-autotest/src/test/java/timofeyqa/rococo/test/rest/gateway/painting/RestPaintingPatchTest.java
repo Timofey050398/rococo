@@ -265,7 +265,7 @@ class RestPaintingPatchTest {
   @User
   @Content(paintings = @Painting(
       museum = "Random",
-      content = "img/pages/paintings-list/the-kiss.png"
+      content = "screenshots/local/paintings-list/the-kiss.png"
   ))
   @ApiLogin
   @DisplayName("При передаче пустых полей они не обновляют запись")

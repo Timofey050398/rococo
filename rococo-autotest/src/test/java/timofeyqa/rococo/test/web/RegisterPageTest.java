@@ -19,7 +19,7 @@ import static timofeyqa.rococo.utils.RandomDataUtils.randomWord;
 @DisplayName("Тесты страницы регистрации")
 public class RegisterPageTest {
 
-  @ScreenShotTest("img/pages/register/renuar.png")
+  @ScreenShotTest("register/renuar.png")
   @DisplayName("На странице логина должно быть изображение эрмитажа")
   void loginPageShouldHasHermitageImage(BufferedImage expected){
     Selenide.open(RegisterPage.URL, RegisterPage.class)

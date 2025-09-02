@@ -16,7 +16,7 @@ import java.awt.image.BufferedImage;
 @DisplayName("Тесты страницы логина")
 class LoginPageTest {
 
-  @ScreenShotTest("img/pages/login/hermitage.png")
+  @ScreenShotTest("login/hermitage.png")
   @DisplayName("На странице логина есть изображение эрмитажа")
   void loginPageShouldHasHermitageImage(BufferedImage expected){
     Selenide.open(MainPage.URL, MainPage.class)

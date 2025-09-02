@@ -1,5 +1,9 @@
 package timofeyqa.rococo.config;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
+
 enum DockerConfig implements Config {
   INSTANCE;
 
@@ -58,10 +62,30 @@ enum DockerConfig implements Config {
   }
 
   private String toMySqlStr(){
-    return compileStr("jdbc:mysql","127.0.0.1",3306);
+    return compileStr("jdbc:mysql",jdbcHost(), dbPort());
   }
 
   private String compileStr(String type, String host, int port){
     return String.format("%s://%s:%d/", type, host, port);
+  }
+
+  private String jdbcHost(){
+    return Objects.requireNonNullElse(
+        System.getenv("JDBC_HOST"),
+        "127.0.0.1"
+    );
+  }
+
+  @NotNull
+  @Override
+  public String allureDockerServiceUrl() {
+    String allureDockerApiUrl = System.getenv("ALLURE_DOCKER_API");
+    return Objects.requireNonNullElse(allureDockerApiUrl, "http://localhost:5050/");
+  }
+
+  @NotNull
+  @Override
+  public String screenshotBaseDir() {
+    return "screenshots/selenoid/";
   }
 }

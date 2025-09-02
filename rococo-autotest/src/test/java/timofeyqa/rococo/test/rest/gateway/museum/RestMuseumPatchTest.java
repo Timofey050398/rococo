@@ -292,7 +292,7 @@ class RestMuseumPatchTest {
       city = "Paris",
       title = "Orsay",
       description = "Impressionist museum",
-      photo = "img/pages/museums-list/louvre.png"
+      photo = "screenshots/local/museums-list/louvre.png"
   ))
   @ApiLogin
   @DisplayName("При передаче пустых полей они не обновляют запись")

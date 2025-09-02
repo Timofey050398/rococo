@@ -18,8 +18,8 @@ import static timofeyqa.rococo.utils.RandomDataUtils.randomFirstname;
 @DisplayName("Тесты компонента профиля")
 public class ProfileTest {
 
-  @ScreenShotTest("img/pages/profile/avatar-modal.png")
-  @User(avatar = "img/pages/profile/avatar.png")
+  @ScreenShotTest("profile/avatar-modal.png")
+  @User(avatar = "img/content/avatar.png")
   @ApiLogin
   @DisplayName("У пользователя с аватаром аватар должен отображаться в модальном окне профиля")
   void avatarInModalShouldBeShown(BufferedImage expected){
@@ -29,7 +29,7 @@ public class ProfileTest {
         .checkAvatarImage(expected);
   }
 
-  @ScreenShotTest("img/pages/profile/avatar-template.png")
+  @ScreenShotTest("profile/avatar-template.png")
   @User
   @ApiLogin
   @DisplayName("У пользователя без аватара должна отображатсья заглушка в модальном окне")
@@ -40,7 +40,7 @@ public class ProfileTest {
         .checkAvatarImage(expected);
   }
 
-  @ScreenShotTest("img/pages/profile/avatar-small.png")
+  @ScreenShotTest("profile/avatar-small.png")
   @User
   @ApiLogin
   @DisplayName("У пользователя после обновления аватара должен отображаться новый аватар")
@@ -48,7 +48,7 @@ public class ProfileTest {
     Selenide.open(MainPage.URL, MainPage.class)
         .getHeader()
         .openProfile()
-        .uploadProfilePhoto("img/pages/profile/avatar.png")
+        .uploadProfilePhoto("screenshots/local/profile/avatar.png")
         .clickUpdateProfileButton(MainPage.class)
         .checkToastMessage("Профиль обновлен")
         .checkToastHidden()

@@ -28,7 +28,14 @@
 <#if data.body??>
     <h4>Body</h4>
     <div>
-        <pre><code>${data.body}</code></pre>
+        <#assign bodyStr = data.body?string>
+        <#assign maskedBody = bodyStr?replace(
+            '"([^"]{1,50})"\\s*:\\s*"(?:[^"\\\\]|\\\\.){2010,}"',
+            '"$1":"<binary>"',
+            "r"
+        )>
+
+        <pre><code>${maskedBody}</code></pre>
     </div>
 </#if>
 

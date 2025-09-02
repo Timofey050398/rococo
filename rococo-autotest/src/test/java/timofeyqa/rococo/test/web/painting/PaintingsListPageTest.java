@@ -15,7 +15,7 @@ import java.awt.image.BufferedImage;
 @DisplayName("Тесты списочной страницы картин")
 public class PaintingsListPageTest {
 
-  @ScreenShotTest("img/pages/paintings-list/cossacs.png")
+  @ScreenShotTest("paintings-list/cossacs.png")
   @Content(
       paintings = {
           @Painting(

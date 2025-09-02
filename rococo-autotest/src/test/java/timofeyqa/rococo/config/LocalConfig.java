@@ -1,5 +1,7 @@
 package timofeyqa.rococo.config;
 
+import org.jetbrains.annotations.NotNull;
+
 enum LocalConfig implements Config {
   INSTANCE;
 
@@ -15,12 +17,12 @@ enum LocalConfig implements Config {
 
   @Override
   public String authJdbcUrl() {
-    return toMySqlStr(3306)+"rococo-auth";
+    return toMySqlStr(dbPort())+"rococo-auth";
   }
 
   @Override
   public String jdbcUrl() {
-    return toMySqlStr(3306)+"rococo";
+    return toMySqlStr(dbPort())+"rococo";
   }
 
   @Override
@@ -67,5 +69,17 @@ enum LocalConfig implements Config {
 
   private String compileStr(String type, int port){
     return String.format("%s://%s:%d/", type, localhost(),port);
+  }
+
+  @NotNull
+  @Override
+  public String allureDockerServiceUrl() {
+    return "http://127.0.0.1:5050/";
+  }
+
+  @NotNull
+  @Override
+  public String screenshotBaseDir() {
+    return "screenshots/local/";
   }
 }

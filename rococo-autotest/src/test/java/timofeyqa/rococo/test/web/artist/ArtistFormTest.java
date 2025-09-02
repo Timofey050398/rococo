@@ -20,7 +20,7 @@ public class ArtistFormTest {
 
   private static final String FOLDER_NAME = "artists";
 
-  @ScreenShotTest("img/pages/artists-list/shishkin.png")
+  @ScreenShotTest("artists-list/shishkin.png")
   @User
   @ApiLogin
   @DisplayName("Авторизованный пользователь может добавить художника")
@@ -40,7 +40,7 @@ public class ArtistFormTest {
         .compareImage(expected);
   }
 
-  @ScreenShotTest("img/pages/artists-list/picasso.png")
+  @ScreenShotTest("artists-list/picasso.png")
   @Content(
       artists = {
           @Artist(

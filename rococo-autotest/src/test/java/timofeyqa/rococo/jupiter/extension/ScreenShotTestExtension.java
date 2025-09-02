@@ -1,6 +1,7 @@
 package timofeyqa.rococo.jupiter.extension;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import timofeyqa.rococo.config.Config;
 import timofeyqa.rococo.jupiter.annotation.ScreenShotTest;
 import timofeyqa.rococo.model.allure.ScreenDiff;
 import io.qameta.allure.Allure;
@@ -25,7 +26,7 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
 
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(ScreenShotTestExtension.class);
     public static final String ASSERT_SCREEN_MESSAGE = "Screen comparison failure";
-
+    private static final Config CFG = Config.getInstance();
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final Base64.Encoder encoder = Base64.getEncoder();
 
@@ -40,7 +41,7 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
     @Override
     public BufferedImage resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
         final ScreenShotTest screenShotTest = extensionContext.getRequiredTestMethod().getAnnotation(ScreenShotTest.class);
-        var inputStream = new ClassPathResource(screenShotTest.value()).getInputStream();
+        var inputStream = new ClassPathResource(CFG.screenshotBaseDir() + screenShotTest.value()).getInputStream();
         var image = ImageIO.read(inputStream);
         return Objects.requireNonNull(image);
     }
@@ -55,7 +56,7 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
                     ImageIO.write(
                             actual,
                             "png",
-                            new File("src/test/resources/" + screenShotTest.value())
+                            new File(".screen-output/" + CFG.screenshotBaseDir()  + screenShotTest.value())
                     );
                 }
             }

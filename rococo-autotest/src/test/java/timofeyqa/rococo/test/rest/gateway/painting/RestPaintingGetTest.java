@@ -24,7 +24,7 @@ class RestPaintingGetTest {
   @DisplayName("Корректное получение картин по UUID")
   @Content(paintings = @Painting(
       museum = "Random",
-      content = "img/pages/paintings-list/the-kiss.png"
+      content = "screenshots/local/paintings-list/the-kiss.png"
   ))
   void correctfindByIdTest(ContentJson content) {
     PaintingDto expected = content.paintings().iterator().next();

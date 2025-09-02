@@ -20,7 +20,7 @@ public class MuseumFormTest {
 
   private static final String FOLDER_NAME = "museums";
 
-  @ScreenShotTest("img/pages/museums-list/british-museum.png")
+  @ScreenShotTest("museums-list/british-museum.png")
   @User
   @ApiLogin
   @DisplayName("Авторизованный пользователь может добавить музей")
@@ -45,7 +45,7 @@ public class MuseumFormTest {
         .compareImage(expected);
   }
 
-  @ScreenShotTest("img/pages/museums-list/dali-museum.png")
+  @ScreenShotTest("museums-list/dali-museum.png")
   @Content(museums = {@Museum(photo = "img/content/museums/british-museum.png")})
   @User
   @ApiLogin

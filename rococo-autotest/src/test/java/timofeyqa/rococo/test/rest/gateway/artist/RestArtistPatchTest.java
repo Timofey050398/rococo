@@ -221,7 +221,7 @@ class RestArtistPatchTest {
   @Content(artists = @Artist(
       name = "Claude Monet",
       biography = "Impressionist painter",
-      photo = "img/pages/artists-list/dali.png"
+      photo = "screenshots/local/artists-list/dali.png"
   ))
   @ApiLogin
   @DisplayName("При передаче пустых полей они не обновляют запись")

@@ -188,7 +188,7 @@ class GrpcPaintingUpdateTest extends BaseGrpcTest {
   @DisplayName("При передаче пустых полей, поля не обновляются")
   @Content(paintings = @timofeyqa.rococo.jupiter.annotation.Painting(
       museum = "Random",
-      content = "img/pages/paintings-list/the-kiss.png"
+      content = "screenshots/local/paintings-list/the-kiss.png"
   ))
   void updatePaintingBlankFieldsShouldNotUpdated(ContentJson content) {
     var painting = content.paintings().iterator().next();

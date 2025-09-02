@@ -28,7 +28,7 @@ public class PaintingFormTest {
   private static final String newArtist = "new artist";
   private static final String newMuseum = "new museum";
 
-  @ScreenShotTest("img/pages/paintings-list/burlaki-na-volge.png")
+  @ScreenShotTest("paintings-list/burlaki-na-volge.png")
   @User
   @ApiLogin
   @Content(artistCount = 1, museumCount = 5)
@@ -55,7 +55,7 @@ public class PaintingFormTest {
         .compareImage(expected);
   }
 
-  @ScreenShotTest("img/pages/paintings-list/burlaki-na-volge.png")
+  @ScreenShotTest("paintings-list/burlaki-na-volge.png")
   @User
   @ApiLogin
   @Content(artistCount = 1)
@@ -79,7 +79,7 @@ public class PaintingFormTest {
         .compareImage(expected);
   }
 
-  @ScreenShotTest("img/pages/paintings-list/liquid-clocks.png")
+  @ScreenShotTest("paintings-list/liquid-clocks.png")
   @Content(
       museums = {@Museum(title = newMuseum)},
       paintings = {@Painting(content = "img/content/paintings/ivan-the-terrible.png", museum = "old museum")}

@@ -3,6 +3,7 @@ package timofeyqa.rococo.utils;
 import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
+import timofeyqa.rococo.config.Config;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
@@ -15,13 +16,7 @@ import java.util.Base64;
 public class PhotoConverter {
 
   public static String loadImageAsString(String resourcePath) {
-    try (InputStream is = PhotoConverter.class.getClassLoader().getResourceAsStream(resourcePath)) {
-      if (is == null) throw new RuntimeException("Resource not found: " + resourcePath);
-      byte[] bytes = is.readAllBytes();
-      return convert(bytes);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    return convert(loadImageAsBytes(resourcePath));
   }
 
   public static byte[] loadImageAsBytes(String resourcePath) {

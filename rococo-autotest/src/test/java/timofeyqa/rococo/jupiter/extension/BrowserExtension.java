@@ -25,6 +25,17 @@ public class BrowserExtension implements
 
   static {
     Configuration.timeout = 10000;
+    Configuration.pageLoadStrategy = "eager";
+    Configuration.browser = "firefox".equals(System.getProperty("browser")) ? "firefox" : "chrome";
+    if ("docker".equals(System.getProperty("test.env"))) {
+      Configuration.remote = "http://selenoid:4444/wd/hub";
+      if ("firefox".equals(System.getProperty("browser"))) {
+        Configuration.browserVersion = "125.0";
+      } else {
+        Configuration.browserCapabilities = new ChromeOptions().addArguments("--no-sandbox");
+        Configuration.browserVersion = "127.0";
+      }
+    }
   }
 
   @Override
