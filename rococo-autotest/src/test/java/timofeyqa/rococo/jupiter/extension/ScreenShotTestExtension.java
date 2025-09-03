@@ -76,11 +76,12 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
     private static void rewriteExpectedImage(ScreenShotTest screenShotTest) throws IOException {
         final BufferedImage actual = getActual();
         if (actual != null) {
-            ImageIO.write(
-                    actual,
-                    "png",
-                    new File(".screen-output/" + CFG.screenshotBaseDir()  + screenShotTest.value())
-            );
+            File outputFile = new File(".screen-output/" + CFG.screenshotBaseDir() + screenShotTest.value());
+            File parentDir = outputFile.getParentFile();
+            if (parentDir != null && !parentDir.exists()) {
+                parentDir.mkdirs();
+            }
+            ImageIO.write(actual, "png", outputFile);
         }
     }
 
