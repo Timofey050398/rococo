@@ -3,7 +3,6 @@ package timofeyqa.rococo.api.core;
 import org.slf4j.LoggerFactory;
 import retrofit2.*;
 import timofeyqa.rococo.config.Config;
-import io.qameta.allure.okhttp3.AllureOkHttp3;
 import okhttp3.Interceptor;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
@@ -46,7 +45,7 @@ public abstract class RestClient implements RequestExecutor {
                 message -> LoggerFactory.getLogger(RestClient.class).debug(maskLongParams(message))
         ).setLevel(level));
         builder.addNetworkInterceptor(
-                new AllureOkHttp3()
+                new AllureRestInterceptor()
                         .setRequestTemplate("http-request.ftl")
                         .setResponseTemplate("http-response.ftl")
         );

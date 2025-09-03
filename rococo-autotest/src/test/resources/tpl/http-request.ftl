@@ -28,13 +28,7 @@
 <#if data.body??>
     <h4>Body</h4>
     <div>
-        <#assign bodyStr = data.body?string>
-        <#assign maskedBody = bodyStr?replace("(?s)(\\"(content|avatar|photo)\\"\\s*:\\s*\\")([^\\"]{1000,}?)(\\")","$1<long_param>$4","r")>
-        <#if maskedBody == bodyStr && bodyStr?length > 2010>
-            <pre><code>&lt;long_param&gt;</code></pre>
-        <#else>
-            <pre><code>${maskedBody}</code></pre>
-        </#if>
+        <pre><code>${data.body}</code></pre>
     </div>
 </#if>
 
