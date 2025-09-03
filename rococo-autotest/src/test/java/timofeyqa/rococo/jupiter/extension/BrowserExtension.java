@@ -7,11 +7,14 @@ import com.codeborne.selenide.logevents.SelenideLogger;
 import io.qameta.allure.Allure;
 import io.qameta.allure.selenide.AllureSelenide;
 import org.junit.jupiter.api.extension.*;
+import org.junit.platform.commons.util.StringUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.util.Map;
@@ -23,14 +26,18 @@ public class BrowserExtension implements
     TestExecutionExceptionHandler,
     LifecycleMethodExecutionExceptionHandler {
 
+  private static final Logger LOG = LoggerFactory.getLogger(BrowserExtension.class);
 
   static {
+    String browser = System.getProperty("browser");
+    if (StringUtils.isBlank(browser)) {
+      browser = "chrome";
+    }
     Configuration.timeout = 10000;
     Configuration.pageLoadStrategy = "eager";
-    Configuration.browser = Objects.requireNonNullElse(
-        System.getProperty("browser"),
-        "chrome"
-    );
+    Configuration.browser = browser;
+
+    LOG.info("### Browser: {}",Configuration.browser);
 
     ChromeOptions chromeOptions = new ChromeOptions();
     FirefoxOptions firefoxOptions = new FirefoxOptions();
@@ -46,7 +53,7 @@ public class BrowserExtension implements
     }
 
     // docker-режим
-    if ("docker".equals(System.getProperty("test.env"))) {
+    if ("Y".equals(System.getenv("SELENOID"))) {
       Configuration.remote = "http://selenoid:4444/wd/hub";
 
       if ("firefox".equalsIgnoreCase(Configuration.browser)) {

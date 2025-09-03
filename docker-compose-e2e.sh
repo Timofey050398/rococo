@@ -50,6 +50,7 @@ if [ "$BROWSER_ARG" = "firefox" ]; then
   export BROWSER="firefox"
   docker pull selenoid/vnc_firefox:125.0
 else
+  export BROWSER="chrome"
   docker pull selenoid/vnc_chrome:127.0
 fi
 

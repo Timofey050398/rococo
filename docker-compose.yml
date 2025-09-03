@@ -207,6 +207,7 @@ services:
       - HEAD_COMMIT_MESSAGE=${HEAD_COMMIT_MESSAGE}
       - EXECUTION_TYPE=${EXECUTION_TYPE}
       - JDBC_HOST=${JDBC_HOST}
+      - SELENOID=Y
     volumes:
       - ./allure-results:/rococo/rococo-autotest/build/allure-results/
       - ./rococo-autotest/.screen-output/screenshots/selenoid:/rococo/rococo-autotest/.screen-output/screenshots/selenoid

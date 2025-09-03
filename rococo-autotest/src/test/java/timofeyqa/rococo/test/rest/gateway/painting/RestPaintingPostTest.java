@@ -154,9 +154,9 @@ class RestPaintingPostTest {
         400,
         ex,
         "400",
-        "Validation error",
+        "gRPC error",
         "/api/painting",
-        "title: Title can`t be longer than 100 characters"
+        "Validation errors: title size must be between 1 and 100; "
     );
   }
 
@@ -183,7 +183,7 @@ class RestPaintingPostTest {
         "400",
         "Validation error",
         "/api/painting",
-        "description: Description can`t be longer than 1000 characters"
+        "description: Can`t be longer than 1000 characters"
     );
   }
 

@@ -47,7 +47,7 @@ public class AllureRestInterceptor implements Interceptor {
         .setHeaders(toMapConverter(request.headers().toMultimap()));
 
     final RequestBody requestBody = request.body();
-    if (Objects.nonNull(requestBody)) {
+    if (Objects.nonNull(requestBody) && !isAllureSendResults(chain)) {
       requestAttachmentBuilder.setBody(maskLongParams(readRequestBody(requestBody)));
     }
     final HttpRequestAttachment requestAttachment = requestAttachmentBuilder.build();
@@ -63,7 +63,7 @@ public class AllureRestInterceptor implements Interceptor {
 
     final ResponseBody responseBody = response.body();
 
-    if (Objects.nonNull(responseBody)) {
+    if (Objects.nonNull(responseBody) && !isAllureSendResults(chain)) {
       final byte[] bytes = responseBody.bytes();
       responseAttachmentBuilder.setBody(maskLongParams(new String(bytes, StandardCharsets.UTF_8)));
       responseBuilder.body(ResponseBody.create(responseBody.contentType(), bytes));
@@ -85,5 +85,9 @@ public class AllureRestInterceptor implements Interceptor {
     final Buffer buffer = new Buffer();
     requestBody.writeTo(buffer);
     return buffer.readString(StandardCharsets.UTF_8);
+  }
+
+  private boolean isAllureSendResults(Chain chain) {
+    return chain.request().method().contains("allure-docker-service/send-results");
   }
 }
