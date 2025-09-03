@@ -76,8 +76,17 @@ public class BrowserExtension implements
 
   private static void setRussianLocale(ChromeOptions chromeOptions, FirefoxOptions firefoxOptions) {
     switch (Configuration.browser.toLowerCase()) {
-      case "chrome", "edge" -> chromeOptions.addArguments("--lang=ru-RU");
-      case "firefox" -> firefoxOptions.addPreference("intl.accept_languages", "ru-RU");
+      case "chrome", "edge" -> {
+        chromeOptions.addArguments("--lang=ru-RU");
+        chromeOptions.setExperimentalOption("prefs", Map.of(
+            "intl.accept_languages", "ru-RU",
+            "webkit.webprefs.preferredColorScheme", 2
+        ));
+      }
+      case "firefox" -> {
+        firefoxOptions.addPreference("intl.accept_languages", "ru-RU");
+        firefoxOptions.addPreference("ui.systemUsesDarkTheme", 1);
+      }
       default -> {
         DesiredCapabilities caps = new DesiredCapabilities();
         caps.setCapability("args", "ru-RU");
