@@ -7,12 +7,15 @@ import timofeyqa.rococo.api.AllureApi;
 import timofeyqa.rococo.api.core.RestClient;
 import timofeyqa.rococo.model.allure.AllureResults;
 import timofeyqa.rococo.model.allure.Project;
+import timofeyqa.rococo.model.allure.AllureResult;
 import io.qameta.allure.Step;
 import retrofit2.Response;
 import timofeyqa.rococo.model.allure.ProjectResponse;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class AllureApiClient extends RestClient {
@@ -20,6 +23,7 @@ public class AllureApiClient extends RestClient {
   private final AllureApi allureApi;
 
   private static final Logger LOG = LoggerFactory.getLogger(AllureApiClient.class);
+  private static final int MAX_BATCH_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 
   public AllureApiClient() {
     super(CFG.allureDockerServiceUrl());
@@ -53,13 +57,28 @@ public class AllureApiClient extends RestClient {
 
   @Step("Send allure results")
   public void sendResults(String projectId, AllureResults allureResults) {
+    final List<AllureResult> batch = new ArrayList<>();
+    int batchSize = 0;
+    for (AllureResult result : allureResults.results()) {
+      final int resultSize = result.contentBase64().length();
+      if (batchSize + resultSize > MAX_BATCH_SIZE_BYTES && !batch.isEmpty()) {
+        sendBatch(projectId, batch);
+        batch.clear();
+        batchSize = 0;
+      }
+      batch.add(result);
+      batchSize += resultSize;
+    }
+    if (!batch.isEmpty()) {
+      sendBatch(projectId, batch);
+    }
+  }
+
+  private void sendBatch(String projectId, List<AllureResult> results) {
     try {
-      execute(allureApi.sendResults(
-          projectId,
-          allureResults
-      ));
+      execute(allureApi.sendResults(projectId, new AllureResults(new ArrayList<>(results))));
     } catch (HttpException e) {
-      logErr("ERROR WHILE SEND ALLURE RESULTS",e);
+      logErr("ERROR WHILE SEND ALLURE RESULTS", e);
       throw new RuntimeException(e);
     }
   }
