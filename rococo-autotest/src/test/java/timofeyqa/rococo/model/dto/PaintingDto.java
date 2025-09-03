@@ -1,5 +1,7 @@
 package timofeyqa.rococo.model.dto;
 
+import io.qameta.allure.Param;
+import io.qameta.allure.model.Parameter;
 import lombok.Builder;
 import timofeyqa.rococo.model.rest.ContentImpl;
 
@@ -16,6 +18,7 @@ public record PaintingDto(
     String description,
     ArtistDto artist,
     MuseumDto museum,
+    @Param(mode = Parameter.Mode.MASKED)
     byte[] content) implements ContentImpl {
 
   public void compare(PaintingDto expected) {

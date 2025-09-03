@@ -1,5 +1,7 @@
 package timofeyqa.rococo.data.entity;
 
+import io.qameta.allure.Param;
+import io.qameta.allure.model.Parameter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Data;

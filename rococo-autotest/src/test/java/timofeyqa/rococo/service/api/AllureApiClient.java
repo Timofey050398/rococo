@@ -1,5 +1,6 @@
 package timofeyqa.rococo.service.api;
 
+import io.qameta.allure.model.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.HttpException;
@@ -8,6 +9,7 @@ import timofeyqa.rococo.api.core.RestClient;
 import timofeyqa.rococo.model.allure.AllureResults;
 import timofeyqa.rococo.model.allure.Project;
 import timofeyqa.rococo.model.allure.AllureResult;
+import io.qameta.allure.Param;
 import io.qameta.allure.Step;
 import retrofit2.Response;
 import timofeyqa.rococo.model.allure.ProjectResponse;
@@ -56,20 +58,25 @@ public class AllureApiClient extends RestClient {
   }
 
   @Step("Send allure results")
-  public void sendResults(String projectId, AllureResults allureResults) {
+  public void sendResults(String projectId, @Param(mode = Parameter.Mode.HIDDEN) AllureResults allureResults) {
+    LOG.info("Preparing to send {} allure results for project {}", allureResults.results().size(), projectId);
     final List<AllureResult> batch = new ArrayList<>();
     int batchSize = 0;
+    int batchNumber = 1;
     for (AllureResult result : allureResults.results()) {
       final int resultSize = result.contentBase64().length();
       if (batchSize + resultSize > MAX_BATCH_SIZE_BYTES && !batch.isEmpty()) {
+        LOG.info("Sending batch {} with {} results ({} bytes)", batchNumber, batch.size(), batchSize);
         sendBatch(projectId, batch);
         batch.clear();
         batchSize = 0;
+        batchNumber++;
       }
       batch.add(result);
       batchSize += resultSize;
     }
     if (!batch.isEmpty()) {
+      LOG.info("Sending batch {} with {} results ({} bytes)", batchNumber, batch.size(), batchSize);
       sendBatch(projectId, batch);
     }
   }
@@ -77,6 +84,7 @@ public class AllureApiClient extends RestClient {
   private void sendBatch(String projectId, List<AllureResult> results) {
     try {
       execute(allureApi.sendResults(projectId, new AllureResults(new ArrayList<>(results))));
+      LOG.info("Successfully sent batch with {} results", results.size());
     } catch (HttpException e) {
       logErr("ERROR WHILE SEND ALLURE RESULTS", e);
       throw new RuntimeException(e);

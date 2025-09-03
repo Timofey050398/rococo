@@ -36,7 +36,10 @@ public class AllureRestInterceptor implements Interceptor {
 
   @NotNull
   @Override
-  public Response intercept(final Chain chain) throws IOException {
+  public Response intercept(@NotNull final Chain chain) throws IOException {
+    if (isAllureSendResults(chain)) {
+      return chain.proceed(chain.request());
+    }
     final AttachmentProcessor<AttachmentData> processor = new DefaultAttachmentProcessor();
 
     final Request request = chain.request();
@@ -47,7 +50,7 @@ public class AllureRestInterceptor implements Interceptor {
         .setHeaders(toMapConverter(request.headers().toMultimap()));
 
     final RequestBody requestBody = request.body();
-    if (Objects.nonNull(requestBody) && !isAllureSendResults(chain)) {
+    if (Objects.nonNull(requestBody)) {
       requestAttachmentBuilder.setBody(maskLongParams(readRequestBody(requestBody)));
     }
     final HttpRequestAttachment requestAttachment = requestAttachmentBuilder.build();
@@ -63,7 +66,7 @@ public class AllureRestInterceptor implements Interceptor {
 
     final ResponseBody responseBody = response.body();
 
-    if (Objects.nonNull(responseBody) && !isAllureSendResults(chain)) {
+    if (Objects.nonNull(responseBody)) {
       final byte[] bytes = responseBody.bytes();
       responseAttachmentBuilder.setBody(maskLongParams(new String(bytes, StandardCharsets.UTF_8)));
       responseBuilder.body(ResponseBody.create(responseBody.contentType(), bytes));

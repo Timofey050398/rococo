@@ -1,5 +1,7 @@
 package timofeyqa.rococo.model.dto;
 
+import io.qameta.allure.Param;
+import io.qameta.allure.model.Parameter;
 import lombok.Builder;
 import lombok.ToString;
 import timofeyqa.rococo.model.rest.ContentImpl;
@@ -16,9 +18,11 @@ public record MuseumDto(
     UUID id,
     String title,
     String description,
+    @Param(mode = Parameter.Mode.MASKED)
     byte[] photo,
     GeoJson geo,
     @ToString.Exclude
+    @Param(mode = Parameter.Mode.HIDDEN)
     Set<PaintingDto> paintings) implements ContentImpl {
 
     public void compare(MuseumDto expected) {
