@@ -3,21 +3,14 @@ package timofeyqa.rococo.utils;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import freemarker.template.TemplateMethodModelEx;
-import freemarker.template.TemplateModelException;
+import lombok.experimental.UtilityClass;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Utility to mask long parameters in logged requests/responses.
- *
- * <p>Implements {@link TemplateMethodModelEx} so it can be directly
- * instantiated and used inside FreeMarker templates.</p>
- */
-public class LogUtils implements TemplateMethodModelEx {
+@UtilityClass
+public class LogUtils {
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final int MAX_LENGTH = 2010;
     private static final Set<String> SENSITIVE_KEYS = Set.of("content", "avatar", "photo");
@@ -28,7 +21,7 @@ public class LogUtils implements TemplateMethodModelEx {
      * @param body original body
      * @return body with long parameters replaced with &lt;long_param&gt;
      */
-    public String maskLongParams(String body) {
+    public static String maskLongParams(String body) {
         if (body == null || body.isEmpty()) {
             return body;
         }
@@ -43,7 +36,7 @@ public class LogUtils implements TemplateMethodModelEx {
         }
     }
 
-    private boolean maskNode(JsonNode node) {
+    private static boolean maskNode(JsonNode node) {
         boolean modified = false;
         if (node.isObject()) {
             ObjectNode obj = (ObjectNode) node;
@@ -68,15 +61,5 @@ public class LogUtils implements TemplateMethodModelEx {
             }
         }
         return modified;
-    }
-
-    @Override
-    public Object exec(List arguments) throws TemplateModelException {
-        if (arguments == null || arguments.isEmpty()) {
-            return "";
-        }
-        Object arg = arguments.get(0);
-        String body = arg == null ? null : arg.toString();
-        return maskLongParams(body);
     }
 }

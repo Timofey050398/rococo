@@ -1,5 +1,6 @@
 package timofeyqa.rococo.api.core;
 
+import org.slf4j.LoggerFactory;
 import retrofit2.*;
 import timofeyqa.rococo.config.Config;
 import io.qameta.allure.okhttp3.AllureOkHttp3;
@@ -9,8 +10,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
-import timofeyqa.rococo.utils.LogUtils;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.net.CookieManager;
@@ -18,6 +17,7 @@ import java.net.CookiePolicy;
 
 import static okhttp3.logging.HttpLoggingInterceptor.Level.HEADERS;
 import static org.apache.commons.lang.ArrayUtils.isNotEmpty;
+import static timofeyqa.rococo.utils.LogUtils.maskLongParams;
 
 public abstract class RestClient implements RequestExecutor {
 
@@ -42,21 +42,20 @@ public abstract class RestClient implements RequestExecutor {
         final OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .followRedirects(followRedirect);
 
-        if (isNotEmpty(interceptors)) {
-            for (Interceptor interceptor : interceptors) {
-                builder.addNetworkInterceptor(interceptor);
-            }
-        }
-
-        LogUtils logUtils = new LogUtils();
         builder.addNetworkInterceptor(new HttpLoggingInterceptor(
-                message -> System.out.println(logUtils.maskLongParams(message))
+                message -> LoggerFactory.getLogger(RestClient.class).debug(maskLongParams(message))
         ).setLevel(level));
         builder.addNetworkInterceptor(
                 new AllureOkHttp3()
                         .setRequestTemplate("http-request.ftl")
                         .setResponseTemplate("http-response.ftl")
         );
+        if (isNotEmpty(interceptors)) {
+            for (Interceptor interceptor : interceptors) {
+                builder.addNetworkInterceptor(interceptor);
+            }
+        }
+
         builder.cookieJar(
                 new JavaNetCookieJar(
                         new CookieManager(

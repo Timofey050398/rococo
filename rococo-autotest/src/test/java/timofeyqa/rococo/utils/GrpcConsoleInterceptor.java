@@ -7,14 +7,13 @@ import io.grpc.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import timofeyqa.rococo.utils.LogUtils;
+import static timofeyqa.rococo.utils.LogUtils.maskLongParams;
 
 @SuppressWarnings("unchecked")
 public class GrpcConsoleInterceptor implements ClientInterceptor {
 
     private static final JsonFormat.Printer printer = JsonFormat.printer();
     private static final Logger LOG = LoggerFactory.getLogger(GrpcConsoleInterceptor.class);
-    private static final LogUtils LOG_UTILS = new LogUtils();
 
     @SuppressWarnings("rawtypes")
     @Override
@@ -25,7 +24,7 @@ public class GrpcConsoleInterceptor implements ClientInterceptor {
             @Override
             public void sendMessage(Object message) {
                 try {
-                    LOG.debug("REQUEST: {}",LOG_UTILS.maskLongParams(printer.print((MessageOrBuilder) message)));
+                    LOG.debug("REQUEST: {}",maskLongParams(printer.print((MessageOrBuilder) message)));
                 } catch (InvalidProtocolBufferException e) {
                     throw new RuntimeException(e);
                 }
@@ -38,7 +37,7 @@ public class GrpcConsoleInterceptor implements ClientInterceptor {
                     @Override
                     public void onMessage(Object message) {
                         try {
-                            LOG.debug("RESPONSE: {}",LOG_UTILS.maskLongParams(printer.print((MessageOrBuilder) message)));
+                            LOG.debug("RESPONSE: {}",maskLongParams(printer.print((MessageOrBuilder) message)));
                         } catch (InvalidProtocolBufferException e) {
                             throw new RuntimeException(e);
                         }
