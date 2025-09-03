@@ -3,17 +3,24 @@ package timofeyqa.rococo.utils;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
-
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Utility to mask long parameters in logged requests/responses.
+ */
 public class LogUtils {
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final int MAX_LENGTH = 2010;
     private static final Set<String> SENSITIVE_KEYS = Set.of("content", "avatar", "photo");
 
+    /**
+     * Masks sensitive long parameters in the provided string.
+     *
+     * @param body original body
+     * @return body with long parameters replaced with &lt;long_param&gt;
+     */
     public String maskLongParams(String body) {
         if (body == null || body.isEmpty()) {
             return body;
@@ -55,4 +62,5 @@ public class LogUtils {
         }
         return modified;
     }
+
 }

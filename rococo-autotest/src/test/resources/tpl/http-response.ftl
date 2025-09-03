@@ -45,9 +45,16 @@
     <h4>Body</h4>
     <div>
         <#assign bodyStr = data.body?string>
-        <#assign LogUtils = "timofeyqa.rococo.utils.LogUtils"?new()>
-
-        <pre><code>${LogUtils.maskLongParams(bodyStr)}</code></pre>
+        <#assign maskedBody = bodyStr?replace(
+                "(?s)(\\"(content|avatar|photo)\\"\\s*:\\s*\\")([^\\"]{2010,}?)(\\")",
+                "$1<long_param>$4",
+                "r"
+        )>
+        <#if maskedBody == bodyStr && bodyStr?length > 2010>
+            <pre><code>&lt;long_param&gt;</code></pre>
+        <#else>
+            <pre><code>${maskedBody}</code></pre>
+        </#if>
     </div>
 </#if>
 
