@@ -2,6 +2,7 @@ package timofeyqa.rococo.test.web;
 
 import com.codeborne.selenide.Selenide;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Isolated;
 import timofeyqa.rococo.config.Profile;
@@ -13,6 +14,7 @@ import timofeyqa.rococo.page.lists.ArtistPage;
 
 @WebTest
 @Isolated
+@Order(Integer.MIN_VALUE)
 @OnProfile({Profile.DOCKER,Profile.LOCAL})
 @DisplayName("Тесты пустых списочных страниц")
 public class EmptyListTest {
