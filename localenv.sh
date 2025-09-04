@@ -7,7 +7,6 @@ docker run --name rococo-all -p 3306:3306 \
   -e MYSQL_ROOT_PASSWORD=secret \
   -v mysqldata:/var/lib/mysql \
   -v ./mysql/init:/docker-entrypoint-initdb.d \
-  -e CREATE_DATABASES=rococo-auth,rococo \
   -e TZ=GMT+3 -d mysql:8.0
 
 docker run --name kafka -p 9092:9092 -p 9093:9093 -d \
