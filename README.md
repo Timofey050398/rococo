@@ -66,10 +66,11 @@ docker pull apache/kafka:3.4.0
 docker pull wiremock/wiremock:2.35.0
 ```
 
-### 3. Создать volume для MySQL
+### 3. Создать volume для MySQL и Allure
 
 ```posh
 docker volume create mysqldata
+docker volume create allure-results
 ```
 
 ### 4. Запустить БД и Kafka
