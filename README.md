@@ -116,7 +116,32 @@ localStorage.setItem('id_token', 'faketoken')
 bash docker-compose-dev.sh
 ```
 
-Скрипт очистит старые контейнеры и образы, соберёт все сервисы и запустит их в docker compose. Фронтенд будет доступен по адресу http://frontend.rococo.dc, Swagger сервиса gateway – http://gateway.rococo.dc:8090/swagger-ui/index.html.
+Скрипт очистит старые контейнеры и образы, соберёт все сервисы и запустит их в docker compose.
+
+Чтобы домены вида `*.rococo.dc` (например, `http://gateway.rococo.dc`) резолвились в `127.0.0.1`, добавьте их в hosts-файл.
+
+#### macOS
+
+Откройте `/etc/hosts` и добавьте строки:
+
+```
+127.0.0.1 gateway.rococo.dc
+127.0.0.1 frontend.rococo.dc
+127.0.0.1 auth.rococo.dc
+127.0.0.1 artist.rococo.dc
+127.0.0.1 geo.rococo.dc
+127.0.0.1 museum.rococo.dc
+127.0.0.1 painting.rococo.dc
+127.0.0.1 userdata.rococo.dc
+```
+
+При необходимости выполните `sudo dscacheutil -flushcache`.
+
+#### Windows
+
+Откройте `C:\\Windows\\System32\\drivers\\etc\\hosts` от имени администратора и добавьте те же строки. После сохранения выполните `ipconfig /flushdns`.
+
+Фронтенд будет доступен по адресу http://frontend.rococo.dc, Swagger сервиса gateway – http://gateway.rococo.dc:8090/swagger-ui/index.html.
 
 # Создание своего Docker repository для форка Rococo и сборка своих контейнеров
 
@@ -131,8 +156,8 @@ bash docker-compose-dev.sh
    - rococo-userdata
    - rococo-grpc
    - rococo-autotest
-2. В файле `docker.properties` замените `IMAGE_PREFIX=qaguru` на `IMAGE_PREFIX=<ваш_dockerhub_username>`.
-3. В `build.gradle` замените `dockerHubName = "qaguru"` на `dockerHubName = "<ваш_dockerhub_username>"`.
+2. В файле `docker.properties` замените `IMAGE_PREFIX=timofeqa` на `IMAGE_PREFIX=<ваш_dockerhub_username>`.
+3. В `build.gradle` замените `dockerHubName = "timofeqa"` на `dockerHubName = "<ваш_dockerhub_username>"`.
 4. Соберите, запушьте и запустите проект:
 
 ```posh
@@ -147,7 +172,7 @@ bash docker-compose-dev.sh push
 bash docker-compose-e2e.sh
 ```
 
-Для запуска только тестов без пересборки окружения используйте:
+Для пересборки и запуска только тестов без пересборки окружения используйте:
 
 ```posh
 bash docker-compose-e2e.sh test-only
