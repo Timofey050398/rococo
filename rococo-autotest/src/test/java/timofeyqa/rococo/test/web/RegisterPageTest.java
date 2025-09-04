@@ -51,32 +51,36 @@ public class RegisterPageTest {
 
   @Test
   @DisplayName("Логин должен быть меньше 51 символа")
-  void usernameShouldBeLessThan51Characters(){
+  void usernameShouldBeLessThan51Characters() {
     final String password = randomWord(5);
     Selenide.open(RegisterPage.URL, RegisterPage.class)
         .checkThatPageLoaded()
         .submitRegister(randomWord(51),password,password)
-        .checkFormErrorMessage("Allowed username length should be from 3 to 50 characters");
+        .checkFormErrorMessage(
+            "Allowed username length should be from 3 to 50 characters"
+        );
   }
 
   @Test
   @DisplayName("Пароль должен быть больше 2 символов")
-  void passwordShouldBeGraterThan2Characters(){
+  void passwordShouldBeGraterThan2Characters() {
+    String passErrorText = "Allowed password length should be from 3 to 12 characters";
     final String password = randomWord(2);
     Selenide.open(RegisterPage.URL, RegisterPage.class)
         .checkThatPageLoaded()
         .submitRegister(randomUsername(),password,password)
-        .checkFormErrorMessage("Allowed password length should be from 3 to 12 characters");
+        .checkFormErrorMessage(passErrorText,passErrorText);
   }
 
   @Test
   @DisplayName("Пароль должен быть меньше 13 символов")
   void passwordShouldBeLessThan13Characters(){
+    String passErrorText = "Allowed password length should be from 3 to 12 characters";
     final String password = randomWord(13);
     Selenide.open(RegisterPage.URL, RegisterPage.class)
         .checkThatPageLoaded()
         .submitRegister(randomUsername(),password,password)
-        .checkFormErrorMessage("Allowed password length should be from 3 to 12 characters");
+        .checkFormErrorMessage(passErrorText,passErrorText );
   }
 
   @Test
@@ -92,8 +96,11 @@ public class RegisterPageTest {
   @Test
   @DisplayName("Активация кнопки 'логин' должна производить редирект на страницу логина")
   void clickToLoginLinkShouldRedirectToLoginPage(){
-    Selenide.open(RegisterPage.URL, RegisterPage.class)
+    Selenide.open(MainPage.URL, MainPage.class)
         .checkThatPageLoaded()
+        .getHeader()
+        .clickLoginButton()
+        .clickRegister()
         .goToLoginPage()
         .checkThatPageLoaded();
   }

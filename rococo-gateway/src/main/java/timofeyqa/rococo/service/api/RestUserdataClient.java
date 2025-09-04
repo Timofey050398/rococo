@@ -43,7 +43,7 @@ public class RestUserdataClient {
         if (!StringUtils.isEmpty(patchedUser.username()) && !patchedUser.username().equals(username)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User can't change username");
         }
-        return process(HttpMethod.PATCH,new HttpEntity<>(patchedUser),username);
+        return process(HttpMethod.PATCH, new HttpEntity<>(patchedUser),username);
     }
 
     private UserJson process(@Nonnull HttpMethod method, @Nullable HttpEntity<?> requestEntity, @Nonnull String username) {

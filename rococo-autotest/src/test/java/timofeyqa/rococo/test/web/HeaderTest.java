@@ -79,7 +79,6 @@ public class HeaderTest {
   }
 
 
-
   @ScreenShotTest("profile/avatar-template-small.png")
   @User
   @ApiLogin

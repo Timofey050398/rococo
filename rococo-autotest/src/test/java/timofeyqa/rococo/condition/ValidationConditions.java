@@ -9,6 +9,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class ValidationConditions {
 
+  private static final boolean IS_SELENOID = "Y".equals(System.getenv("SELENOID"));
+
   public static WebElementCondition validationMessage(String expectedMessage) {
     return new WebElementCondition("validation message") {
 
@@ -24,7 +26,16 @@ public class ValidationConditions {
     };
   }
 
-  public static final WebElementCondition requiredInput = validationMessage("Заполните это поле.");
-  public static final WebElementCondition requiredFile = validationMessage("Выберите файл.");
-  public static final WebElementCondition requiredList = validationMessage("Выберите один из пунктов списка.");
+  public static final WebElementCondition requiredInput = validationMessage(IS_SELENOID
+      ? "Please fill out this field."
+      : "Заполните это поле."
+  );
+  public static final WebElementCondition requiredFile = validationMessage(IS_SELENOID
+      ? "Please select a file."
+      : "Выберите файл."
+  );
+  public static final WebElementCondition requiredList = validationMessage(IS_SELENOID
+      ? "Please select an item in the list."
+      : "Выберите один из пунктов списка."
+  );
 }

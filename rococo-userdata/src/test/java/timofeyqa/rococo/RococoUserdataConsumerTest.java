@@ -2,34 +2,42 @@ package timofeyqa.rococo;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 import timofeyqa.rococo.data.repository.UserRepository;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import timofeyqa.rococo.data.UserEntity;
 import timofeyqa.rococo.ex.NotFoundException;
+import timofeyqa.rococo.mapper.UserMapper;
 import timofeyqa.rococo.model.UserJson;
 import timofeyqa.rococo.service.UserService;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class RococoUserdataConsumerTest {
 
     @Mock
     private UserRepository userRepository;
+    @Spy
+    private UserMapper userMapper;
     private UserService userService;
 
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
-        userService = new UserService(userRepository);
+        userService = new UserService(userRepository,userMapper);
     }
 
     @Test
@@ -107,27 +115,29 @@ public class RococoUserdataConsumerTest {
 
     @Test
     void patchUser_updatesAllowedFields() {
-        String username = "john";
         UUID id = UUID.randomUUID();
-
         UserEntity entity = new UserEntity()
             .setId(id)
-            .setUsername(username)
+            .setUsername("john")
             .setFirstname("OldFirst")
             .setLastname("OldLast")
             .setAvatar("old".getBytes(StandardCharsets.UTF_8));
 
-        UserJson patchRequest = new UserJson(id, username, "NewFirst", "NewLast", "newAvatar");
+        String newAvatar = "data:image/png;base64," +
+            Base64.getEncoder().encodeToString("newImage".getBytes(StandardCharsets.UTF_8));
 
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(entity));
+        UserJson patch = new UserJson(id, "john", "NewFirst", "NewLast", newAvatar);
+
+        when(userRepository.findByUsername("john")).thenReturn(Optional.of(entity));
         when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
-        UserJson result = userService.patchUser(patchRequest, username);
+        UserJson result = userService.patchUser(patch, "john");
 
         assertEquals("NewFirst", result.firstname());
         assertEquals("NewLast", result.lastname());
-        assertArrayEquals("newAvatar".getBytes(StandardCharsets.UTF_8), result.avatar().getBytes(StandardCharsets.UTF_8));
+        assertTrue(result.avatar().startsWith("data:image/png;base64,"));
     }
+
 
     @Test
     void patchUser_usernameMismatch_throwsException() {

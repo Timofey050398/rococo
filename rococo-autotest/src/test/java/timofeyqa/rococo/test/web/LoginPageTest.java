@@ -20,6 +20,7 @@ class LoginPageTest {
   @DisplayName("На странице логина есть изображение эрмитажа")
   void loginPageShouldHasHermitageImage(BufferedImage expected){
     Selenide.open(MainPage.URL, MainPage.class)
+        .checkThatPageLoaded()
         .getHeader()
         .clickLoginButton()
         .checkThatPageLoaded()

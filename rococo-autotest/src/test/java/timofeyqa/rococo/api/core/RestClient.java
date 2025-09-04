@@ -13,6 +13,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
+import java.util.concurrent.TimeUnit;
 
 import static okhttp3.logging.HttpLoggingInterceptor.Level.HEADERS;
 import static org.apache.commons.lang.ArrayUtils.isNotEmpty;
@@ -30,14 +31,18 @@ public abstract class RestClient implements RequestExecutor {
     }
 
     public RestClient(String baseUrl) {
-        this(baseUrl, false, JacksonConverterFactory.create(), HttpLoggingInterceptor.Level.BODY);
+        this(baseUrl, false, JacksonConverterFactory.create(), HttpLoggingInterceptor.Level.BODY, false);
+    }
+
+    public RestClient(String baseUrl, boolean isAllureApiClient) {
+        this(baseUrl, false, JacksonConverterFactory.create(), HttpLoggingInterceptor.Level.BODY, isAllureApiClient);
     }
 
     public RestClient(String baseUrl, boolean followRedirect, @Nullable Interceptor... interceptors) {
-        this(baseUrl, followRedirect, JacksonConverterFactory.create(), HEADERS, interceptors);
+        this(baseUrl, followRedirect, JacksonConverterFactory.create(), HEADERS, false, interceptors);
     }
 
-    public RestClient(String baseUrl, boolean followRedirect, Converter.Factory factory, HttpLoggingInterceptor.Level level, @Nullable Interceptor... interceptors) {
+    public RestClient(String baseUrl, boolean followRedirect, Converter.Factory factory, HttpLoggingInterceptor.Level level, boolean isAllureApi, @Nullable Interceptor... interceptors) {
         final OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .followRedirects(followRedirect);
 
@@ -63,6 +68,11 @@ public abstract class RestClient implements RequestExecutor {
                         )
                 )
         );
+        if (isAllureApi) {
+            builder.connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS);
+        }
         this.okHttpClient = builder.build();
         this.retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)

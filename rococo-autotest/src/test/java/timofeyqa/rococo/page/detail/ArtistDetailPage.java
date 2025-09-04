@@ -32,8 +32,7 @@ public class ArtistDetailPage extends BasePage<ArtistDetailPage> implements Deta
   private final SelenideElement biography = $("article p");
   private final SelenideElement addPaintingButton = $(byText("Добавить картину"));
   private final SelenideElement editArtistButton = $("button[data-testid='edit-artist']");
-  private final SelenideElement emptyPageText = $(byText("Пока что список картин этого художника пуст"));
-
+  private final SelenideElement detailCard = $("article.card");
 
 
   @Override
@@ -69,7 +68,7 @@ public class ArtistDetailPage extends BasePage<ArtistDetailPage> implements Deta
   @Step("Compare that page is empty")
   public ArtistDetailPage comparePageIsEmpty() {
     cards().shouldHave(size(0));
-    emptyPageText.shouldBe(visible);
+    detailCard.shouldHave(text("Пока что список картин этого художника пуст."));
     return this;
   }
 

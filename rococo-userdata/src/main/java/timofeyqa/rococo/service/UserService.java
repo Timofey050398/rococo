@@ -3,6 +3,7 @@ package timofeyqa.rococo.service;
 import timofeyqa.rococo.ex.NotFoundException;
 import jakarta.annotation.Nonnull;
 import timofeyqa.rococo.data.UserEntity;
+import timofeyqa.rococo.mapper.UserMapper;
 import timofeyqa.rococo.model.UserJson;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
@@ -14,18 +15,18 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import timofeyqa.rococo.data.repository.UserRepository;
 
-import java.nio.charset.StandardCharsets;
-
 @Component
 public class UserService {
 
   private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
 
   private final UserRepository userRepository;
+  private final UserMapper userMapper;
 
   @Autowired
-  public UserService(UserRepository userRepository) {
+  public UserService(UserRepository userRepository, UserMapper userMapper) {
     this.userRepository = userRepository;
+    this.userMapper = userMapper;
   }
 
   @Transactional
@@ -53,7 +54,7 @@ public class UserService {
 
     public @Nonnull UserJson getUser(@Nonnull String username) {
         return userRepository.findByUsername(username)
-            .map(UserJson::fromEntity)
+            .map(userMapper::fromEntity)
             .orElseThrow(() -> new NotFoundException("User with provided username: " + username + " not found"));
     }
 
@@ -79,9 +80,9 @@ public class UserService {
       }
 
       if (patchRequest.avatar() != null && !patchRequest.avatar().isEmpty()) {
-        user.setAvatar(patchRequest.avatar().getBytes(StandardCharsets.UTF_8));
+        user.setAvatar(userMapper.toByte(patchRequest.avatar()));
       }
 
-      return UserJson.fromEntity(userRepository.save(user));
+      return userMapper.fromEntity(userRepository.save(user));
     }
 }

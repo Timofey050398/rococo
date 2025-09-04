@@ -28,7 +28,7 @@ public class AllureApiClient extends RestClient {
   private static final int MAX_BATCH_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 
   public AllureApiClient() {
-    super(CFG.allureDockerServiceUrl());
+    super(CFG.allureDockerServiceUrl(),true);
     this.allureApi = create(AllureApi.class);
   }
 

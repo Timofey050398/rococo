@@ -11,6 +11,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
 import java.net.URL;
+import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
@@ -55,14 +56,18 @@ public abstract class Form<T extends Form<?>> extends BaseComponent<T> {
   @Step("Check that toast message appears: {expectedText}")
   @SuppressWarnings("unchecked")
   @Nonnull
-  public T checkToastMessage(String expectedText) {
-    toast.should(text(expectedText));
+  public T checkToastMessage(String expectedText, Duration... duration) {
+    if (duration.length > 0) {
+      toast.should(text(expectedText),duration[0]);
+    } else {
+      toast.shouldHave(text(expectedText));
+    }
     return (T) this;
   }
 
   public T checkToastFileSizeErrorMessage() {
     final String expectedText = String.format("%s: File size exceeds allowed limit",imageParamName);
-    return checkToastMessage(expectedText);
+    return checkToastMessage(expectedText, Duration.ofSeconds(30));
   }
 
   public abstract T checkThatPageLoaded();
