@@ -18,7 +18,20 @@
         </encoder>
     </appender>
 
+    <appender name="KAFKA" class="com.github.danielwegener.logback.kafka.KafkaAppender">
+        <topic>logs</topic>
+        <producerConfig>
+            bootstrap.servers=${spring.kafka.bootstrap-servers}
+            key.serializer=org.apache.kafka.common.serialization.StringSerializer
+            value.serializer=org.apache.kafka.common.serialization.StringSerializer
+        </producerConfig>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{"service":"${spring.application.name}"}</customFields>
+        </encoder>
+    </appender>
+
     <root level="${LOG_LEVEL}">
+        <appender-ref ref="KAFKA"/>
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </root>

@@ -41,6 +41,8 @@ subprojects {
         mapstructVersion = '1.5.5.Final'
         hibernateValidatorVersion = '8.0.1.Final'
         jakartaElVersion = '5.0.0-M1'
+        kafkaAppenderVersion = '0.2.0-RC2'
+        logstashVersion = '8.1'
 
         dockerImage = System.getProperty("os.arch") == "aarch64" || System.getProperty("os.arch") == "arm64"
                 ? "arm64v8/eclipse-temurin:21-jdk"

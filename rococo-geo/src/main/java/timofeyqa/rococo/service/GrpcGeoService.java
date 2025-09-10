@@ -2,9 +2,8 @@ package timofeyqa.rococo.service;
 
 import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
+import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import timofeyqa.grpc.rococo.*;
@@ -15,8 +14,8 @@ import java.util.List;
 import java.util.UUID;
 
 @GrpcService
+@Slf4j
 public class GrpcGeoService extends RococoGeoServiceGrpc.RococoGeoServiceImplBase {
-    private static final Logger LOG = LoggerFactory.getLogger(GrpcGeoService.class);
 
     private final CountryRepository countryRepository;
 
@@ -27,7 +26,7 @@ public class GrpcGeoService extends RococoGeoServiceGrpc.RococoGeoServiceImplBas
 
     @Override
     public void getGeo(Uuid request, StreamObserver<GeoResponse> responseObserver) {
-        LOG.info("Fetching country by ID: {}", request.getUuid());
+        log.info("Fetching country by ID: {}", request.getUuid());
         final CountryEntity country = countryRepository.findById(UUID.fromString(request.getUuid()))
                 .orElseThrow(()->new IllegalStateException("Country not found "+ request.getUuid()));
 
@@ -37,7 +36,7 @@ public class GrpcGeoService extends RococoGeoServiceGrpc.RococoGeoServiceImplBas
 
     @Override
     public void getAll(Empty request, StreamObserver<GeoListResponse> responseObserver) {
-        LOG.info("Get all countries");
+        log.info("Get all countries");
         final List<CountryEntity> country = countryRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
         GeoListResponse response = GeoListResponse
                 .newBuilder()
@@ -58,7 +57,7 @@ public class GrpcGeoService extends RococoGeoServiceGrpc.RococoGeoServiceImplBas
                 .map(uuid -> UUID.fromString(uuid.getUuid()))
                 .toList();
 
-        LOG.info("Fetching country by ID's: {}", uuids);
+        log.info("Fetching country by ID's: {}", uuids);
 
         List<CountryEntity> country = countryRepository.findAllByIdIn(uuids);
 

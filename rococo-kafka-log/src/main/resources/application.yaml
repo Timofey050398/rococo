@@ -1,10 +1,9 @@
-grpc:
-  server:
-    port: 8095
+server:
+  port: 8097
 
 spring:
   application:
-    name: rococo-geo
+    name: rococo-kafka-log
   datasource:
     hikari:
       connection-timeout: 20000
@@ -17,7 +16,8 @@ spring:
     enabled: true
     baseline-on-migrate: true
     baseline-version: 0
-    locations: classpath:db/migration/rococo-geo
+    locations: classpath:db/migration/rococo-kafka-log
+    table: flyway_history_kafka_log
   jpa:
     hibernate:
       ddl-auto: none
@@ -31,16 +31,6 @@ spring:
     show-sql: false
     open-in-view: false
 
-logging:
-  file:
-    path: ./logs/rococo-geo
-  level:
-    root: INFO
-    org.springframework.kafka: INFO
-    org.springframework.web: INFO
-    org.springframework.ws: INFO
-    org.springframework.boot.autoconfigure: INFO
-
 ---
 spring:
   config:
@@ -51,12 +41,15 @@ spring:
       - 'org.springframework.cloud.vault.config.VaultAutoConfiguration'
       - 'org.springframework.cloud.vault.config.VaultObservationAutoConfiguration'
       - 'org.springframework.cloud.vault.config.VaultReactiveAutoConfiguration'
+  kafka:
+    bootstrap-servers: 'localhost:9092'
+    consumer:
+      group-id: 'logs'
+      auto-offset-reset: earliest
   datasource:
     url: 'jdbc:mysql://localhost:3306/rococo?serverTimezone=UTC&createDatabaseIfNotExist=true'
     username: root
     password: secret
-  kafka:
-    bootstrap-servers: 'localhost:9092'
 ---
 spring:
   config:
@@ -67,9 +60,12 @@ spring:
       - 'org.springframework.cloud.vault.config.VaultAutoConfiguration'
       - 'org.springframework.cloud.vault.config.VaultObservationAutoConfiguration'
       - 'org.springframework.cloud.vault.config.VaultReactiveAutoConfiguration'
+  kafka:
+    bootstrap-servers: 'kafka:9092'
+    consumer:
+      group-id: 'logs'
+      auto-offset-reset: earliest
   datasource:
     url: 'jdbc:mysql://rococo-all-db:3306/rococo?serverTimezone=UTC&createDatabaseIfNotExist=true'
     username: root
     password: secret
-  kafka:
-    bootstrap-servers: 'kafka:9092'

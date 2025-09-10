@@ -13,7 +13,6 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation "org.springframework.kafka:spring-kafka:${project.ext.springKafkaVersion}"
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation "org.springframework.cloud:spring-cloud-starter-vault-config:${project.ext.springVaultVersion}"
     implementation "org.flywaydb:flyway-core:${project.ext.flywayVersion}"
     implementation "org.flywaydb:flyway-mysql:${project.ext.flywayVersion}"
     implementation "net.coobird:thumbnailator:${project.ext.thumbnailatorVersion}"
@@ -21,7 +20,6 @@ dependencies {
     compileOnly "org.projectlombok:lombok:${project.ext.lombokVersion}"
     runtimeOnly "com.mysql:mysql-connector-j:${project.ext.mysqlDriverVersion}"
     implementation "org.glassfish:jakarta.el:${project.ext.jakartaElVersion}"
-    implementation "org.hibernate.validator:hibernate-validator:${project.ext.hibernateValidatorVersion}"
 
     //KAFKA Logs
     implementation "com.github.danielwegener:logback-kafka-appender:${project.ext.kafkaAppenderVersion}"
@@ -34,7 +32,7 @@ dependencies {
 
 jib {
     container {
-        ports = ['8089']
+        ports = ['8097']
         jvmFlags = ["-Dspring.profiles.active=${System.env.PROFILE}"]
         environment = [
                 'VAULT_TOKEN': "${System.env.VAULT_TOKEN}".toString(),

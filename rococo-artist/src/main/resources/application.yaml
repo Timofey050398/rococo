@@ -55,6 +55,8 @@ spring:
     url: 'jdbc:mysql://localhost:3306/rococo?serverTimezone=UTC&createDatabaseIfNotExist=true'
     username: root
     password: secret
+  kafka:
+    bootstrap-servers: 'localhost:9092'
 ---
 spring:
   config:
@@ -69,3 +71,5 @@ spring:
     url: 'jdbc:mysql://rococo-all-db:3306/rococo?serverTimezone=UTC&createDatabaseIfNotExist=true'
     username: root
     password: secret
+  kafka:
+    bootstrap-servers: 'kafka:9092'

@@ -35,6 +35,8 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: 'http://127.0.0.1:9000'
+  kafka:
+    bootstrap-servers: 'localhost:9092'
 
 grpc:
   client:
@@ -83,6 +85,8 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: 'http://auth.rococo.dc:9000'
+  kafka:
+    bootstrap-servers: 'kafka:9092'
 
 grpc:
   client:

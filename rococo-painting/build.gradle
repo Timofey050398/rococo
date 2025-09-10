@@ -26,6 +26,10 @@ dependencies {
 	implementation "org.glassfish:jakarta.el:${project.ext.jakartaElVersion}"
 	implementation "org.hibernate.validator:hibernate-validator:${project.ext.hibernateValidatorVersion}"
 
+	//KAFKA Logs
+	implementation "com.github.danielwegener:logback-kafka-appender:${project.ext.kafkaAppenderVersion}"
+	implementation "net.logstash.logback:logstash-logback-encoder:${project.ext.logstashVersion}"
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation "com.h2database:h2:${project.ext.h2Version}"
 }
