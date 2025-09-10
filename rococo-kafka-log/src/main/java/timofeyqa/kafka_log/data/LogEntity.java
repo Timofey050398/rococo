@@ -17,6 +17,7 @@ public class LogEntity {
   private UUID id;
 
   @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
   private Service service;
 
   @Column(nullable = false)
