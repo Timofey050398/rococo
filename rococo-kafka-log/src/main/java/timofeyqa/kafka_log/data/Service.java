@@ -1,10 +1,25 @@
 package timofeyqa.kafka_log.data;
 
-public enum Service {
-  rococo_auth,rococo_gateway,rococo_museum,rococo_artist,rococo_painting, rococo_userdata, rococo_geo;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
-  @Override
-  public String toString() {
-    return this.name().replaceAll("_", "-");
+public enum Service {
+  rococo_auth,
+  rococo_gateway,
+  rococo_museum,
+  rococo_artist,
+  rococo_painting,
+  rococo_userdata,
+  rococo_geo;
+
+  @JsonCreator
+  public static Service fromValue(String value) {
+    return Service.valueOf(value.replace("-", "_"));
+  }
+
+  @JsonValue
+  public String toValue() {
+    return this.name().replace("_", "-");
   }
 }
+
