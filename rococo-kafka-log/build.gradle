@@ -72,6 +72,3 @@ tasks.register('printVersion') {
 tasks.named('test') {
     useJUnitPlatform()
 }
-
-// Allow running the Gradle Wrapper task from this subproject
-tasks.register('wrapper', Wrapper)
