@@ -15,11 +15,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation "org.flywaydb:flyway-core:${project.ext.flywayVersion}"
     implementation "org.flywaydb:flyway-mysql:${project.ext.flywayVersion}"
-    implementation "net.coobird:thumbnailator:${project.ext.thumbnailatorVersion}"
     annotationProcessor "org.projectlombok:lombok:${project.ext.lombokVersion}"
     compileOnly "org.projectlombok:lombok:${project.ext.lombokVersion}"
     runtimeOnly "com.mysql:mysql-connector-j:${project.ext.mysqlDriverVersion}"
-    implementation "org.glassfish:jakarta.el:${project.ext.jakartaElVersion}"
     implementation "org.mapstruct:mapstruct:${project.ext.mapstructVersion}"
     annotationProcessor "org.mapstruct:mapstruct-processor:${project.ext.mapstructVersion}"
 
