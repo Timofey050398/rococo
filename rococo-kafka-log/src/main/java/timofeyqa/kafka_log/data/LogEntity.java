@@ -12,13 +12,11 @@ import java.util.UUID;
 public class LogEntity {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  @Column(name = "id", nullable = false, columnDefinition = "CHAR(36) DEFAULT (UUID())")
+  @GeneratedValue
   private UUID id;
 
   @Column(nullable = false)
-  @Enumerated(EnumType.STRING)
-  private Service service;
+  private String service;
 
   @Column(nullable = false)
   private String level;

@@ -1,6 +1,7 @@
 package timofeyqa.rococo.service.db;
 
 import io.qameta.allure.Step;
+import org.springframework.lang.Nullable;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import timofeyqa.rococo.config.Config;
@@ -13,6 +14,7 @@ import timofeyqa.rococo.data.repository.UserRepository;
 import timofeyqa.rococo.data.tpl.XaTransactionTemplate;
 import timofeyqa.rococo.model.rest.UserJson;
 import timofeyqa.rococo.service.UserClient;
+import timofeyqa.rococo.utils.waiter.Waiter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -52,9 +54,10 @@ public class UsersDbClient implements UserClient, DeletableClient<UserJson> {
 
     @Override
     @Step("Get user {username}")
-    public UserJson getUser(String username){
-        return xaTransactionTemplate.execute(() -> UserJson.fromEntity(userRepository.findByUsername(username)
-            .orElseThrow()
+    public  @Nullable UserJson getUser(String username) {
+        return Waiter.getNonOptional(() -> xaTransactionTemplate.execute(
+            () -> userRepository.findByUsername(username)
+                .map(UserJson::fromEntity)
         ));
     }
 

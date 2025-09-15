@@ -1,6 +1,7 @@
 package timofeyqa.rococo.config;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 public interface Config {
 
@@ -74,4 +75,11 @@ public interface Config {
 
   @Nonnull
   String screenshotBaseDir();
+
+  @Nonnull
+  String kafkaAddress();
+
+  default List<String> kafkaTopics() {
+    return List.of("users","logs");
+  }
 }

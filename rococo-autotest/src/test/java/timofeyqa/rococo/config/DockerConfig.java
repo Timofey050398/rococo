@@ -88,4 +88,10 @@ enum DockerConfig implements Config {
   public String screenshotBaseDir() {
     return "screenshots/selenoid/";
   }
+
+  @NotNull
+  @Override
+  public String kafkaAddress() {
+    return "kafka:9092";
+  }
 }
