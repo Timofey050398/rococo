@@ -66,4 +66,10 @@ public enum ProdConfig implements Config {
   public String screenshotBaseDir() {
     return "";
   }
+
+  @NotNull
+  @Override
+  public String kafkaAddress() {
+    return "";
+  }
 }

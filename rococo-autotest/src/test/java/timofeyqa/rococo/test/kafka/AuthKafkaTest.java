@@ -10,6 +10,8 @@ import timofeyqa.rococo.service.db.UsersDbClient;
 import timofeyqa.rococo.service.kafka.KafkaService;
 import timofeyqa.rococo.utils.RandomDataUtils;
 
+import java.util.Objects;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @KafkaTest
@@ -25,7 +27,7 @@ public class AuthKafkaTest {
 
     usersApiClient.createUser(username, PASSWORD);
 
-    UserJson userFromKafka = KafkaService.getUser(username);
+    UserJson userFromKafka = Objects.requireNonNull(KafkaService.getUser(username));
     Assertions.assertEquals(
         username,
         userFromKafka.username()

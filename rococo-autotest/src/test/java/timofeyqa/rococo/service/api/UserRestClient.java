@@ -2,14 +2,11 @@ package timofeyqa.rococo.service.api;
 
 import timofeyqa.rococo.api.AuthApi;
 import timofeyqa.rococo.api.UserdataApi;
-import timofeyqa.rococo.api.core.RestClient;
-import timofeyqa.rococo.api.core.ThreadSafeCookieStore;
+import timofeyqa.rococo.api.core.*;
 import timofeyqa.rococo.config.Config;
 import timofeyqa.rococo.model.rest.UserJson;
 import timofeyqa.rococo.service.UserClient;
 import io.qameta.allure.Step;
-import timofeyqa.rococo.api.core.ErrorAsserter;
-import timofeyqa.rococo.api.core.RequestExecutor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -28,17 +25,15 @@ public class UserRestClient implements UserClient, ErrorAsserter, RequestExecuto
     @Step("Create user with username {username} and password {password}")
     @Nonnull
     public UserJson createUser(String username, String password) {
+        execute(authApi.getRegisterPage());
+        execute(authApi.register(
+            username,
+            password,
+            password,
+            ThreadSafeCookieStore.INSTANCE.cookieValue("XSRF-TOKEN")
+        ));
         return Objects.requireNonNull(
-                this.<UserJson>execute(
-                    authApi.getRegisterPage(),
-                    authApi.register(
-                            username,
-                            password,
-                            password,
-                            ThreadSafeCookieStore.INSTANCE.cookieValue("XSRF-TOKEN")
-                    ),
-                    userdataApi.getUser(username)
-                ))
+                this.<UserJson>execute(userdataApi.getUser(username)))
                 .withPassword(CFG.defaultPassword());
     }
 

@@ -91,5 +91,9 @@ public abstract class RestClient implements RequestExecutor {
         public EmptyRestClient(String baseUrl) {
             super(baseUrl);
         }
+
+        public EmptyRestClient(String baseUrl, boolean followRedirect, @Nullable Interceptor... interceptors) {
+            super(baseUrl, followRedirect, interceptors);
+        }
     }
 }

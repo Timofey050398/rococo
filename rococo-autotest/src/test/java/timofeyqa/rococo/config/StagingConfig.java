@@ -66,4 +66,10 @@ public enum StagingConfig implements Config {
   public String screenshotBaseDir() {
     return "";
   }
+
+  @NotNull
+  @Override
+  public String kafkaAddress() {
+    return "";
+  }
 }
