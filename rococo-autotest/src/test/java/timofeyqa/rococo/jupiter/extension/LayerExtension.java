@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;
 import timofeyqa.rococo.jupiter.annotation.meta.GrpcTest;
+import timofeyqa.rococo.jupiter.annotation.meta.KafkaTest;
 import timofeyqa.rococo.jupiter.annotation.meta.RestTest;
 import timofeyqa.rococo.jupiter.annotation.meta.WebTest;
 
@@ -20,5 +21,7 @@ public class LayerExtension implements BeforeAllCallback {
         .ifPresent(grpcTest -> Allure.label(LAYER,"rest api"));
     AnnotationSupport.findAnnotation(testClass, WebTest.class)
         .ifPresent(grpcTest -> Allure.label(LAYER,"web"));
+    AnnotationSupport.findAnnotation(testClass, KafkaTest.class)
+        .ifPresent(grpcTest -> Allure.label(LAYER,"kafka"));
   }
 }

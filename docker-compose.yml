@@ -145,8 +145,8 @@ services:
     networks:
       - rococo-network
 
-  kafka-logs.rococo.dc:
-    container_name: kafka-logs.rococo.dc
+  kafka-log.rococo.dc:
+    container_name: kafka-log.rococo.dc
     image: ${PREFIX}/rococo-kafka-log-docker:latest
     ports:
       - 8097:8097

@@ -1,6 +1,7 @@
 package timofeyqa.rococo.test.kafka;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import timofeyqa.rococo.config.Config;
 import timofeyqa.rococo.jupiter.annotation.meta.KafkaTest;
@@ -15,6 +16,7 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @KafkaTest
+@DisplayName("Тесты kafka")
 public class AuthKafkaTest {
 
   private final UserRestClient usersApiClient = new UserRestClient();
@@ -22,6 +24,7 @@ public class AuthKafkaTest {
   private static final String PASSWORD = Config.getInstance().defaultPassword();
 
   @Test
+  @DisplayName("При регистрации пользователь отправляется в kafka")
   void userShouldBeProducedToKafka() throws Exception {
     final String username = RandomDataUtils.randomUsername();
 
@@ -35,6 +38,7 @@ public class AuthKafkaTest {
   }
 
   @Test
+  @DisplayName("После отправки в kafka пользователь сохраняется в бд userdata")
   void whenUserProducedToKafkaThenUserAddedToDb() throws Exception {
     final String username = RandomDataUtils.randomUsername();
 
@@ -48,6 +52,7 @@ public class AuthKafkaTest {
   }
 
   @Test
+  @DisplayName("Логи отправляются в kafka")
   void logsShouldBeProduced() throws Exception {
     final String username = RandomDataUtils.randomUsername();
 

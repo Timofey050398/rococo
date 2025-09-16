@@ -10,8 +10,8 @@ public record LogJson(
     @JsonProperty String service,
     @JsonProperty String level,
     @JsonProperty String message,
-    @JsonProperty String thread,
-    @JsonProperty String logger,
-    @JsonProperty Instant timestamp
+    @JsonProperty("thread_name") String thread,
+    @JsonProperty("logger_name") String logger,
+    @JsonProperty("@timestamp") Instant timestamp
 ) {
 }

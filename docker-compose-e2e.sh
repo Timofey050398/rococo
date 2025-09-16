@@ -69,7 +69,7 @@ for image in \
   "${PREFIX}/rococo-userdata-docker:latest" \
   "${PREFIX}/rococo-grpc-docker:latest" \
   "${PREFIX}/rococo-client-docker:latest" \
-  "${PREFIX}/rococo-kafka-logs-docker:latest" \
+  "${PREFIX}/rococo-kafka-log-docker:latest" \
   "aerokube/selenoid:1.11.3" \
   "aerokube/selenoid-ui:1.10.11" \
   "${PREFIX}/rococo-autotest:latest" \
