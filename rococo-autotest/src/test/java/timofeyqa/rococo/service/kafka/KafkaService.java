@@ -77,12 +77,16 @@ public class KafkaService implements Runnable {
           }
           if("logs".equals(record.topic())) {
             LogJson logJson = om.readValue(stringValue, LogJson.class);
-            logStore.put(logJson);
+            try {
+              logStore.put(logJson);
+            } catch (InterruptedException e) {
+              throw new RuntimeException(e);
+            }
           }
         }
       }
-    } catch (JsonProcessingException | InterruptedException e) {
-      throw new RuntimeException(e);
+    } catch (JsonProcessingException e) {
+      System.err.printf("Error while processing records:\n %s", e.getMessage());
     } finally {
       consumer.close();
       Thread.currentThread().interrupt();
