@@ -1,5 +1,6 @@
 package timofeyqa.kafka_log.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -27,8 +28,11 @@ class KafkaLogsServiceTest {
   @Autowired
   private KafkaLogsRepository kafkaLogsRepository;
 
+  @Autowired
+  private ObjectMapper objectMapper;
+
   @Test
-  void logShouldBeSavedToDatabase() {
+  void logShouldBeSavedToDatabase() throws Exception {
     LogJson log = new LogJson(
         "rococo-auth",
         "INFO",
@@ -38,7 +42,9 @@ class KafkaLogsServiceTest {
         Instant.now()
     );
 
-    kafkaLogsService.listener(log);
+    byte[] payload = objectMapper.writeValueAsBytes(log);
+
+    kafkaLogsService.listener(payload);
 
     List<LogEntity> all = kafkaLogsRepository.findAll();
     assertThat(all).hasSize(1);
