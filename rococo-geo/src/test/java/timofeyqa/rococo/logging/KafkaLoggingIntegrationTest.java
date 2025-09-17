@@ -9,11 +9,13 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.*;
 import org.springframework.kafka.test.EmbeddedKafkaKraftBroker;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
@@ -64,14 +66,10 @@ class KafkaLoggingIntegrationTest {
 
     // Логируем маркер
     String marker = UUID.randomUUID().toString();
-    Logger logger = loggerContext.getLogger("test.kafka.logger");
-    logger.info("Test log with marker {}", marker);
 
-    // Небольшая пауза, чтобы KafkaAppender успел отправить
     Thread.sleep(500);
 
-    // Создаём консумера
-    try (KafkaConsumer<String, String> consumer = createConsumer()) {
+    try (KafkaConsumer<String, byte[]> consumer = createConsumer()) {
       consumer.subscribe(Collections.singletonList(TOPIC));
 
       String payload = awaitPayload(consumer, marker);
@@ -96,24 +94,28 @@ class KafkaLoggingIntegrationTest {
     }
   }
 
-  private KafkaConsumer<String, String> createConsumer() {
+  private KafkaConsumer<String, byte[]> createConsumer() {
     Properties props = new Properties();
     props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, embeddedKafka.getBrokersAsString());
     props.put(ConsumerConfig.GROUP_ID_CONFIG, "test-" + UUID.randomUUID());
     props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-    props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+    props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class.getName());
     props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
     return new KafkaConsumer<>(props);
   }
 
-  private String awaitPayload(KafkaConsumer<String, String> consumer, String marker) {
+  private String awaitPayload(KafkaConsumer<String, byte[]> consumer, String marker) {
     long deadline = System.currentTimeMillis() + 10_000;
     while (System.currentTimeMillis() < deadline) {
-      ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(200));
-      for (ConsumerRecord<String, String> record : records) {
-        if (record.value() != null && record.value().contains(marker)) {
-          System.out.println(">>> Received from Kafka: " + record.value());
-          return record.value();
+      ConsumerRecords<String, byte[]> records = consumer.poll(Duration.ofMillis(200));
+      for (ConsumerRecord<String, byte[]> record : records) {
+        byte[] value = record.value();
+        if (value != null) {
+          String payload = new String(value, StandardCharsets.UTF_8);
+          if (payload.contains(marker)) {
+            System.out.println(">>> Received from Kafka: " + payload);
+            return payload;
+          }
         }
       }
     }
