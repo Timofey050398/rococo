@@ -19,7 +19,7 @@
         <producerConfig>
             bootstrap.servers=${spring.kafka.bootstrap-servers}
             key.serializer=org.apache.kafka.common.serialization.StringSerializer
-            value.serializer=org.apache.kafka.common.serialization.StringSerializer
+            value.serializer=org.apache.kafka.common.serialization.JsonSerializer
         </producerConfig>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <customFields>{"service":"${spring.application.name}"}</customFields>

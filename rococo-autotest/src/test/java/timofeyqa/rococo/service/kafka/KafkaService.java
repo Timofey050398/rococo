@@ -46,7 +46,7 @@ public class KafkaService implements Runnable {
   }
 
   public static LogJson takeLog() throws InterruptedException {
-    return takeLog(5000L);
+    return takeLog(10000L);
   }
 
   public static LogJson takeLog(long timeoutMs) throws InterruptedException {
