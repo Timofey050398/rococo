@@ -1,6 +1,8 @@
 package timofeyqa.kafka_log.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +31,12 @@ class KafkaLogsServiceTest {
   @Autowired
   private KafkaLogsRepository kafkaLogsRepository;
 
+  private final ObjectMapper objectMapper = new ObjectMapper()
+      .registerModule(new JavaTimeModule())
+      .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
   @Test
-  void logShouldBeSavedToDatabase() {
+  void logShouldBeSavedToDatabase() throws Exception {
     LogJson log = new LogJson(
         "rococo-auth",
         "INFO",
@@ -40,9 +46,12 @@ class KafkaLogsServiceTest {
         Instant.now()
     );
 
-    ConsumerRecord<String, LogJson> cr = new ConsumerRecord<>("logs",1,1,null, log);
+    String logStr = objectMapper.writeValueAsString(log);
 
-    kafkaLogsService.listener(log,cr);
+    ConsumerRecord<String, String> cr =
+        new ConsumerRecord<>("logs", 1, 1, null, logStr);
+
+    kafkaLogsService.listener(logStr, cr);
 
     List<LogEntity> all = kafkaLogsRepository.findAll();
     assertThat(all).hasSize(1);

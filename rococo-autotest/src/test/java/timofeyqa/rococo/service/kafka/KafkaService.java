@@ -76,7 +76,7 @@ public class KafkaService implements Runnable {
             store.put(userJson.username(), userJson);
           }
           if("logs".equals(record.topic())) {
-            LogJson logJson = om.readValue(stringValue, LogJson.class);
+            LogJson logJson = LogJson.parse(stringValue);
             try {
               logStore.put(logJson);
             } catch (InterruptedException e) {

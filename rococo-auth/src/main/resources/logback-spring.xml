@@ -3,7 +3,7 @@
     <springProperty scope="context"
                     name="kafkaBootstrap"
                     source="spring.kafka.bootstrap-servers"
-                    defaultValue="127.0.0.1:9292"/>
+                    defaultValue="localhost:9292"/>
     <springProperty scope="context"
                     name="serviceName"
                     source="spring.application.name"/>
@@ -16,11 +16,7 @@
 
     <appender name="KAFKA" class="com.github.danielwegener.logback.kafka.KafkaAppender">
         <topic>logs</topic>
-        <producerConfig>
-            bootstrap.servers=${kafkaBootstrap}
-            key.serializer=org.apache.kafka.common.serialization.StringSerializer
-            value.serializer=org.apache.kafka.common.serialization.JsonSerializer
-        </producerConfig>
+        <producerConfig>bootstrap.servers=${kafkaBootstrap}</producerConfig>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <customFields>{"service":"${serviceName}"}</customFields>
         </encoder>

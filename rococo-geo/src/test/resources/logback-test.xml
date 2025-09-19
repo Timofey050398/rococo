@@ -1,12 +1,7 @@
 <configuration>
     <property name="LOG_LEVEL" value="INFO"/>
-    <springProperty scope="context"
-                    name="kafkaBootstrap"
-                    source="spring.kafka.bootstrap-servers"
-                    defaultValue="localhost:9292"/>
-    <springProperty scope="context"
-                    name="serviceName"
-                    source="spring.application.name"/>
+    <property name="kafkaBootstrap" value="localhost:9292"/>
+    <property name="serviceName" value="test-service"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -16,9 +11,9 @@
 
     <appender name="KAFKA" class="com.github.danielwegener.logback.kafka.KafkaAppender">
         <topic>logs</topic>
-        <producerConfig>bootstrap.servers=${spring.kafka.bootstrap-servers}</producerConfig>
+        <producerConfig>bootstrap.servers=${kafkaBootstrap}</producerConfig>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <customFields>{"service":"${spring.application.name}"}</customFields>
+            <customFields>{"service":"${serviceName}"}</customFields>
         </encoder>
     </appender>
 
