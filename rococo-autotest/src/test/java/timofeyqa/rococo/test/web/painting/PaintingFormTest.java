@@ -115,8 +115,6 @@ public class PaintingFormTest {
   )
   @User
   @ApiLogin
-  @Disabled("Artist not edited: when user choose another artist " +
-      "then send request with old artist id")
   @DisplayName("Авторизованный пользователь может изменить автора картины")
   void authorShouldEditCorrectly(ContentJson content) {
     final var painting = content.paintings().iterator().next();
