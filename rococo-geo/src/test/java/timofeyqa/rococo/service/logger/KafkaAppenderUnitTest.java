@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 
 /**
  * Юнит-тест проверяет, что logback KafkaAppender реально шлёт логи в KafkaProducer.
- * Сам Kafka не поднимаем — мокаем продюсер и проверяем вызов send().
+ * Сам Kafka не поднимаем - мокаем продюсер и проверяем вызов send().
  */
 class KafkaAppenderUnitTest {
 

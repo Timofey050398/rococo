@@ -1,10 +1,12 @@
 package timofeyqa.rococo.controller;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import timofeyqa.rococo.ex.BadRequestException;
 import timofeyqa.rococo.model.PaintingJson;
 import timofeyqa.rococo.model.page.RestPage;
 import timofeyqa.rococo.service.api.grpc.GrpcPaintingClient;
@@ -17,16 +19,14 @@ import java.util.concurrent.CompletionException;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class PaintingControllerTest {
 
+  @Mock
   private GrpcPaintingClient paintingClient;
-  private PaintingController paintingController;
 
-  @BeforeEach
-  void setUp() {
-    paintingClient = mock(GrpcPaintingClient.class);
-    paintingController = new PaintingController(paintingClient);
-  }
+  @InjectMocks
+  private PaintingController paintingController;
 
   @Test
   void getPainting_withValidId_returnsOk() {

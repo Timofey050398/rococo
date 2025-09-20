@@ -34,15 +34,19 @@ public abstract class RestClient implements RequestExecutor {
         this(baseUrl, false, JacksonConverterFactory.create(), HttpLoggingInterceptor.Level.BODY, false);
     }
 
-    public RestClient(String baseUrl, boolean isAllureApiClient) {
-        this(baseUrl, false, JacksonConverterFactory.create(), HttpLoggingInterceptor.Level.BODY, isAllureApiClient);
+    public RestClient(boolean isContentOversized){
+        this(CFG.gatewayUrl(), isContentOversized);
+    }
+
+    public RestClient(String baseUrl, boolean isContentOversized) {
+        this(baseUrl, false, JacksonConverterFactory.create(), HttpLoggingInterceptor.Level.BODY, isContentOversized);
     }
 
     public RestClient(String baseUrl, boolean followRedirect, @Nullable Interceptor... interceptors) {
         this(baseUrl, followRedirect, JacksonConverterFactory.create(), HEADERS, false, interceptors);
     }
 
-    public RestClient(String baseUrl, boolean followRedirect, Converter.Factory factory, HttpLoggingInterceptor.Level level, boolean isAllureApi, @Nullable Interceptor... interceptors) {
+    public RestClient(String baseUrl, boolean followRedirect, Converter.Factory factory, HttpLoggingInterceptor.Level level, boolean isContentOversized, @Nullable Interceptor... interceptors) {
         final OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .followRedirects(followRedirect);
 
@@ -68,7 +72,7 @@ public abstract class RestClient implements RequestExecutor {
                         )
                 )
         );
-        if (isAllureApi) {
+        if (isContentOversized) {
             builder.connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(60, TimeUnit.SECONDS)
                 .writeTimeout(60, TimeUnit.SECONDS);

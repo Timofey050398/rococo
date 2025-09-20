@@ -1,10 +1,12 @@
 package timofeyqa.rococo.controller;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import timofeyqa.rococo.ex.BadRequestException;
 import timofeyqa.rococo.model.MuseumJson;
 import timofeyqa.rococo.model.page.RestPage;
 import timofeyqa.rococo.service.api.grpc.GrpcMuseumClient;
@@ -17,16 +19,14 @@ import java.util.concurrent.CompletionException;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class MuseumControllerTest {
 
+  @Mock
   private GrpcMuseumClient museumClient;
-  private MuseumController museumController;
 
-  @BeforeEach
-  void setUp() {
-    museumClient = mock(GrpcMuseumClient.class);
-    museumController = new MuseumController(museumClient);
-  }
+  @InjectMocks
+  private MuseumController museumController;
 
   @Test
   void getMuseum_withValidId_returnsMuseum() {

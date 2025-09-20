@@ -24,6 +24,17 @@ public class PaintingRestClient extends RestClient implements ErrorAsserter, Pai
 
   private static final PaintingMapper MAPPER = PaintingMapper.INSTANCE;
 
+  public PaintingRestClient(){
+    super();
+  }
+
+  private PaintingRestClient(boolean isContentOversized) {
+    super(isContentOversized);
+  }
+
+  public PaintingRestClient withOversizedContent(){
+    return new PaintingRestClient(true);
+  }
   @Step("execute PATCH /api/painting")
   public PaintingDto updatePainting(PaintingDto painting, String token) {
     PaintingJson json = execute(api.updatePainting(

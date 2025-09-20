@@ -20,7 +20,6 @@ public class ArtistListPageTest {
       artists = {
           @Artist(
               photo = "img/content/artists/dali.png",
-              name = "dali",
               biography = "random artist biography"
           )
       }

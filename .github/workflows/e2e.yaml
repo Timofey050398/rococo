@@ -89,7 +89,7 @@ jobs:
         id: e2e
         run: |
           echo "### Starting tests ###"
-          docker wait rococo-e2e-tests
+          docker wait rococo-autotest
           exit_code=$(docker inspect -f '{{.State.ExitCode}}' rococo-autotest)
           echo "E2E_EXIT_CODE=$exit_code" >> $GITHUB_OUTPUT
           echo "### Test logs ###"

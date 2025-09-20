@@ -235,7 +235,7 @@ class RestArtistPostTest {
         .build();
 
     HttpException ex = assertThrows(HttpException.class,
-        () -> artistClient.createArtist(request,"Bearer "+token));
+        () -> artistClient.withOversizedContent().createArtist(request,"Bearer "+token));
 
     artistClient.assertError(
         400,

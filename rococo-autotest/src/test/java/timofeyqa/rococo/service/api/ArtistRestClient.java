@@ -27,20 +27,32 @@ public class ArtistRestClient extends RestClient implements ErrorAsserter, Artis
 
   private static final ArtistMapper MAPPER = ArtistMapper.INSTANCE;
 
+  public ArtistRestClient(){
+    super();
+  }
+
+  private ArtistRestClient(boolean isContentOversized) {
+    super(isContentOversized);
+  }
+
+  public ArtistRestClient withOversizedContent(){
+    return new ArtistRestClient(true);
+  }
+
   @Step("execute PATCH /api/artist")
-  public ArtistDto updateArtist(ArtistDto Artist, String token) {
+  public ArtistDto updateArtist(ArtistDto artist, String token) {
     ArtistJson json = execute(api.updateArtist(
         token,
-        MAPPER.toJson(Artist)
+        MAPPER.toJson(artist)
     ));
     return MAPPER.fromJson(json);
   }
 
   @Step("execute POST /api/artist")
-  public ArtistDto createArtist(ArtistDto Artist, String token) {
+  public ArtistDto createArtist(ArtistDto artist, String token) {
     ArtistJson json = execute(api.createArtist(
         token,
-        MAPPER.toJson(Artist)
+        MAPPER.toJson(artist)
     ));
     return MAPPER.fromJson(json);
   }
@@ -72,12 +84,12 @@ public class ArtistRestClient extends RestClient implements ErrorAsserter, Artis
 
   @Override
   @Step("Create Artist")
-  public ArtistDto create(ArtistDto Artist) {
+  public ArtistDto create(ArtistDto artist) {
     String token = getToken();
     if (!StringUtils.isEmpty(token)) {
       token = "Bearer "+ getToken();
     }
-    return createArtist(Artist, token);
+    return createArtist(artist, token);
   }
 
 }

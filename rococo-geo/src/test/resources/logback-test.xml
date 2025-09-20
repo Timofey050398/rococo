@@ -12,6 +12,11 @@
     <appender name="KAFKA" class="com.github.danielwegener.logback.kafka.KafkaAppender">
         <topic>logs</topic>
         <producerConfig>bootstrap.servers=${kafkaBootstrap}</producerConfig>
+        <producerConfig>acks=1</producerConfig>
+        <producerConfig>retries=3</producerConfig>
+        <producerConfig>delivery.timeout.ms=5000</producerConfig>
+        <producerConfig>request.timeout.ms=2000</producerConfig>
+        <producerConfig>max.block.ms=2000</producerConfig>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <customFields>{"service":"${serviceName}"}</customFields>
         </encoder>

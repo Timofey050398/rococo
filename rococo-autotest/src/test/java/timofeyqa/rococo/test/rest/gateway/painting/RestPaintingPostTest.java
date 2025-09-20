@@ -287,7 +287,7 @@ class RestPaintingPostTest {
         .build();
 
     HttpException ex = assertThrows(HttpException.class,
-        () -> paintingClient.createPainting(request, "Bearer " + token));
+        () -> paintingClient.withOversizedContent().createPainting(request, "Bearer " + token));
 
     paintingClient.assertError(
         400,

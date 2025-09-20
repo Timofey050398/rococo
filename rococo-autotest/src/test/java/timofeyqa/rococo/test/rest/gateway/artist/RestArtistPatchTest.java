@@ -183,7 +183,7 @@ class RestArtistPatchTest {
         .build();
 
     HttpException ex = assertThrows(HttpException.class,
-        () -> artistClient.updateArtist(request, "Bearer " + token));
+        () -> artistClient.withOversizedContent().updateArtist(request, "Bearer " + token));
 
     artistClient.assertError(
         400,

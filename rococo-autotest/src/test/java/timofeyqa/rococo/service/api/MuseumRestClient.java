@@ -22,6 +22,18 @@ public class MuseumRestClient extends RestClient implements ErrorAsserter, Museu
 
   private static final MuseumMapper MAPPER = MuseumMapper.INSTANCE;
 
+  public MuseumRestClient(){
+    super();
+  }
+
+  private MuseumRestClient(boolean isContentOversized) {
+    super(isContentOversized);
+  }
+
+  public MuseumRestClient withOversizedContent(){
+    return new MuseumRestClient(true);
+  }
+
   @Step("execute PATCH /api/museum")
   public MuseumDto updateMuseum(MuseumDto Museum, String token) {
     MuseumJson json = execute(api.updateMuseum(

@@ -34,7 +34,7 @@ public class KafkaLogsService {
   public void listener(@Payload String payload, ConsumerRecord<String, String> cr) {
     try {
       LogJson logJson = objectMapper.readValue(payload, LogJson.class);
-      kafkaLogsRepository.save(logMapper.toEntity(logJson));
+      if (!"DEBUG".equals(logJson.level())) kafkaLogsRepository.save(logMapper.toEntity(logJson));
     } catch (JsonProcessingException e) {
       log.error("### Can't parse josn: {}", e);
       throw new RuntimeException(e);

@@ -233,7 +233,7 @@ class RestMuseumPostTest {
         .build();
 
     HttpException ex = assertThrows(HttpException.class,
-        () -> museumClient.createMuseum(request, "Bearer " + token));
+        () -> museumClient.withOversizedContent().createMuseum(request, "Bearer " + token));
 
     museumClient.assertError(
         400,

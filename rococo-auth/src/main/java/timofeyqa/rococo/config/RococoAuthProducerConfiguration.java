@@ -59,4 +59,13 @@ public class RococoAuthProducerConfiguration {
         .replicas(1)
         .build();
   }
+
+  @Bean
+  public NewTopic logsTopic() {
+    return TopicBuilder.name("logs")
+        .partitions(1)
+        .replicas(1)
+        .build();
+  }
+
 }

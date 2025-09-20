@@ -252,7 +252,7 @@ class RestMuseumPatchTest {
         .build();
 
     HttpException ex = assertThrows(HttpException.class,
-        () -> museumClient.updateMuseum(request, "Bearer " + token));
+        () -> museumClient.withOversizedContent().updateMuseum(request, "Bearer " + token));
 
     museumClient.assertError(
         400,

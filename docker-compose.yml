@@ -47,6 +47,21 @@ services:
     networks:
       - rococo-network
 
+  kafka-init:
+    image: confluentinc/cp-kafka:7.3.2
+    depends_on:
+      kafka:
+        condition: service_started
+    entrypoint: >
+      sh -c "
+        echo '### Waiting for Kafka...';
+        sleep 10;
+        kafka-topics --create --if-not-exists --topic logs --partitions 1 --replication-factor 1 --bootstrap-server kafka:9092;
+        echo '### Logs topic created ###';
+      "
+    networks:
+      - rococo-network
+
   auth.rococo.dc:
     container_name: auth.rococo.dc
     image: ${PREFIX}/rococo-auth-docker:latest
@@ -63,6 +78,8 @@ services:
         condition: service_healthy
       kafka:
         condition: service_started
+      kafka-init:
+        condition: service_completed_successfully
     networks:
       - rococo-network
 
@@ -75,6 +92,8 @@ services:
     depends_on:
       rococo-all-db:
         condition: service_healthy
+      kafka-init:
+        condition: service_completed_successfully
     networks:
       - rococo-network
 
@@ -104,6 +123,8 @@ services:
     depends_on:
       rococo-all-db:
         condition: service_healthy
+      kafka-init:
+        condition: service_completed_successfully
     networks:
       - rococo-network
 
@@ -116,6 +137,8 @@ services:
     depends_on:
       rococo-all-db:
         condition: service_healthy
+      kafka-init:
+        condition: service_completed_successfully
     networks:
       - rococo-network
 
@@ -128,6 +151,8 @@ services:
     depends_on:
       rococo-all-db:
         condition: service_healthy
+      kafka-init:
+        condition: service_completed_successfully
     networks:
       - rococo-network
 

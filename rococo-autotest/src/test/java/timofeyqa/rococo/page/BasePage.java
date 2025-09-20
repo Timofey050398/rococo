@@ -44,7 +44,7 @@ public abstract class BasePage<T extends BasePage<?>> {
     @SuppressWarnings("unchecked")
     @Nonnull
     public T checkToastHidden() {
-        toast.should(not(visible), Duration.ofSeconds(7));
+        toast.should(not(visible), Duration.ofSeconds(10));
         return (T) this;
     }
 }
