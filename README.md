@@ -188,5 +188,12 @@ Allure UI доступен по адресу: http://localhost:5252/
 Allure report: http://localhost:5050/allure-docker-service/projects/rococo-ng/reports/latest/index.html
 
 ---
+## :octopus: CI/CD Pipeline(GitHub Actions)
+
+```mermaid
+flowchart LR
+PR --> Unit --> Build --> E2E --> Report
+E2E --> Notify
+```
 
 <img src="rococo.png" width="800">
