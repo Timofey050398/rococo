@@ -117,6 +117,8 @@ services:
     depends_on:
       auth.rococo.dc:
         condition: service_healthy
+      painting.rococo.dc:
+        condition: service_healthy
     networks:
       - rococo-network
 
