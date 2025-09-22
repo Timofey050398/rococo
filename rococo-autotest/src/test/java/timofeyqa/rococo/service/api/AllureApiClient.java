@@ -57,6 +57,15 @@ public class AllureApiClient extends RestClient {
     }
   }
 
+  public void cleanResults(String projectId) {
+    try {
+      execute(allureApi.cleanResults(projectId));
+    } catch (HttpException e) {
+      logErr("ERROR WHILE CLEAN RESULTS",e);
+      throw new RuntimeException(e);
+    }
+  }
+
   @Step("Send allure results")
   public void sendResults(String projectId, @Param(mode = Parameter.Mode.HIDDEN) AllureResults allureResults) {
     LOG.info("Preparing to send {} allure results for project {}", allureResults.results().size(), projectId);

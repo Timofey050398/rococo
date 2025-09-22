@@ -17,6 +17,9 @@ public interface AllureApi {
   Call<Void> sendResults(@Query("project_id") String projectId,
                          @Body AllureResults allureResults);
 
+  @GET("allure-docker-service/clean-results")
+  Call<Void> cleanResults(@Query("project_id") String projectId);
+
   @GET("allure-docker-service/generate-report")
   Call<Void> generateReport(@Query("project_id") String projectId,
                             @Query("execution_name") String executionName,
