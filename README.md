@@ -134,6 +134,7 @@ bash docker-compose-dev.sh
 127.0.0.1 museum.rococo.dc
 127.0.0.1 painting.rococo.dc
 127.0.0.1 userdata.rococo.dc
+127.0.0.1 rococo-all-db
 ```
 
 При необходимости выполните `sudo dscacheutil -flushcache`.
