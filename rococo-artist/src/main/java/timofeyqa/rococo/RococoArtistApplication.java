@@ -12,5 +12,4 @@ public class RococoArtistApplication {
 		springApplication.addListeners(new PropertiesLogger());
 		springApplication.run(args);
 	}
-
 }

@@ -70,10 +70,7 @@ enum DockerConfig implements Config {
   }
 
   private String jdbcHost(){
-    return Objects.requireNonNullElse(
-        System.getenv("JDBC_HOST"),
-        "127.0.0.1"
-    );
+    return "rococo-all-db";
   }
 
   @NotNull
