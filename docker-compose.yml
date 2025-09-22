@@ -88,6 +88,12 @@ services:
     image: ${PREFIX}/rococo-artist-docker:latest
     ports:
       - 8091:8091
+      - 18091:18091
+    healthcheck:
+      test: "wget --spider http://localhost:18091/actuator/health || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 6
     restart: always
     depends_on:
       rococo-all-db:
@@ -119,6 +125,12 @@ services:
     image: ${PREFIX}/rococo-geo-docker:latest
     ports:
       - 8095:8095
+      - 18095:18095
+    healthcheck:
+      test: "wget --spider http://localhost:18095/actuator/health || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 6
     restart: always
     depends_on:
       rococo-all-db:
@@ -133,12 +145,20 @@ services:
     image: ${PREFIX}/rococo-museum-docker:latest
     ports:
       - 8092:8092
+      - 18092:18092
+    healthcheck:
+      test: "wget --spider http://localhost:18092/actuator/health || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 6
     restart: always
     depends_on:
       rococo-all-db:
         condition: service_healthy
       kafka-init:
         condition: service_completed_successfully
+      geo.rococo.dc:
+        condition: service_healthy
     networks:
       - rococo-network
 
@@ -147,12 +167,22 @@ services:
     image: ${PREFIX}/rococo-painting-docker:latest
     ports:
       - 8094:8094
+      - 18094:18094
+    healthcheck:
+      test: "wget --spider http://localhost:18094/actuator/health || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 6
     restart: always
     depends_on:
       rococo-all-db:
         condition: service_healthy
       kafka-init:
         condition: service_completed_successfully
+      artist.rococo.dc:
+        condition: service_healthy
+      museum.rococo.dc:
+        condition: service_healthy
     networks:
       - rococo-network
 
