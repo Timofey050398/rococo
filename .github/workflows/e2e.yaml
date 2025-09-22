@@ -16,7 +16,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       BUILD_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
       EXECUTION_TYPE: github
-      HEAD_COMMIT_MESSAGE: GitHub Docker run
+      HEAD_COMMIT_MESSAGE: ${{ github.event.pull_request.title }}
       FRONT_VERSION: 0.0.1
       DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
       DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
