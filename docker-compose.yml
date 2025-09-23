@@ -115,7 +115,7 @@ services:
       retries: 5
     restart: always
     depends_on:
-      auth.rococo.dc:
+      userdata.rococo.dc:
         condition: service_healthy
       painting.rococo.dc:
         condition: service_healthy
@@ -193,6 +193,11 @@ services:
     image: ${PREFIX}/rococo-userdata-docker:latest
     ports:
       - 8089:8089
+    healthcheck:
+      test: "wget --spider http://localhost:8089/actuator/health || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 6
     restart: always
     depends_on:
       rococo-all-db:
