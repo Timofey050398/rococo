@@ -10,10 +10,9 @@ dependencies {
 	implementation project(':rococo-grpc')
 	implementation "net.devh:grpc-server-spring-boot-starter:${project.ext.springGrpcVersion}"
 
-        implementation 'org.springframework.boot:spring-boot-starter-web'
-        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-        implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation "org.springframework.cloud:spring-cloud-starter-vault-config:${project.ext.springVaultVersion}"
 	implementation "org.flywaydb:flyway-core:${project.ext.flywayVersion}"
 	implementation "org.flywaydb:flyway-mysql:${project.ext.flywayVersion}"
@@ -27,6 +26,7 @@ dependencies {
 	implementation "com.github.danielwegener:logback-kafka-appender:${project.ext.kafkaAppenderVersion}"
 	implementation "net.logstash.logback:logstash-logback-encoder:${project.ext.logstashVersion}"
 
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation "com.h2database:h2:${project.ext.h2Version}"
 }

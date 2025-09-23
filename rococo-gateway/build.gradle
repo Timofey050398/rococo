@@ -15,7 +15,6 @@ dependencies {
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${project.ext.springOpenApiVersion}"
     implementation 'org.springframework.data:spring-data-commons'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation "org.springframework.cloud:spring-cloud-starter-vault-config:${project.ext.springVaultVersion}"
     implementation "net.coobird:thumbnailator:${project.ext.thumbnailatorVersion}"
     annotationProcessor "org.projectlombok:lombok:${project.ext.lombokVersion}"
@@ -28,6 +27,7 @@ dependencies {
     implementation "com.github.danielwegener:logback-kafka-appender:${project.ext.kafkaAppenderVersion}"
     implementation "net.logstash.logback:logstash-logback-encoder:${project.ext.logstashVersion}"
 
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 }
